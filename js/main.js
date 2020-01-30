@@ -23,7 +23,6 @@ var getRandomElement = function (arr) {
 
 // тут пишем генерацию случайной адрессной строки для ключа avatar
 var avatarRandom = 'img/avatars/user' + '0' + getRandomInt(1, 8) + '.png';
-console.log(avatarRandom)
 // тут пишем рандомное описание
 var getDescriptionRandom = function (skolkoNadoTeksta) {
   var text = ' ';
@@ -96,7 +95,6 @@ var getAdList = function (number) {
 var numberOfAds = 8;
 // тут пишем массив который создается из функции getAdList в зависимости от numberOfAds
 var cards = getAdList(numberOfAds);
-console.log(cards);
 // тут ищем класс для открытия карты
 var mapFaded = document.querySelector('.map');
 // удаляем его если находим
@@ -105,7 +103,7 @@ if (mapFaded) {
 }
 
 // тут ищем ДОМ элемент куда будем добавлять метку(F12 и там посмотрел)
-var mapPins = document.querySelector(".map__pins");
+var mapPins = document.querySelector('.map__pins');
 
 // тут ищем шаблон метки и в ней разметку метки
 var similarMapPin = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -119,7 +117,6 @@ var createAdMapElement = function (unitGetAdList) {
   var adMapElement = similarMapPin.cloneNode(true);
   // тут подставляем данные из элемента(обьекта) массива adList/cards
   adMapElement.style.left = unitGetAdList.location.x + pinWidth / 2;
-  console.log(adMapElement.style.left);
   adMapElement.style.top = unitGetAdList.location.y + pinHeight / 2;
   // это координты из массива + половина метки
   // тут в шаблоне ищем  Альтернативный текст: alt="{{заголовок объявления}}"
@@ -129,7 +126,6 @@ var createAdMapElement = function (unitGetAdList) {
   // -? Дима, правильно ли Я написал изменние пути к рисунку ??
   return adMapElement;
 };
-console.log(createAdMapElement(cards[2]));
 
 // тут пишем функцию которрая в зависимости от длины массива создаёт метки и циклом накидывает фрагменты
 var renderAdMapPins = function (arrAd) {
@@ -141,8 +137,7 @@ var renderAdMapPins = function (arrAd) {
   }
   // тут к mapPins подкидываем детей
   mapPins.appendChild(fragment);
-  console.log(mapPins);
-}
+};
 
-renderAdMapPins(cards)
+renderAdMapPins(cards);
 
