@@ -106,15 +106,21 @@ var similarMapPin = document.querySelector('#pin').content.querySelector('.map__
 
 // тут копируем шаблон
 var adMapElement = similarMapPin.cloneNode(true);
+var pinWidth = document.querySelector('.map__pin').offsetWidth;
+var pinHeight = document.querySelector('.map__pin').offsetHeight;
+console.log(pinHeight);
+
+console.log(pinWidth);
+
+adMapElement.style.left = '30px';
+adMapElement.style.top = "50px"
 // Координаты:
 // style="left: {{location.x + смещение по X}}px;
 // top: {{location.y + смещение по Y}}px;"
-adMapElement.style.left = '30px';
-adMapElement.style.top = "50px"
 // тут в шаблоне ищем  Альтернативный текст: alt="{{заголовок объявления}}"
 adMapElement.querySelectorAll('img').item(0).alt = getAdList(8)[1].offer.title;
-// src="{{author.avatar}}"
 adMapElement.querySelectorAll('img').item(0).src = getAdList(8)[2].author.avatar;
+// это src="{{author.avatar}}"
 
 console.log(adMapElement);
 console.log(adMapElement.querySelectorAll('img').item(0).src);
@@ -126,9 +132,7 @@ console.log(adMapElement.style.left)
 //     На основе данных, созданных в первом пункте, создайте DOM-элементы, соответствующие меткам на карте, и заполните их данными из массива.
 //     Итоговую разметку метки .map__pin можно взять из шаблона #pin.
 
-//     У метки укажите:
 
-//     Координаты: style="left: {{location.x + смещение по X}}px; top: {{location.y + смещение по Y}}px;"
 
 //     Обратите внимание. Координаты X и Y, которые вы вставите в разметку, это не координаты левого верхнего угла блока метки,
 //     а координаты, на которые указывает метка своим острым концом. Чтобы найти эту координату нужно учесть размеры элемента с меткой.
