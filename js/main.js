@@ -23,7 +23,7 @@ var getRandomElement = function (arr) {
 
 // тут пишем генерацию случайной адрессной строки для ключа avatar
 var avatarRandom = 'img/avatars/user' + '0' + getRandomInt(1, 8) + '.png';
-
+console.log(avatarRandom)
 // тут пишем рандомное описание
 var getDescriptionRandom = function (skolkoNadoTeksta) {
   var text = ' ';
@@ -91,8 +91,12 @@ var getAdList = function (number) {
   }
   return adList;
 };
-getAdList(8);
-console.log(getAdList(8));
+// --? Дима, почему получаються 8 массивов с одинкоыми данными 7?
+// тут пишем переменную которая содержит в себе кол-во обьявлений(по заданию их 8)
+var numberOfAds = 8;
+// тут пишем массив который создается из функции getAdList в зависимости от numberOfAds
+var cards = getAdList(numberOfAds);
+console.log(cards);
 // тут ищем класс для открытия карты
 var mapFaded = document.querySelector('.map');
 // удаляем его если находим
@@ -100,42 +104,45 @@ if (mapFaded) {
   mapFaded.classList.remove('map--faded');
 }
 
+// тут ищем ДОМ элемент куда будем добавлять метку(F12 и там посмотрел)
+var mapPins = document.querySelector(".map__pins");
 
 // тут ищем шаблон метки и в ней разметку метки
 var similarMapPin = document.querySelector('#pin').content.querySelector('.map__pin');
 
-// тут копируем шаблон
-var adMapElement = similarMapPin.cloneNode(true);
 var pinWidth = document.querySelector('.map__pin').offsetWidth;
 var pinHeight = document.querySelector('.map__pin').offsetHeight;
-console.log(pinHeight);
 
-console.log(pinWidth);
+// тут пришем функцию которая в зависимости от данных из массива cards создаёт метку(1)
+var createAdMapElement = function (unitGetAdList) {
+  // тут копируем шаблон
+  var adMapElement = similarMapPin.cloneNode(true);
+  // тут подставляем данные из элемента(обьекта) массива adList/cards
+  adMapElement.style.left = unitGetAdList.location.x + pinWidth / 2;
+  console.log(adMapElement.style.left);
+  adMapElement.style.top = unitGetAdList.location.y + pinHeight / 2;
+  // это координты из массива + половина метки
+  // тут в шаблоне ищем  Альтернативный текст: alt="{{заголовок объявления}}"
+  adMapElement.querySelectorAll('img').item(0).alt = unitGetAdList.offer.title;
+  adMapElement.querySelectorAll('img').item(0).src = unitGetAdList.author.avatar;
+  // это src="{{author.avatar}}"
+  // -? Дима, правильно ли Я написал изменние пути к рисунку ??
+  return adMapElement;
+};
+console.log(createAdMapElement(cards[2]));
 
-adMapElement.style.left = '30px';
-adMapElement.style.top = "50px"
-// Координаты:
-// style="left: {{location.x + смещение по X}}px;
-// top: {{location.y + смещение по Y}}px;"
-// тут в шаблоне ищем  Альтернативный текст: alt="{{заголовок объявления}}"
-adMapElement.querySelectorAll('img').item(0).alt = getAdList(8)[1].offer.title;
-adMapElement.querySelectorAll('img').item(0).src = getAdList(8)[2].author.avatar;
-// это src="{{author.avatar}}"
+// тут пишем функцию которрая в зависимости от длины массива создаёт метки и циклом накидывает фрагменты
+var renderAdMapPins = function (arrAd) {
+  // тут создаем переменую fragment которая в содает в document е любой DOM элемент - но он еще не отрисован
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < arrAd.length; i++) {
+    fragment.appendChild(createAdMapElement(arrAd[i]));
+    //  а тут в fragment циклом накидиваем детей от функции renderWizard с параметром wizards[i]
+  }
+  // тут к mapPins подкидываем детей
+  mapPins.appendChild(fragment);
+  console.log(mapPins);
+}
 
-console.log(adMapElement);
-console.log(adMapElement.querySelectorAll('img').item(0).src);
-console.log(adMapElement.style.left)
+renderAdMapPins(cards)
 
-// тут создаём дом элементы заполненые из getAdList
-
-
-//     На основе данных, созданных в первом пункте, создайте DOM-элементы, соответствующие меткам на карте, и заполните их данными из массива.
-//     Итоговую разметку метки .map__pin можно взять из шаблона #pin.
-
-
-
-//     Обратите внимание. Координаты X и Y, которые вы вставите в разметку, это не координаты левого верхнего угла блока метки,
-//     а координаты, на которые указывает метка своим острым концом. Чтобы найти эту координату нужно учесть размеры элемента с меткой.
-
-//
-// 4 Отрисуйте сгенерированные DOM-элементы в блок .map__pins. Для вставки элементов используйте DocumentFragment.
