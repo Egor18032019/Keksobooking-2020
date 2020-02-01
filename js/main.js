@@ -21,8 +21,6 @@ var getRandomElement = function (arr) {
   return arr[random];
 };
 
-// тут пишем генерацию случайной адрессной строки для ключа avatar
-var avatarRandom = 'img/avatars/user' + '0' + getRandomInt(1, 8) + '.png';
 // тут пишем рандомное описание
 var getDescriptionRandom = function (skolkoNadoTeksta) {
   var text = ' ';
@@ -44,7 +42,8 @@ var getAdList = function (number) {
   for (var i = 0; i < number; i++) {
     adList[i] = {
       author: {
-        avatar: avatarRandom
+        avatar: 'img/avatars/user' + '0' + getRandomInt(1, 8) + '.png'
+        // тут пишем генерацию случайной адрессной строки для ключа avatar
       },
       // строка, адрес изображения вида img/avatars/user{{xx}}.png, где {{xx}}
       // это число от 1 до 8 с ведущим нулём.
@@ -115,15 +114,14 @@ var pinHeight = document.querySelector('.map__pin').offsetHeight;
 var createAdMapElement = function (unitGetAdList) {
   // тут копируем шаблон
   var adMapElement = similarMapPin.cloneNode(true);
-  // тут подставляем данные из элемента(обьекта) массива adList/cards
-  adMapElement.style.left = unitGetAdList.location.x + pinWidth / 2;
-  adMapElement.style.top = unitGetAdList.location.y + pinHeight / 2;
+  var leftX = unitGetAdList.location.x + pinWidth / 2;
+  var topY = unitGetAdList.location.y + pinHeight / 2;
   // это координты из массива + половина метки
+  adMapElement.style.left = leftX + 'px';
+  adMapElement.style.top = topY + 'px';
   // тут в шаблоне ищем  Альтернативный текст: alt="{{заголовок объявления}}"
   adMapElement.querySelectorAll('img').item(0).alt = unitGetAdList.offer.title;
   adMapElement.querySelectorAll('img').item(0).src = unitGetAdList.author.avatar;
-  // это src="{{author.avatar}}"
-  // -? Дима, правильно ли Я написал изменние пути к рисунку ??
   return adMapElement;
 };
 
