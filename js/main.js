@@ -130,7 +130,7 @@ var cards = getAdList(NUMBER_OF_ADS);
  * @param {*} unitGetAdList
  * @return {template} возращает склонируемый шаблон с заполнеными координтам+подписями+картинками
  */
-var createAdMapElement = function (unitGetAdList) {
+var getCreateAdMapElement = function (unitGetAdList) {
   // тут копируем шаблон
   var adMapElement = similarMapPin.cloneNode(true);
   var leftX = unitGetAdList.location.x + pinWidth / 2;
@@ -148,16 +148,16 @@ var createAdMapElement = function (unitGetAdList) {
  * тут пишем функцию которрая в зависимости от длины массива создаёт метки и циклом накидывает фрагменты
  * @param {arr} arrAd массив обьектов которых надо отрисовать на страницы
  */
-var renderAdMapPins = function (arrAd) {
+var getRenderAdMapPins = function (arrAd) {
   var fragment = document.createDocumentFragment();
   // тут создаем переменую fragment которая в содает в document е любой DOM элемент - но он еще не отрисован
   for (var i = 0; i < arrAd.length; i++) {
-    fragment.appendChild(createAdMapElement(arrAd[i]));
+    fragment.appendChild(getCreateAdMapElement(arrAd[i]));
     //  а тут в fragment циклом накидиваем детей от функции renderWizard с параметром wizards[i]
   }
   // тут к mapPins подкидываем детей
   mapPins.appendChild(fragment);
 };
 
-renderAdMapPins(cards);
+getRenderAdMapPins(cards);
 
