@@ -128,7 +128,7 @@ var getAdList = function (number) {
 };
 
 // тут пишем массив который создается из функции getAdList в зависимости от numberOfAds
-var cards = getAdList(NUMBER_OF_ADS);
+var cardsArr = getAdList(NUMBER_OF_ADS);
 
 /**
  * тут пришем функцию которая в зависимости от данных из массива позиционирует метку+ генерирует подписи и аватарки
@@ -164,5 +164,56 @@ var getRenderAdMapPins = function (arrAd) {
   mapPins.appendChild(fragment);
 };
 
-getRenderAdMapPins(cards);
+getRenderAdMapPins(cardsArr);
 
+// /////// задание 3.3.
+var cardsShablon = document.querySelector('#card').content.querySelector('.map__card');
+console.log(cardsShablon);
+
+// тут пишем переменую из которой функция getMapCard будет принимать значения
+var cardsArrElement = cardsArr[1];
+console.log(cardsArrElement);
+
+/**
+ * тут пишем функцию которая будт принимать переменую cardsArrElement и из него подставлять данные
+ * в карточку обьявления
+ * @param
+ * @returns
+ */
+var getMapCard = function (cardsArrElement) {
+  var adMapCard = cardsShablon.cloneNode(true);
+  if (cardsArrElement.offer.title) {
+    adMapCard.querySelector('.popup__title').textContent = cardsArrElement.offer.title;
+    //   Выведите заголовок объявления offer.title в заголовок .popup__title.
+  }
+  if (cardsArrElement.author.avatar) {
+    adMapCard.querySelectorAll('.popup__avatar').item(0).src = cardsArrElement.author.avatar;
+    //   Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
+  }
+  if (cardsArrElement.offer.price) {
+    adMapCard.querySelector('.popup__text--price').textContent = cardsArrElement.offer.price + '₽/ночь';
+    //   Выведите цену offer.price в блок .popup__text--price строкой вида {{offer.price}}₽/ночь. Например, 5200₽/ночь.
+  }
+  var offerType = cardsArrElement.offer.type
+  ctx.fillStyle = players[i] === 'Вы' ? 'rgba(255, 0, 0, 1)' : getRandomColorSaturation(240, 50);
+  // заливка текста равно (если игрок это вы (и это правда) - то вернёт красный цвет если ложь то вернет синий с рандомной насыщеностью)
+
+  adMapCard.querySelector('.popup__type').textContent = cardsArrElement.offer.type + '₽/ночь';
+
+  //   В блок .popup__type выведите тип жилья offer.type:
+  Квартира для flat, Бунгало для bungalo, Дом для house, Дворец для palace.
+
+
+  //   Выведите адрес offer.address в блок .popup__text--address.
+  //   Выведите количество гостей и комнат offer.rooms и offer.guests в блок .popup__text--capacity строкой вида {{offer.rooms}} комнаты для {{offer.guests}} гостей. Например, 2 комнаты для 3 гостей.
+  //   Время заезда и выезда offer.checkin и offer.checkout в блок .popup__text--time строкой вида Заезд после {{offer.checkin}}, выезд до {{offer.checkout}}. Например, заезд после 14:00, выезд до 12:00.
+  //   В список .popup__features выведите все доступные удобства в объявлении.
+  //   В блок .popup__description выведите описание объекта недвижимости offer.description.
+  //   В блок .popup__photos выведите все фотографии из списка offer.photos. Каждая из строк массива photos должна записываться как src соответствующего изображения.
+
+  // Если данных для заполнения не хватает, соответствующий блок в карточке скрывается.
+  return adMapCard;
+};
+
+getMapCard(cardsArrElement);
+console.log(getMapCard(cardsArrElement));
