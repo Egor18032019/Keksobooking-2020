@@ -1,17 +1,15 @@
 'use strict';
+// это фиксированные значения обьктов
+var TYPE_RANDOM = ['palace', 'flat', 'house', 'bungalo'];
+var CHECKOUT_RANDOM = ['12:00', '13:00', '14:00'];
+var CHECKIN_RANDOM = ['12:00', '13:00', '14:00'];
+var FEATURES_RANDOM = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var PHOTOS_RANDOM = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
+  'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
+];
 
 // тут пишем переменную которая содержит в себе кол-во обьявлений(по заданию их 8)
 var NUMBER_OF_ADS = 8;
-
-// тут ищем класс для открытия карты
-var mapFaded = document.querySelector('.map');
-// удаляем его если находим
-if (mapFaded) {
-  mapFaded.classList.remove('map--faded');
-}
-
-// тут ищем ДОМ элемент куда будем добавлять метку(F12 и там посмотрел)
-var mapPins = document.querySelector('.map__pins');
 
 // тут ищем шаблон метки и в ней разметку метки
 var similarMapPin = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -26,17 +24,8 @@ var pinHeight = document.querySelector('.map__pin').offsetHeight;
  * @return {number} случайное число в диапозоне от мин до max
  */
 var getRandomInt = function (min, max) {
-  return Math.floor(min + Math.random() * (max + 1 - min));
+  return Math.ceil(min + Math.random() * (max - min));
 };
-
-// это фиксированные значения обьктов
-var TYPE_RANDOM = ['palace', 'flat', 'house', 'bungalo'];
-var CHECKOUT_RANDOM = ['12:00', '13:00', '14:00'];
-var CHECKIN_RANDOM = ['12:00', '13:00', '14:00'];
-var FEATURES_RANDOM = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var PHOTOS_RANDOM = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-  'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
-];
 
 /**
  * тут пишем рандомную функцию которая будет случайно выбирать элемент из любого массивва
@@ -44,31 +33,31 @@ var PHOTOS_RANDOM = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http
  * @return {randomElement} случайный элемент массива
  */
 var getRandomElement = function (arr) {
-  if (arr) {
+  if (!arr) {
+    return null;
+  } else {
     var random = Math.floor(Math.random() * arr.length);
+    return arr[random];
   }
-  return arr[random];
 };
 
 // тут пишем рандомное описание
 
 /**
  * текстовая функция которая составляет нужной длины текст
- * @param {number} skolkoNadoTeksta - кол-во циклов
+ * @param {number} needText - кол-во циклов
  * @return {string} выдаёт текст нужной длины
  */
-var getDescriptionRandom = function (skolkoNadoTeksta) {
-  var text = ' ';
-  var nado = ' Берите не пожалеете ! Дёшево !! Ни где такое не найдете !!! ';
-  for (var i = 1; i <= skolkoNadoTeksta; i++) {
-    text = text + nado;
-  }
-  return text;
+var getDescriptionRandom = function (needText) {
+  var text = 'Берите не пожалеете ! Дёшево !! Ни где такое не найдете !!! ';
+  var textString = text.substring(0, needText);
+  return textString;
 };
 
 // тут пишем переменую которая должна определять размеры блока в котором в котором перетаскивается метка.
 var maxWidth = document.querySelector('.map__pins').offsetWidth;
 // --? Дима Почемуто всегда даёт цифру 980.. ,,??
+// --? так она всегда 980 внезависимости от размера окна
 
 /**
  *  тут пишем функцию которая в зависимости от введеного числа создаёт такое же количество обьектов в массиве.
@@ -115,7 +104,7 @@ var getAdList = function (number) {
         features: getRandomElement(FEATURES_RANDOM),
         // массив строк случайной длины из ниже предложенных:
         // "wifi", "dishwasher", "parking", "washer", "elevator", "conditioner"
-        description: getDescriptionRandom(2),
+        description: getDescriptionRandom(getRandomInt(21, 58)),
         // строка с описанием
         photos: getRandomElement(PHOTOS_RANDOM)
         // массив строк случайной длины, содержащий адреса фотографий
@@ -127,8 +116,6 @@ var getAdList = function (number) {
   return adList;
 };
 
-// тут пишем массив который создается из функции getAdList в зависимости от numberOfAds
-var cards = getAdList(NUMBER_OF_ADS);
 
 /**
  * тут пришем функцию которая в зависимости от данных из массива позиционирует метку+ генерирует подписи и аватарки
@@ -151,18 +138,79 @@ var getCreateAdMapElement = function (unitGetAdList) {
 
 /**
  * тут пишем функцию которрая в зависимости от длины массива создаёт метки и циклом накидывает фрагменты
- * @param {arr} arrAd массив обьектов которых надо отрисовать на страницы
+ * @param {arr} cardsArr массив обьектов которых надо отрисовать на страницы
  */
-var getRenderAdMapPins = function (arrAd) {
+var getRenderAdMapPins = function () {
   var fragment = document.createDocumentFragment();
   // тут создаем переменую fragment которая в содает в document е любой DOM элемент - но он еще не отрисован
-  for (var i = 0; i < arrAd.length; i++) {
-    fragment.appendChild(getCreateAdMapElement(arrAd[i]));
+  // тут пишем массив который создается из функции getAdList в зависимости от numberOfAds
+  var cardsArr = getAdList(NUMBER_OF_ADS);
+  for (var i = 0; i < cardsArr.length; i++) {
+    fragment.appendChild(getCreateAdMapElement(cardsArr[i]));
     //  а тут в fragment циклом накидиваем детей от функции renderWizard с параметром wizards[i]
   }
+  // тут ищем ДОМ элемент куда будем добавлять метку(F12 и там посмотрел)
+  var mapPins = document.querySelector('.map__pins');
   // тут к mapPins подкидываем детей
   mapPins.appendChild(fragment);
+  // тут ищем класс для открытия карты
+  var mapFaded = document.querySelector('.map');
+  // удаляем его если находим
+  if (mapFaded) {
+    mapFaded.classList.remove('map--faded');
+  }
 };
 
-getRenderAdMapPins(cards);
+getRenderAdMapPins();
 
+// /////// задание 3.3.
+// var cardsShablon = document.querySelector('#card').content.querySelector('.map__card');
+// console.log(cardsShablon);
+
+// // тут пишем переменую из которой функция getMapCard будет принимать значения
+// var cardsArrElement = cardsArr[1];
+// console.log(cardsArrElement);
+
+// /**
+//  * тут пишем функцию которая будт принимать переменую cardsArrElement и из него подставлять данные
+//  * в карточку обьявления
+//  * @param
+//  * @returns
+//  */
+// var getMapCard = function (cardsArrElement) {
+//   var adMapCard = cardsShablon.cloneNode(true);
+//   if (cardsArrElement.offer.title) {
+//     adMapCard.querySelector('.popup__title').textContent = cardsArrElement.offer.title;
+//     //   Выведите заголовок объявления offer.title в заголовок .popup__title.
+//   }
+//   if (cardsArrElement.author.avatar) {
+//     adMapCard.querySelectorAll('.popup__avatar').item(0).src = cardsArrElement.author.avatar;
+//     //   Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
+//   }
+//   if (cardsArrElement.offer.price) {
+//     adMapCard.querySelector('.popup__text--price').textContent = cardsArrElement.offer.price + '₽/ночь';
+//     //   Выведите цену offer.price в блок .popup__text--price строкой вида {{offer.price}}₽/ночь. Например, 5200₽/ночь.
+//   }
+//   var offerType = cardsArrElement.offer.type
+//   ctx.fillStyle = players[i] === 'Вы' ? 'rgba(255, 0, 0, 1)' : getRandomColorSaturation(240, 50);
+//   // заливка текста равно (если игрок это вы (и это правда) - то вернёт красный цвет если ложь то вернет синий с рандомной насыщеностью)
+
+//   adMapCard.querySelector('.popup__type').textContent = cardsArrElement.offer.type + '₽/ночь';
+
+//   //   В блок .popup__type выведите тип жилья offer.type:
+//   Квартира для flat, Бунгало для bungalo, Дом для house, Дворец для palace.
+
+
+//   //   Выведите адрес offer.address в блок .popup__text--address.
+//   //   Выведите количество гостей и комнат offer.rooms и offer.guests в блок .popup__text--capacity строкой вида {{offer.rooms}} комнаты для {{offer.guests}} гостей. Например, 2 комнаты для 3 гостей.
+//   //   Время заезда и выезда offer.checkin и offer.checkout в блок .popup__text--time строкой вида Заезд после {{offer.checkin}}, выезд до {{offer.checkout}}. Например, заезд после 14:00, выезд до 12:00.
+//   //   В список .popup__features выведите все доступные удобства в объявлении.
+//   //   В блок .popup__description выведите описание объекта недвижимости offer.description.
+//   //   В блок .popup__photos выведите все фотографии из списка offer.photos. Каждая из строк массива photos должна записываться как src соответствующего изображения.
+
+//   // Если данных для заполнения не хватает, соответствующий блок в карточке скрывается.
+//   return adMapCard;
+// };
+
+// getMapCard(cardsArrElement);
+// console.log(getMapCard(cardsArrElement));
