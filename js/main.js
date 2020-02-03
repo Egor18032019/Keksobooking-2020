@@ -19,7 +19,12 @@ var similarMapPin = document.querySelector('#pin').content.querySelector('.map__
 var pinWidth = document.querySelector('.map__pin').offsetWidth;
 var pinHeight = document.querySelector('.map__pin').offsetHeight;
 
-
+/**
+ * генерация случайного числа
+ * @param {number} min чистло от
+ * @param {number} max максимальное число
+ * @return {number} случайное число в диапозоне от мин до max
+ */
 var getRandomInt = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
 };
