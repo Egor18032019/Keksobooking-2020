@@ -237,19 +237,12 @@ var getMapCard = function () {
   }
   // --? Дима,  так скрывать надо ?
 
-  // console.log(adMapCard.querySelectorAll('.popup__features').item(0));
-  // console.log(adMapCard.querySelectorAll('.popup__features').item(0).children.item(1));
-  // console.log(adMapCard.querySelector('.popup__features').querySelectorAll("li"));
-  var removeLI = adMapCard.querySelectorAll('.popup__features');
+  var removeLI = adMapCard.querySelector('.popup__features');
   // console.log(removeLI);
+  // console.log(removeLI.hasChildNodes());
+  // adMapCard.removeChild(removeLI);
   removeLI.innerHTML = ' ';
-  // console.log(removeLI);
-  // console.log(adMapCard.querySelectorAll('.popup__features').item(0).childNodes);
-  // console.log(adMapCard.querySelectorAll('.popup__features').item(0).children.item(1));
-  // console.log(adMapCard.querySelector('.popup__features').querySelectorAll("li"));
-  // cardsArrElement.offer.features = adMapCard.querySelectorAll('.popup__features').item(0).children.item(1);
-  // adMapCard.querySelector('.popup__features').querySelectorAll("li") = cardsArrElement.offer.features;
-  // console.log(cardsArrElement.offer.features);
+
 
   //   В список .popup__features выведите все доступные удобства в объявлении.
 
