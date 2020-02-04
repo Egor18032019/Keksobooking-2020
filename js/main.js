@@ -71,7 +71,7 @@ var getAdList = function (number) {
   for (var i = 0; i < number; i++) {
     // вынес сюда чтобы адрее считалься
     var coordinateX = getRandomInt(130, maxWidth);
-    var coordinateY = getRandomInt(130, 630) ;
+    var coordinateY = getRandomInt(130, 630);
     adList.push({
       author: {
         avatar: 'img/avatars/user' + '0' + getRandomInt(1, 8) + '.png'
@@ -180,7 +180,6 @@ var getMapCard = function () {
   var adMapCard = cardsShablon.cloneNode(true);
   // тут пишем переменую равную первому элементу сгенерированого массив(условие из задания)
   var cardsArrElement = getAdList(NUMBER_OF_ADS)[1];
-  console.log(cardsArrElement);
   if (cardsArrElement.offer.title) {
     adMapCard.querySelector('.popup__title').textContent = cardsArrElement.offer.title;
     //   Выведите заголовок объявления offer.title в заголовок .popup__title.
@@ -207,7 +206,6 @@ var getMapCard = function () {
     //   В блок .popup__type выведите тип жилья offer.type:
     // Квартира для flat, Бунгало для bungalo, Дом для house, Дворец для palace.
   }
-  console.log(cardsArrElement.offer.address);
   adMapCard.querySelector('.popup__text--address').textContent = cardsArrElement.offer.address;
   //   Выведите адрес offer.address в блок .popup__text--address.
   // console.log(cardsArrElement.offer.address);
@@ -239,19 +237,19 @@ var getMapCard = function () {
   }
   // --? Дима,  так скрывать надо ?
 
-  console.log(adMapCard.querySelectorAll('.popup__features').item(0));
+  // console.log(adMapCard.querySelectorAll('.popup__features').item(0));
   // console.log(adMapCard.querySelectorAll('.popup__features').item(0).children.item(1));
   // console.log(adMapCard.querySelector('.popup__features').querySelectorAll("li"));
   var removeLI = adMapCard.querySelectorAll('.popup__features');
-  console.log(removeLI);
+  // console.log(removeLI);
   removeLI.innerHTML = ' ';
-  console.log(removeLI);
+  // console.log(removeLI);
   // console.log(adMapCard.querySelectorAll('.popup__features').item(0).childNodes);
   // console.log(adMapCard.querySelectorAll('.popup__features').item(0).children.item(1));
   // console.log(adMapCard.querySelector('.popup__features').querySelectorAll("li"));
   // cardsArrElement.offer.features = adMapCard.querySelectorAll('.popup__features').item(0).children.item(1);
   // adMapCard.querySelector('.popup__features').querySelectorAll("li") = cardsArrElement.offer.features;
-  console.log(cardsArrElement.offer.features);
+  // console.log(cardsArrElement.offer.features);
 
   //   В список .popup__features выведите все доступные удобства в объявлении.
 
@@ -259,4 +257,4 @@ var getMapCard = function () {
 };
 
 getMapCard();
-console.log(getMapCard());
+// console.log(getMapCard());
