@@ -69,6 +69,9 @@ var getAdList = function (number) {
   // тут обьявим пустой массив в который  - будем толкать элементы
   var adList = [];
   for (var i = 0; i < number; i++) {
+    // вынес сюда чтобы адрее считалься
+    var coordinateX = getRandomInt(130, maxWidth);
+    var coordinateY = getRandomInt(130, 630) ;
     adList.push({
       author: {
         avatar: 'img/avatars/user' + '0' + getRandomInt(1, 8) + '.png'
@@ -78,8 +81,8 @@ var getAdList = function (number) {
         // Например, 01, 02 и т. д. Адреса изображений не повторяются
       },
       location: {
-        x: getRandomInt(130, maxWidth),
-        y: getRandomInt(130, 630)
+        x: coordinateX,
+        y: coordinateY
         // "x": случайное число, координата x метки на карте. Значение ограничено размерами блока, в котором перетаскивается метка.
         // --? 130 для x взял от балды или 0 поставит ?
         // "y": случайное число, координата y метки на карте от 130 до 630.
@@ -87,7 +90,7 @@ var getAdList = function (number) {
       offer: {
         title: 'Что сюда написать ? Массив с которого будут дергаться в случайном порядке элементы ?',
         // строка, заголовок предложения
-        address: location.x + ' , ' + location.y,
+        address: coordinateX + ' , ' + coordinateY,
         // --? поучему он не подтаскивает значения с соседненго обьекта ? location цпециально выше положил ?
         price: getRandomInt(1000, 1000000),
         // число, стоимость - случайно
@@ -111,7 +114,9 @@ var getAdList = function (number) {
         //  "http://o0.github.io/assets/images/tokyo/hotel1.jpg", "http://o0.github.io/assets/images/tokyo/hotel2.jpg",
         //   "http://o0.github.io/assets/images/tokyo/hotel3.jpg"
       }
-    });
+    }
+    );
+
   }
   return adList;
 };
@@ -175,6 +180,7 @@ var getMapCard = function () {
   var adMapCard = cardsShablon.cloneNode(true);
   // тут пишем переменую равную первому элементу сгенерированого массив(условие из задания)
   var cardsArrElement = getAdList(NUMBER_OF_ADS)[1];
+  console.log(cardsArrElement);
   if (cardsArrElement.offer.title) {
     adMapCard.querySelector('.popup__title').textContent = cardsArrElement.offer.title;
     //   Выведите заголовок объявления offer.title в заголовок .popup__title.
@@ -201,6 +207,7 @@ var getMapCard = function () {
     //   В блок .popup__type выведите тип жилья offer.type:
     // Квартира для flat, Бунгало для bungalo, Дом для house, Дворец для palace.
   }
+  console.log(cardsArrElement.offer.address);
   adMapCard.querySelector('.popup__text--address').textContent = cardsArrElement.offer.address;
   //   Выведите адрес offer.address в блок .popup__text--address.
   // console.log(cardsArrElement.offer.address);
@@ -232,18 +239,19 @@ var getMapCard = function () {
   }
   // --? Дима,  так скрывать надо ?
 
-  // console.log(adMapCard.querySelectorAll('.popup__features').item(0).childNodes);
+  console.log(adMapCard.querySelectorAll('.popup__features').item(0));
   // console.log(adMapCard.querySelectorAll('.popup__features').item(0).children.item(1));
   // console.log(adMapCard.querySelector('.popup__features').querySelectorAll("li"));
-  // var removeLI = adMapCard.querySelector('.popup__features').querySelectorAll("li");
-  // console.log(removeLI);
-  // removeLi.removeChild(li);
+  var removeLI = adMapCard.querySelectorAll('.popup__features');
+  console.log(removeLI);
+  removeLI.innerHTML = ' ';
+  console.log(removeLI);
   // console.log(adMapCard.querySelectorAll('.popup__features').item(0).childNodes);
   // console.log(adMapCard.querySelectorAll('.popup__features').item(0).children.item(1));
   // console.log(adMapCard.querySelector('.popup__features').querySelectorAll("li"));
   // cardsArrElement.offer.features = adMapCard.querySelectorAll('.popup__features').item(0).children.item(1);
-  // // adMapCard.querySelector('.popup__features').querySelectorAll("li") = cardsArrElement.offer.features;
-  // console.log(cardsArrElement.offer.features);
+  // adMapCard.querySelector('.popup__features').querySelectorAll("li") = cardsArrElement.offer.features;
+  console.log(cardsArrElement.offer.features);
 
   //   В список .popup__features выведите все доступные удобства в объявлении.
 
@@ -251,4 +259,4 @@ var getMapCard = function () {
 };
 
 getMapCard();
-// console.log(getMapCard());
+console.log(getMapCard());
