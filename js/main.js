@@ -164,53 +164,91 @@ var getRenderAdMapPins = function () {
 getRenderAdMapPins();
 
 // /////// задание 3.3.
-// var cardsShablon = document.querySelector('#card').content.querySelector('.map__card');
-// console.log(cardsShablon);
+var cardsShablon = document.querySelector('#card').content.querySelector('.map__card');
+/**
+ * тут пишем функцию которая будт принимать переменую cardsArrElement и из него подставлять данные
+ * в карточку обьявления
+ * @param {net} так используються фиксированные значения
+ * @return {DOM} заполненный DOM элемент данными из сгенерированного массива
+ */
+var getMapCard = function () {
+  var adMapCard = cardsShablon.cloneNode(true);
+  // тут пишем переменую равную первому элементу сгенерированого массив(условие из задания)
+  var cardsArrElement = getAdList(NUMBER_OF_ADS)[1];
+  if (cardsArrElement.offer.title) {
+    adMapCard.querySelector('.popup__title').textContent = cardsArrElement.offer.title;
+    //   Выведите заголовок объявления offer.title в заголовок .popup__title.
+  }
+  if (cardsArrElement.author.avatar) {
+    adMapCard.querySelectorAll('.popup__avatar').item(0).src = cardsArrElement.author.avatar;
+    //   Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
+  }
+  if (cardsArrElement.offer.price) {
+    adMapCard.querySelector('.popup__text--price').textContent = cardsArrElement.offer.price + '₽/ночь';
+    //   Выведите цену offer.price в блок .popup__text--price строкой вида {{offer.price}}₽/ночь. Например, 5200₽/ночь.
+  }
+  if (cardsArrElement.offer.type === 'flat') {
+    cardsArrElement.offer.type = 'Квартира';
+  } else if (cardsArrElement.offer.type === 'bungalo') {
+    cardsArrElement.offer.type = 'Бунгало';
+  } else if (cardsArrElement.offer.type === 'house') {
+    cardsArrElement.offer.type = 'Дом';
+  } else if (cardsArrElement.offer.type === 'palace') {
+    cardsArrElement.offer.type = 'Дворец';
+  }
+  if (cardsArrElement.offer.type) {
+    adMapCard.querySelector('.popup__type').textContent = cardsArrElement.offer.type;
+    //   В блок .popup__type выведите тип жилья offer.type:
+    // Квартира для flat, Бунгало для bungalo, Дом для house, Дворец для palace.
+  }
+  adMapCard.querySelector('.popup__text--address').textContent = cardsArrElement.offer.address;
+  //   Выведите адрес offer.address в блок .popup__text--address.
+  // console.log(cardsArrElement.offer.address);
+  if (cardsArrElement.offer.rooms || cardsArrElement.offer.quests) {
+    // ---если будет время = сделать что бы более по правильно писала
+    adMapCard.querySelector('.popup__text--capacity').textContent = cardsArrElement.offer.rooms + ' комнаты для ' + cardsArrElement.offer.quests + ' гостей';
+    //   Выведите количество гостей и комнат offer.rooms и offer.guests в блок .popup__text--capacity
+    //  строкой вида {{offer.rooms}} комнаты для {{offer.guests}} гостей. Например, 2 комнаты для 3 гостей.
+  }
+  if (cardsArrElement.offer.checkin || cardsArrElement.offer.checkout) {
+    adMapCard.querySelector('.popup__text--time').textContent = 'заезд после ' + cardsArrElement.offer.checkin + ' , выезд до  ' + cardsArrElement.offer.checkout + ' гостей';
+    //   Время заезда и выезда offer.checkin и offer.checkout в блок .popup__text--time строкой вида
+    //  Заезд после {{offer.checkin}}, выезд до {{offer.checkout}}. Например, заезд после 14:00, выезд до 12:00.
+  }
+  if (cardsArrElement.offer.description) {
+    adMapCard.querySelector('.popup__description').textContent = cardsArrElement.offer.description;
+    //   В блок .popup__description выведите описание объекта недвижимости offer.description.
+  } else {
+    adMapCard.querySelector('.popup__description').textContent = null;
+  }
+  // Если данных для заполнения не хватает, соответствующий блок в карточке скрывается.
+  // --? Дима,  так скрывать надо ??
 
-// // тут пишем переменую из которой функция getMapCard будет принимать значения
-// var cardsArrElement = cardsArr[1];
-// console.log(cardsArrElement);
+  if (cardsArrElement.offer.photos) {
+    adMapCard.querySelector('.popup__photos').querySelectorAll('img').item(0).src = cardsArrElement.offer.photos;
+    //   В блок .popup__photos выведите все фотографии из списка offer.photos. Каждая из строк массива photos должна записываться как src соответствующего изображения.
+  } else {
+    adMapCard.querySelector('.popup__photos').querySelectorAll('img').item(0).src = null;
+  }
+  // --? Дима,  так скрывать надо ?
 
-// /**
-//  * тут пишем функцию которая будт принимать переменую cardsArrElement и из него подставлять данные
-//  * в карточку обьявления
-//  * @param
-//  * @returns
-//  */
-// var getMapCard = function (cardsArrElement) {
-//   var adMapCard = cardsShablon.cloneNode(true);
-//   if (cardsArrElement.offer.title) {
-//     adMapCard.querySelector('.popup__title').textContent = cardsArrElement.offer.title;
-//     //   Выведите заголовок объявления offer.title в заголовок .popup__title.
-//   }
-//   if (cardsArrElement.author.avatar) {
-//     adMapCard.querySelectorAll('.popup__avatar').item(0).src = cardsArrElement.author.avatar;
-//     //   Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
-//   }
-//   if (cardsArrElement.offer.price) {
-//     adMapCard.querySelector('.popup__text--price').textContent = cardsArrElement.offer.price + '₽/ночь';
-//     //   Выведите цену offer.price в блок .popup__text--price строкой вида {{offer.price}}₽/ночь. Например, 5200₽/ночь.
-//   }
-//   var offerType = cardsArrElement.offer.type
-//   ctx.fillStyle = players[i] === 'Вы' ? 'rgba(255, 0, 0, 1)' : getRandomColorSaturation(240, 50);
-//   // заливка текста равно (если игрок это вы (и это правда) - то вернёт красный цвет если ложь то вернет синий с рандомной насыщеностью)
+  // console.log(adMapCard.querySelectorAll('.popup__features').item(0).childNodes);
+  // console.log(adMapCard.querySelectorAll('.popup__features').item(0).children.item(1));
+  // console.log(adMapCard.querySelector('.popup__features').querySelectorAll("li"));
+  // var removeLI = adMapCard.querySelector('.popup__features').querySelectorAll("li");
+  // console.log(removeLI);
+  // removeLi.removeChild(li);
+  // console.log(adMapCard.querySelectorAll('.popup__features').item(0).childNodes);
+  // console.log(adMapCard.querySelectorAll('.popup__features').item(0).children.item(1));
+  // console.log(adMapCard.querySelector('.popup__features').querySelectorAll("li"));
+  // cardsArrElement.offer.features = adMapCard.querySelectorAll('.popup__features').item(0).children.item(1);
+  // // adMapCard.querySelector('.popup__features').querySelectorAll("li") = cardsArrElement.offer.features;
+  // console.log(cardsArrElement.offer.features);
 
-//   adMapCard.querySelector('.popup__type').textContent = cardsArrElement.offer.type + '₽/ночь';
+  //   В список .popup__features выведите все доступные удобства в объявлении.
 
-//   //   В блок .popup__type выведите тип жилья offer.type:
-//   Квартира для flat, Бунгало для bungalo, Дом для house, Дворец для palace.
+  return adMapCard;
+};
 
-
-//   //   Выведите адрес offer.address в блок .popup__text--address.
-//   //   Выведите количество гостей и комнат offer.rooms и offer.guests в блок .popup__text--capacity строкой вида {{offer.rooms}} комнаты для {{offer.guests}} гостей. Например, 2 комнаты для 3 гостей.
-//   //   Время заезда и выезда offer.checkin и offer.checkout в блок .popup__text--time строкой вида Заезд после {{offer.checkin}}, выезд до {{offer.checkout}}. Например, заезд после 14:00, выезд до 12:00.
-//   //   В список .popup__features выведите все доступные удобства в объявлении.
-//   //   В блок .popup__description выведите описание объекта недвижимости offer.description.
-//   //   В блок .popup__photos выведите все фотографии из списка offer.photos. Каждая из строк массива photos должна записываться как src соответствующего изображения.
-
-//   // Если данных для заполнения не хватает, соответствующий блок в карточке скрывается.
-//   return adMapCard;
-// };
-
-// getMapCard(cardsArrElement);
-// console.log(getMapCard(cardsArrElement));
+getMapCard();
+// console.log(getMapCard());
