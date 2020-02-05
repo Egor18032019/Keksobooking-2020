@@ -40,21 +40,18 @@ var getRandomElement = function (arr) {
     return arr[random];
   }
 };
-var FE = getRandomElement(FEATURES_RANDOM);
-var featuresRandomLength = getRandomInt(0,FEATURES_RANDOM.length);
-console.log(featuresRandomLength);
+var featuresRandomLength = getRandomInt(0, FEATURES_RANDOM.length);
 // массив строк случайной длины из ниже предложенных:
-var getRandomArrLength = function (RandomLength,RandomArray) {
+var getRandomArrLength = function (RandomLength, RandomArray) {
   var randomArrLength = [];
   for (var i = 0; i < RandomLength; i++) {
-    randomArrLength.push(
-      getRandomElement(RandomArray));
+    randomArrLength.push(getRandomElement(RandomArray));
   }
   return randomArrLength;
 };
 
-getRandomArrLength(featuresRandomLength,FEATURES_RANDOM);
-console.log(getRandomArrLength(featuresRandomLength,FEATURES_RANDOM));
+getRandomArrLength(featuresRandomLength, FEATURES_RANDOM);
+// console.log(getRandomArrLength(featuresRandomLength, FEATURES_RANDOM));
 
 /**
  * текстовая функция которая составляет нужной длины текст
@@ -78,7 +75,7 @@ var maxWidth = document.querySelector('.map__pins').offsetWidth;
  * @return {arr} возвращает массив с задданым кол-вом обьектов.
  */
 
-var getAdList = function (NUMBER_OF_ADS) {
+var getAdList = function () {
   // тут обьявим пустой массив в который  - будем толкать элементы
   var adList = [];
   for (var i = 0; i < NUMBER_OF_ADS; i++) {
@@ -117,7 +114,7 @@ var getAdList = function (NUMBER_OF_ADS) {
         // строка с одним из трёх фиксированных значений: 12:00, 13:00 или 14:00 - случайно
         checkout: getRandomElement(CHECKOUT_RANDOM),
         // строка с одним из трёх фиксированных значений: 12:00, 13:00 или 14:00
-        features: getRandomArrLength(featuresRandomLength,FEATURES_RANDOM),
+        features: getRandomArrLength(featuresRandomLength, FEATURES_RANDOM),
         // массив строк случайной длины из ниже предложенных:
         // "wifi", "dishwasher", "parking", "washer", "elevator", "conditioner"
         description: getDescriptionRandom(getRandomInt(21, 58)),
@@ -253,7 +250,7 @@ var getMapCard = function () {
   var insertFeatures = function () {
     var removeFeatureItem = adMapCard.querySelector('.popup__features');
     removeFeatureItem.innerHTML = ' ';
-    console.log(removeFeatureItem);
+    // console.log(removeFeatureItem);
     // --? Дима почему этот консоль лог показвает бред ?
     if (cardsArrElement.offer.features) {
       for (var i = 0; i < cardsArrElement.offer.features.length; i++) {
@@ -266,11 +263,15 @@ var getMapCard = function () {
     }
   };
   insertFeatures();
-
   //   В список .popup__features выведите все доступные удобства в объявлении.
-
   return adMapCard;
 };
 
-// getMapCard();
-console.log(getMapCard());
+getMapCard();
+// console.log(getMapCard());
+
+var mapBlock = document.querySelector('.map');
+var mapFiltersContainer = mapBlock.querySelector('.map__filters-container');
+
+mapBlock.insertBefore(getMapCard(), mapFiltersContainer);
+
