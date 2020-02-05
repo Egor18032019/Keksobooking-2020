@@ -40,8 +40,21 @@ var getRandomElement = function (arr) {
     return arr[random];
   }
 };
+var FE = getRandomElement(FEATURES_RANDOM);
+var featuresRandomLength = getRandomInt(0,FEATURES_RANDOM.length);
+console.log(featuresRandomLength);
+// массив строк случайной длины из ниже предложенных:
+var getRandomArrLength = function (RandomLength,RandomArray) {
+  var randomArrLength = [];
+  for (var i = 0; i < RandomLength; i++) {
+    randomArrLength.push(
+      getRandomElement(RandomArray));
+  }
+  return randomArrLength;
+};
 
-// тут пишем рандомное описание
+getRandomArrLength(featuresRandomLength,FEATURES_RANDOM);
+console.log(getRandomArrLength(featuresRandomLength,FEATURES_RANDOM));
 
 /**
  * текстовая функция которая составляет нужной длины текст
@@ -61,14 +74,14 @@ var maxWidth = document.querySelector('.map__pins').offsetWidth;
 
 /**
  *  тут пишем функцию которая в зависимости от введеного числа создаёт такое же количество обьектов в массиве.
- * @param {number} number число необходимых обьектов в массиве
+ * @param {number}NUMBER_OF_ADS число необходимых обьектов в массиве
  * @return {arr} возвращает массив с задданым кол-вом обьектов.
  */
 
-var getAdList = function (number) {
+var getAdList = function (NUMBER_OF_ADS) {
   // тут обьявим пустой массив в который  - будем толкать элементы
   var adList = [];
-  for (var i = 0; i < number; i++) {
+  for (var i = 0; i < NUMBER_OF_ADS; i++) {
     // вынес сюда чтобы адрее считалься
     var coordinateX = getRandomInt(130, maxWidth);
     var coordinateY = getRandomInt(130, 630);
@@ -104,7 +117,7 @@ var getAdList = function (number) {
         // строка с одним из трёх фиксированных значений: 12:00, 13:00 или 14:00 - случайно
         checkout: getRandomElement(CHECKOUT_RANDOM),
         // строка с одним из трёх фиксированных значений: 12:00, 13:00 или 14:00
-        features: getRandomElement(FEATURES_RANDOM),
+        features: getRandomArrLength(featuresRandomLength,FEATURES_RANDOM),
         // массив строк случайной длины из ниже предложенных:
         // "wifi", "dishwasher", "parking", "washer", "elevator", "conditioner"
         description: getDescriptionRandom(getRandomInt(21, 58)),
@@ -114,8 +127,7 @@ var getAdList = function (number) {
         //  "http://o0.github.io/assets/images/tokyo/hotel1.jpg", "http://o0.github.io/assets/images/tokyo/hotel2.jpg",
         //   "http://o0.github.io/assets/images/tokyo/hotel3.jpg"
       }
-    }
-    );
+    });
 
   }
   return adList;
@@ -237,17 +249,28 @@ var getMapCard = function () {
   }
   // --? Дима,  так скрывать надо ?
 
-  var removeLI = adMapCard.querySelector('.popup__features');
-  // console.log(removeLI);
-  // console.log(removeLI.hasChildNodes());
-  // adMapCard.removeChild(removeLI);
-  removeLI.innerHTML = ' ';
+  // вставка удобств(незабыть изменить список features в родном массиве)
+  var insertFeatures = function () {
+    var removeFeatureItem = adMapCard.querySelector('.popup__features');
+    removeFeatureItem.innerHTML = ' ';
+    console.log(removeFeatureItem);
+    // --? Дима почему этот консоль лог показвает бред ?
+    if (cardsArrElement.offer.features) {
+      for (var i = 0; i < cardsArrElement.offer.features.length; i++) {
 
+        var addFeatureItem = document.createElement('li');
+        addFeatureItem.classList.add('popup__feature');
+        addFeatureItem.classList.add('popup__feature--' + cardsArrElement.offer.features[i]);
+        removeFeatureItem.appendChild(addFeatureItem);
+      }
+    }
+  };
+  insertFeatures();
 
   //   В список .popup__features выведите все доступные удобства в объявлении.
 
   return adMapCard;
 };
 
-getMapCard();
-// console.log(getMapCard());
+// getMapCard();
+console.log(getMapCard());
