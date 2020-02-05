@@ -40,8 +40,14 @@ var getRandomElement = function (arr) {
     return arr[random];
   }
 };
+
 var featuresRandomLength = getRandomInt(0, FEATURES_RANDOM.length);
-// массив строк случайной длины из ниже предложенных:
+/**
+ * создаем массив строк случайной длины из ниже предложенных(но в нем могут быть дубликаты)
+ * @param {*} RandomLength максимальная длина массива
+ * @param {*} RandomArray массив значений
+ * @return {arr} массив где возможны дубликаты значений
+ */
 var getRandomArrLength = function (RandomLength, RandomArray) {
   var randomArrLength = [];
   for (var i = 0; i < RandomLength; i++) {
@@ -49,10 +55,26 @@ var getRandomArrLength = function (RandomLength, RandomArray) {
   }
   return randomArrLength;
 };
-// getRandomArrLength(featuresRandomLength, FEATURES_RANDOM);
-// Удаление из массива одинаковых элементов
-// сделать дома - потом
-// console.log(getRandomArrLength(featuresRandomLength, FEATURES_RANDOM));
+
+var RandomArrLengthFeatures = getRandomArrLength(featuresRandomLength, FEATURES_RANDOM);
+
+/**
+ * пишем функцию которая перебирает массив и удаляет одинаковые элементы
+ * @param {*} arr
+ * @return {arr} массив где нет одинаковых элементов
+ */
+function getRemoveDuplicates(arr) {
+  var seen = {};
+  var resultUniqueArr = [];
+  for (var i = 0; i < arr.length; i++) {
+    if (!(arr[i] in seen)) {
+      resultUniqueArr.push(arr[i]);
+      seen[arr[i]] = true;
+    }
+  }
+  return resultUniqueArr;
+}
+getRemoveDuplicates(RandomArrLengthFeatures);
 
 /**
  * текстовая функция которая составляет нужной длины текст
@@ -115,7 +137,7 @@ var getAdList = function () {
         // строка с одним из трёх фиксированных значений: 12:00, 13:00 или 14:00 - случайно
         checkout: getRandomElement(CHECKOUT_RANDOM),
         // строка с одним из трёх фиксированных значений: 12:00, 13:00 или 14:00
-        features: getRandomArrLength(featuresRandomLength, FEATURES_RANDOM),
+        features: getRemoveDuplicates(RandomArrLengthFeatures),
         // массив строк случайной длины из ниже предложенных:
         // "wifi", "dishwasher", "parking", "washer", "elevator", "conditioner"
         description: getDescriptionRandom(getRandomInt(21, 58)),
@@ -273,4 +295,3 @@ var getMapCard = function () {
 var mapBlock = document.querySelector('.map');
 var mapFiltersContainer = mapBlock.querySelector('.map__filters-container');
 mapBlock.insertBefore(getMapCard(), mapFiltersContainer);
-
