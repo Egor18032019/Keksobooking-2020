@@ -49,8 +49,9 @@ var getRandomArrLength = function (RandomLength, RandomArray) {
   }
   return randomArrLength;
 };
-
-getRandomArrLength(featuresRandomLength, FEATURES_RANDOM);
+// getRandomArrLength(featuresRandomLength, FEATURES_RANDOM);
+// Удаление из массива одинаковых элементов
+// сделать дома - потом
 // console.log(getRandomArrLength(featuresRandomLength, FEATURES_RANDOM));
 
 /**
@@ -178,7 +179,7 @@ var getRenderAdMapPins = function () {
 getRenderAdMapPins();
 
 // /////// задание 3.3.
-var cardsShablon = document.querySelector('#card').content.querySelector('.map__card');
+var cardsTemplate = document.querySelector('#card').content.querySelector('.map__card');
 /**
  * тут пишем функцию которая будт принимать переменую cardsArrElement и из него подставлять данные
  * в карточку обьявления
@@ -186,7 +187,7 @@ var cardsShablon = document.querySelector('#card').content.querySelector('.map__
  * @return {DOM} заполненный DOM элемент данными из сгенерированного массива
  */
 var getMapCard = function () {
-  var adMapCard = cardsShablon.cloneNode(true);
+  var adMapCard = cardsTemplate.cloneNode(true);
   // тут пишем переменую равную первому элементу сгенерированого массив(условие из задания)
   var cardsArrElement = getAdList(NUMBER_OF_ADS)[1];
   if (cardsArrElement.offer.title) {
@@ -246,7 +247,7 @@ var getMapCard = function () {
   }
   // --? Дима,  так скрывать надо ?
 
-  // вставка удобств(незабыть изменить список features в родном массиве)
+  // вставка удобств
   var insertFeatures = function () {
     var removeFeatureItem = adMapCard.querySelector('.popup__features');
     removeFeatureItem.innerHTML = ' ';
@@ -267,11 +268,9 @@ var getMapCard = function () {
   return adMapCard;
 };
 
-getMapCard();
 // console.log(getMapCard());
 
 var mapBlock = document.querySelector('.map');
 var mapFiltersContainer = mapBlock.querySelector('.map__filters-container');
-
 mapBlock.insertBefore(getMapCard(), mapFiltersContainer);
 
