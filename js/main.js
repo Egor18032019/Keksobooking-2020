@@ -8,6 +8,7 @@ var PHOTOS_RANDOM = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
+
 // тут пишем переменную которая содержит в себе кол-во обьявлений(по заданию их 8)
 var NUMBER_OF_ADS = 8;
 
@@ -20,6 +21,14 @@ var cardsTemplate = document.querySelector('#card').content.querySelector('.map_
 var mapBlock = document.querySelector('.map');
 var mapFiltersContainer = mapBlock.querySelector('.map__filters-container');
 // тут ищем блок куда будем вставлять и перед чем будем вставлять
+
+// массив для подставки данных
+var typeObj = {
+  palace: 'Дворец',
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'
+};
 
 /**
  * генерация случайного числа
@@ -98,8 +107,9 @@ var getDescriptionRandom = function (needText) {
 var getAdList = function () {
   // тут обьявим пустой массив в который  - будем толкать элементы
   var adList = [];
-  for (var i = 0; i < NUMBER_OF_ADS; i++) {
+  for (var i = 1; i <= NUMBER_OF_ADS; i++) {
     var maxWidth = document.querySelector('.map__pins').offsetWidth;
+    // console.log(maxWidth);
     // --? Дима Почемуто всегда даёт цифру 980.. ,,??
     // --? так она всегда 980 внезависимости от размера окна
 
@@ -108,8 +118,8 @@ var getAdList = function () {
     var coordinateY = getRandomInt(130, 630);
     adList.push({
       author: {
-        avatar: 'img/avatars/user' + '0' + getRandomInt(1, 8) + '.png'
-        // тут пишем генерацию случайной адрессной строки для ключа avatar
+        avatar: 'img/avatars/user' + '0' + i + '.png'
+        // тут пишем генерацию адрессной строки для ключа avatar
         // строка, адрес изображения вида img/avatars/user{{xx}}.png, где {{xx}}
         // это число от 1 до 8 с ведущим нулём.
         // Например, 01, 02 и т. д. Адреса изображений не повторяются
@@ -180,32 +190,22 @@ var getCreateAdMapElement = function (unitGetAdList) {
 
 /**
  * тут пишем функцию которрая в зависимости от длины массива создаёт метки и циклом накидывает фрагменты
- * @param {arr} cardsArr массив обьектов которых надо отрисовать на страницы
+ * @param {arr} cards массив обьектов которых надо отрисовать на страницы
  */
-var getRenderAdMapPins = function () {
+var getRenderAdMapPins = function (cards) {
   var fragment = document.createDocumentFragment();
   // тут создаем переменую fragment которая в содает в document е любой DOM элемент - но он еще не отрисован
   // тут пишем массив который создается из функции getAdList в зависимости от numberOfAds
-  var cardsArr = getAdList(NUMBER_OF_ADS);
-  for (var i = 0; i < cardsArr.length; i++) {
-    fragment.appendChild(getCreateAdMapElement(cardsArr[i]));
+  for (var i = 0; i < cards.length; i++) {
+    fragment.appendChild(getCreateAdMapElement(cards[i]));
     //  а тут в fragment циклом накидиваем детей от функции renderWizard с параметром wizards[i]
   }
   // тут ищем ДОМ элемент куда будем добавлять метку(F12 и там посмотрел)
   var mapPins = document.querySelector('.map__pins');
   // тут к mapPins подкидываем детей
   mapPins.appendChild(fragment);
-  // тут ищем класс для открытия карты
-  var mapFaded = document.querySelector('.map');
-  // удаляем его если находим
-  if (mapFaded) {
-    mapFaded.classList.remove('map--faded');
-  }
 };
 
-getRenderAdMapPins();
-
-// /////// задание 3.3.
 /**
  * фукция вставки массива !! изображений
  * @param {*} adTemplate шаблон
@@ -251,72 +251,68 @@ var insertFeatures = function (adTemplate, addElementArray) {
 /**
  * тут пишем функцию которая будт принимать ОДИН элемент массива и из него подставлять данные
  * в карточку обьявления
- * @param {net} так используються фиксированные значения
+ * @param {Object} card так используються фиксированные значения
  * @return {DOM} заполненный DOM элемент данными из сгенерированного массива
  */
-var getMapCard = function () {
+var getMapCard = function (card) {
   var adMapCard = cardsTemplate.cloneNode(true);
   // тут пишем переменую равную первому элементу сгенерированого массив(условие из задания)
-  var cardsArrElement = getAdList(NUMBER_OF_ADS)[1];
-  if (cardsArrElement.offer.title) {
-    adMapCard.querySelector('.popup__title').textContent = cardsArrElement.offer.title;
+  if (card.offer.title) {
+    adMapCard.querySelector('.popup__title').textContent = card.offer.title;
     //   Выведите заголовок объявления offer.title в заголовок .popup__title.
   }
-  if (cardsArrElement.author.avatar) {
-    adMapCard.querySelector('.popup__avatar').src = cardsArrElement.author.avatar;
+  if (card.author.avatar) {
+    adMapCard.querySelector('.popup__avatar').src = card.author.avatar;
+    // --? Дима , тогда здесь будет всегда одинаковая аватарка
     //   Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
   }
-  if (cardsArrElement.offer.price) {
-    adMapCard.querySelector('.popup__text--price').textContent = cardsArrElement.offer.price + '₽/ночь';
+  if (card.offer.price) {
+    adMapCard.querySelector('.popup__text--price').textContent = card.offer.price + '₽/ночь';
     //   Выведите цену offer.price в блок .popup__text--price строкой вида {{offer.price}}₽/ночь. Например, 5200₽/ночь.
   }
-  if (cardsArrElement.offer.type === 'flat') {
-    cardsArrElement.offer.type = 'Квартира';
-  } else if (cardsArrElement.offer.type === 'bungalo') {
-    cardsArrElement.offer.type = 'Бунгало';
-  } else if (cardsArrElement.offer.type === 'house') {
-    cardsArrElement.offer.type = 'Дом';
-  } else if (cardsArrElement.offer.type === 'palace') {
-    cardsArrElement.offer.type = 'Дворец';
-  }
-  if (cardsArrElement.offer.type) {
-    adMapCard.querySelector('.popup__type').textContent = cardsArrElement.offer.type;
-    //   В блок .popup__type выведите тип жилья offer.type:
-    // Квартира для flat, Бунгало для bungalo, Дом для house, Дворец для palace.
-  }
-  adMapCard.querySelector('.popup__text--address').textContent = cardsArrElement.offer.address;
+
+  adMapCard.querySelector('.popup__type').textContent = typeObj[card.offer.type];
+  // Запомнить что строку надо брать в квадратные скобки. через токчку не работает
+  // Квадратные скобки также позволяют обратиться к свойству, имя которого может быть результатом выражения.
+  adMapCard.querySelector('.popup__text--address').textContent = card.offer.address;
   //   Выведите адрес offer.address в блок .popup__text--address.
-  // console.log(cardsArrElement.offer.address);
-  if (cardsArrElement.offer.rooms || cardsArrElement.offer.quests) {
+  if (card.offer.rooms || card.offer.quests) {
     // ---если будет время = сделать что бы более по правильно писала
-    adMapCard.querySelector('.popup__text--capacity').textContent = cardsArrElement.offer.rooms + ' комнаты для ' + cardsArrElement.offer.quests + ' гостей';
-    //   Выведите количество гостей и комнат offer.rooms и offer.guests в блок .popup__text--capacity
+    adMapCard.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.quests + ' гостей';
+    //  Выведите количество гостей и комнат offer.rooms и offer.guests в блок .popup__text--capacity
     //  строкой вида {{offer.rooms}} комнаты для {{offer.guests}} гостей. Например, 2 комнаты для 3 гостей.
   }
-  if (cardsArrElement.offer.checkin || cardsArrElement.offer.checkout) {
-    adMapCard.querySelector('.popup__text--time').textContent = 'заезд после ' + cardsArrElement.offer.checkin + ' , выезд до  ' + cardsArrElement.offer.checkout + ' гостей';
-    //   Время заезда и выезда offer.checkin и offer.checkout в блок .popup__text--time строкой вида
+  if (card.offer.checkin || card.offer.checkout) {
+    adMapCard.querySelector('.popup__text--time').textContent = 'заезд после ' + card.offer.checkin + ' , выезд до  ' + card.offer.checkout + ' гостей';
+    //  Время заезда и выезда offer.checkin и offer.checkout в блок .popup__text--time строкой вида
     //  Заезд после {{offer.checkin}}, выезд до {{offer.checkout}}. Например, заезд после 14:00, выезд до 12:00.
   }
-  if (cardsArrElement.offer.description) {
-    adMapCard.querySelector('.popup__description').textContent = cardsArrElement.offer.description;
-    //   В блок .popup__description выведите описание объекта недвижимости offer.description.
-  } else {
-    adMapCard.querySelector('.popup__description').textContent = null;
-  }
-  // Если данных для заполнения не хватает, соответствующий блок в карточке скрывается.
-  // --? Дима,  так скрывать надо ??
 
+  adMapCard.querySelector('.popup__description').textContent = card.offer.description;
+  //   В блок .popup__description выведите описание объекта недвижимости offer.description.
 
   // вставка масиива фото
-  insertPhotos(adMapCard, cardsArrElement);
+  insertPhotos(adMapCard, card);
 
   // вставка удобств
-  insertFeatures(adMapCard, cardsArrElement);
+  insertFeatures(adMapCard, card);
   //   В список .popup__features выведите все доступные удобства в объявлении.
   return adMapCard;
 };
 
-// console.log(getMapCard());
+/**
+ * пишем единую фунцию в которой содержиться
+ * открытие карты
+ * отрисовка пинов
+ * отрисовка заполненных карточек обьявлений
+ */
+var init = function () {
+  // открыываем карту
+  mapBlock.classList.remove('map--faded');
+  var cards = getAdList(NUMBER_OF_ADS);
+  getRenderAdMapPins(cards);
+  mapBlock.insertBefore(getMapCard(cards[0]), mapFiltersContainer);
+};
 
-mapBlock.insertBefore(getMapCard(), mapFiltersContainer);
+// обьявляем единую функцию
+init();
