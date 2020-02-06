@@ -14,8 +14,12 @@ var NUMBER_OF_ADS = 8;
 // тут ищем шаблон метки и в ней разметку метки
 var similarMapPin = document.querySelector('#pin').content.querySelector('.map__pin');
 
-var pinWidth = document.querySelector('.map__pin').offsetWidth;
-var pinHeight = document.querySelector('.map__pin').offsetHeight;
+var cardsTemplate = document.querySelector('#card').content.querySelector('.map__card');
+// тут ищем шаблон для карточек обьявлений
+
+var mapBlock = document.querySelector('.map');
+var mapFiltersContainer = mapBlock.querySelector('.map__filters-container');
+// тут ищем блок куда будем вставлять и перед чем будем вставлять
 
 /**
  * генерация случайного числа
@@ -35,13 +39,13 @@ var getRandomInt = function (min, max) {
 var getRandomElement = function (arr) {
   if (!arr) {
     return null;
-  } else {
-    var random = Math.floor(Math.random() * arr.length);
-    return arr[random];
   }
+  var random = Math.floor(Math.random() * arr.length);
+  return arr[random];
 };
 
 var featuresRandomLength = getRandomInt(0, FEATURES_RANDOM.length);
+var photosRandomLength = getRandomInt(0, PHOTOS_RANDOM.length);
 /**
  * создаем массив строк случайной длины из ниже предложенных(но в нем могут быть дубликаты)
  * @param {*} RandomLength максимальная длина массива
@@ -57,13 +61,13 @@ var getRandomArrLength = function (RandomLength, RandomArray) {
 };
 
 var RandomArrLengthFeatures = getRandomArrLength(featuresRandomLength, FEATURES_RANDOM);
-
+var RandomArrLengthPhotos = getRandomArrLength(photosRandomLength, PHOTOS_RANDOM);
 /**
  * пишем функцию которая перебирает массив и удаляет одинаковые элементы
  * @param {*} arr
  * @return {arr} массив где нет одинаковых элементов
  */
-function getRemoveDuplicates(arr) {
+var getRemoveDuplicates = function (arr) {
   var seen = {};
   var resultUniqueArr = [];
   for (var i = 0; i < arr.length; i++) {
@@ -73,8 +77,7 @@ function getRemoveDuplicates(arr) {
     }
   }
   return resultUniqueArr;
-}
-getRemoveDuplicates(RandomArrLengthFeatures);
+};
 
 /**
  * текстовая функция которая составляет нужной длины текст
@@ -83,14 +86,8 @@ getRemoveDuplicates(RandomArrLengthFeatures);
  */
 var getDescriptionRandom = function (needText) {
   var text = 'Берите не пожалеете ! Дёшево !! Ни где такое не найдете !!! ';
-  var textString = text.substring(0, needText);
-  return textString;
+  return text.substring(0, needText);
 };
-
-// тут пишем переменую которая должна определять размеры блока в котором в котором перетаскивается метка.
-var maxWidth = document.querySelector('.map__pins').offsetWidth;
-// --? Дима Почемуто всегда даёт цифру 980.. ,,??
-// --? так она всегда 980 внезависимости от размера окна
 
 /**
  *  тут пишем функцию которая в зависимости от введеного числа создаёт такое же количество обьектов в массиве.
@@ -102,7 +99,11 @@ var getAdList = function () {
   // тут обьявим пустой массив в который  - будем толкать элементы
   var adList = [];
   for (var i = 0; i < NUMBER_OF_ADS; i++) {
-    // вынес сюда чтобы адрее считалься
+    var maxWidth = document.querySelector('.map__pins').offsetWidth;
+    // --? Дима Почемуто всегда даёт цифру 980.. ,,??
+    // --? так она всегда 980 внезависимости от размера окна
+
+    // вынес сюда чтобы адрееc считалься
     var coordinateX = getRandomInt(130, maxWidth);
     var coordinateY = getRandomInt(130, 630);
     adList.push({
@@ -142,13 +143,12 @@ var getAdList = function () {
         // "wifi", "dishwasher", "parking", "washer", "elevator", "conditioner"
         description: getDescriptionRandom(getRandomInt(21, 58)),
         // строка с описанием
-        photos: getRandomElement(PHOTOS_RANDOM)
+        photos: getRemoveDuplicates(RandomArrLengthPhotos)
         // массив строк случайной длины, содержащий адреса фотографий
         //  "http://o0.github.io/assets/images/tokyo/hotel1.jpg", "http://o0.github.io/assets/images/tokyo/hotel2.jpg",
         //   "http://o0.github.io/assets/images/tokyo/hotel3.jpg"
       }
     });
-
   }
   return adList;
 };
@@ -162,14 +162,19 @@ var getAdList = function () {
 var getCreateAdMapElement = function (unitGetAdList) {
   // тут копируем шаблон
   var adMapElement = similarMapPin.cloneNode(true);
+  var pinWidth = document.querySelector('.map__pin').offsetWidth;
+  var pinHeight = document.querySelector('.map__pin').offsetHeight;
+  // тут пишем переменую которая должна определять размеры блока в котором в котором перетаскивается метка.
   var leftX = unitGetAdList.location.x + pinWidth / 2;
   var topY = unitGetAdList.location.y + pinHeight / 2;
   // это координты из массива + половина метки
   adMapElement.style.left = leftX + 'px';
   adMapElement.style.top = topY + 'px';
+
+  var addImgButton = adMapElement.querySelector('img');
   // тут в шаблоне ищем  Альтернативный текст: alt="{{заголовок объявления}}"
-  adMapElement.querySelectorAll('img').item(0).alt = unitGetAdList.offer.title;
-  adMapElement.querySelectorAll('img').item(0).src = unitGetAdList.author.avatar;
+  addImgButton.alt = unitGetAdList.offer.title;
+  addImgButton.src = unitGetAdList.author.avatar;
   return adMapElement;
 };
 
@@ -201,9 +206,50 @@ var getRenderAdMapPins = function () {
 getRenderAdMapPins();
 
 // /////// задание 3.3.
-var cardsTemplate = document.querySelector('#card').content.querySelector('.map__card');
 /**
- * тут пишем функцию которая будт принимать переменую cardsArrElement и из него подставлять данные
+ * фукция вставки массива !! изображений
+ * @param {*} adTemplate шаблон
+ * @param {*} addElementArray один элемент массива
+ * заполняет шаблон нужным кол-вом фоток
+ */
+var insertPhotos = function (adTemplate, addElementArray) {
+  //   В блок .popup__photos выведите все фотографии из списка offer.photos.
+  // Каждая из строк массива photos должна записываться как src соответствующего изображения.
+  var removePhotosItem = adTemplate.querySelector('.popup__photos');
+  removePhotosItem.innerHTML = ' ';
+  if (addElementArray.offer.photos) {
+    for (var j = 0; j < addElementArray.offer.photos.length; j++) {
+      var addPhotosItem = new Image(45, 40);
+      addPhotosItem.classList.add('popup__photo');
+      addPhotosItem.src = addElementArray.offer.photos[j];
+      removePhotosItem.appendChild(addPhotosItem);
+    }
+  }
+};
+
+/**
+ * фунция для вставки удобств в шаблон
+ * @param {*} adTemplate шаблон
+ * @param {*} addElementArray один элемент массива
+ * заполняет шаблон списком удобств из одного элемента массива
+ */
+var insertFeatures = function (adTemplate, addElementArray) {
+  var removeFeatureItem = adTemplate.querySelector('.popup__features');
+  removeFeatureItem.innerHTML = ' ';
+  // console.log(removeFeatureItem);
+  // --? Дима почему этот консоль лог показвает бред ?
+  if (addElementArray.offer.features) {
+    for (var i = 0; i < addElementArray.offer.features.length; i++) {
+      var addFeatureItem = document.createElement('li');
+      addFeatureItem.classList.add('popup__feature');
+      addFeatureItem.classList.add('popup__feature--' + addElementArray.offer.features[i]);
+      removeFeatureItem.appendChild(addFeatureItem);
+    }
+  }
+};
+
+/**
+ * тут пишем функцию которая будт принимать ОДИН элемент массива и из него подставлять данные
  * в карточку обьявления
  * @param {net} так используються фиксированные значения
  * @return {DOM} заполненный DOM элемент данными из сгенерированного массива
@@ -217,7 +263,7 @@ var getMapCard = function () {
     //   Выведите заголовок объявления offer.title в заголовок .popup__title.
   }
   if (cardsArrElement.author.avatar) {
-    adMapCard.querySelectorAll('.popup__avatar').item(0).src = cardsArrElement.author.avatar;
+    adMapCard.querySelector('.popup__avatar').src = cardsArrElement.author.avatar;
     //   Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
   }
   if (cardsArrElement.offer.price) {
@@ -261,37 +307,16 @@ var getMapCard = function () {
   // Если данных для заполнения не хватает, соответствующий блок в карточке скрывается.
   // --? Дима,  так скрывать надо ??
 
-  if (cardsArrElement.offer.photos) {
-    adMapCard.querySelector('.popup__photos').querySelectorAll('img').item(0).src = cardsArrElement.offer.photos;
-    //   В блок .popup__photos выведите все фотографии из списка offer.photos. Каждая из строк массива photos должна записываться как src соответствующего изображения.
-  } else {
-    adMapCard.querySelector('.popup__photos').querySelectorAll('img').item(0).src = null;
-  }
-  // --? Дима,  так скрывать надо ?
+
+  // вставка масиива фото
+  insertPhotos(adMapCard, cardsArrElement);
 
   // вставка удобств
-  var insertFeatures = function () {
-    var removeFeatureItem = adMapCard.querySelector('.popup__features');
-    removeFeatureItem.innerHTML = ' ';
-    // console.log(removeFeatureItem);
-    // --? Дима почему этот консоль лог показвает бред ?
-    if (cardsArrElement.offer.features) {
-      for (var i = 0; i < cardsArrElement.offer.features.length; i++) {
-
-        var addFeatureItem = document.createElement('li');
-        addFeatureItem.classList.add('popup__feature');
-        addFeatureItem.classList.add('popup__feature--' + cardsArrElement.offer.features[i]);
-        removeFeatureItem.appendChild(addFeatureItem);
-      }
-    }
-  };
-  insertFeatures();
+  insertFeatures(adMapCard, cardsArrElement);
   //   В список .popup__features выведите все доступные удобства в объявлении.
   return adMapCard;
 };
 
 // console.log(getMapCard());
 
-var mapBlock = document.querySelector('.map');
-var mapFiltersContainer = mapBlock.querySelector('.map__filters-container');
 mapBlock.insertBefore(getMapCard(), mapFiltersContainer);
