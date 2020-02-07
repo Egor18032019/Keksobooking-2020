@@ -53,8 +53,6 @@ var getRandomElement = function (arr) {
   return arr[random];
 };
 
-var featuresRandomLength = getRandomInt(0, FEATURES_RANDOM.length);
-var photosRandomLength = getRandomInt(0, PHOTOS_RANDOM.length);
 /**
  * создаем массив строк случайной длины из ниже предложенных(но в нем могут быть дубликаты)
  * @param {*} RandomLength максимальная длина массива
@@ -69,8 +67,12 @@ var getRandomArrLength = function (RandomLength, RandomArray) {
   return randomArrLength;
 };
 
-var RandomArrLengthFeatures = getRandomArrLength(featuresRandomLength, FEATURES_RANDOM);
-var RandomArrLengthPhotos = getRandomArrLength(photosRandomLength, PHOTOS_RANDOM);
+// создаем случайный массив строк ограниченый максимальной длиной
+var RandomArrLengthFeatures = getRandomArrLength(getRandomInt(0, FEATURES_RANDOM.length), FEATURES_RANDOM);
+// для удобств
+var RandomArrLengthPhotos = getRandomArrLength(getRandomInt(0, PHOTOS_RANDOM.length), PHOTOS_RANDOM);
+// для фоток
+
 /**
  * пишем функцию которая перебирает массив и удаляет одинаковые элементы
  * @param {*} arr
