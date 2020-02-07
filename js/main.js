@@ -163,7 +163,6 @@ var getAdList = function () {
   return adList;
 };
 
-
 /**
  * тут пришем функцию которая в зависимости от данных из массива позиционирует метку+ генерирует подписи и аватарки
  * @param {*} unitGetAdList
@@ -289,7 +288,7 @@ var getMapCard = function (card) {
   }
 
   adMapCard.querySelector('.popup__description').textContent = card.offer.description;
-  //   В блок .popup__description выведите описание объекта недвижимости offer.description.
+  // В блок .popup__description выведите описание объекта недвижимости offer.description.
 
   // вставка масиива фото
   insertPhotos(adMapCard, card);
@@ -307,7 +306,7 @@ var getMapCard = function (card) {
  * отрисовка заполненных карточек обьявлений
  */
 var init = function () {
-  // открыываем карту
+  // открываем карту
   mapBlock.classList.remove('map--faded');
   var cards = getAdList(NUMBER_OF_ADS);
   getRenderAdMapPins(cards);
