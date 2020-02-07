@@ -14,8 +14,20 @@ var NUMBER_OF_ADS = 8;
 // тут ищем шаблон метки и в ней разметку метки
 var similarMapPin = document.querySelector('#pin').content.querySelector('.map__pin');
 
-var pinWidth = document.querySelector('.map__pin').offsetWidth;
-var pinHeight = document.querySelector('.map__pin').offsetHeight;
+var cardsTemplate = document.querySelector('#card').content.querySelector('.map__card');
+// тут ищем шаблон для карточек обьявлений
+
+var mapBlock = document.querySelector('.map');
+var mapFiltersContainer = mapBlock.querySelector('.map__filters-container');
+// тут ищем блок куда будем вставлять и перед чем будем вставлять
+
+// массив для подставки данных
+var typeObj = {
+  palace: 'Дворец',
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'
+};
 
 /**
  * генерация случайного числа
@@ -41,8 +53,24 @@ var getRandomElement = function (arr) {
   }
 };
 
-// тут пишем рандомное описание
+var featuresRandomLength = getRandomInt(0, FEATURES_RANDOM.length);
+var photosRandomLength = getRandomInt(0, PHOTOS_RANDOM.length);
+/**
+ * создаем массив строк случайной длины из ниже предложенных(но в нем могут быть дубликаты)
+ * @param {*} RandomLength максимальная длина массива
+ * @param {*} RandomArray массив значений
+ * @return {arr} массив где возможны дубликаты значений
+ */
+var getRandomArrLength = function (RandomLength, RandomArray) {
+  var randomArrLength = [];
+  for (var i = 0; i < RandomLength; i++) {
+    randomArrLength.push(getRandomElement(RandomArray));
+  }
+  return randomArrLength;
+};
 
+var RandomArrLengthFeatures = getRandomArrLength(featuresRandomLength, FEATURES_RANDOM);
+var RandomArrLengthPhotos = getRandomArrLength(photosRandomLength, PHOTOS_RANDOM);
 /**
  * текстовая функция которая составляет нужной длины текст
  * @param {number} needText - кол-во циклов
@@ -61,11 +89,11 @@ var maxWidth = document.querySelector('.map__pins').offsetWidth;
 
 /**
  *  тут пишем функцию которая в зависимости от введеного числа создаёт такое же количество обьектов в массиве.
- * @param {number} number число необходимых обьектов в массиве
+ * @param {number}NUMBER_OF_ADS число необходимых обьектов в массиве
  * @return {arr} возвращает массив с задданым кол-вом обьектов.
  */
 
-var getAdList = function (number) {
+var getAdList = function () {
   // тут обьявим пустой массив в который  - будем толкать элементы
   var adList = [];
   for (var i = 0; i < number; i++) {
@@ -74,8 +102,8 @@ var getAdList = function (number) {
     var coordinateY = getRandomInt(130, 630);
     adList.push({
       author: {
-        avatar: 'img/avatars/user' + '0' + getRandomInt(1, 8) + '.png'
-        // тут пишем генерацию случайной адрессной строки для ключа avatar
+        avatar: 'img/avatars/user' + '0' + i + '.png'
+        // тут пишем генерацию адрессной строки для ключа avatar
         // строка, адрес изображения вида img/avatars/user{{xx}}.png, где {{xx}}
         // это число от 1 до 8 с ведущим нулём.
         // Например, 01, 02 и т. д. Адреса изображений не повторяются
@@ -104,12 +132,12 @@ var getAdList = function (number) {
         // строка с одним из трёх фиксированных значений: 12:00, 13:00 или 14:00 - случайно
         checkout: getRandomElement(CHECKOUT_RANDOM),
         // строка с одним из трёх фиксированных значений: 12:00, 13:00 или 14:00
-        features: getRandomElement(FEATURES_RANDOM),
+        features: getRemoveDuplicates(RandomArrLengthFeatures),
         // массив строк случайной длины из ниже предложенных:
         // "wifi", "dishwasher", "parking", "washer", "elevator", "conditioner"
         description: getDescriptionRandom(getRandomInt(21, 58)),
         // строка с описанием
-        photos: getRandomElement(PHOTOS_RANDOM)
+        photos: getRemoveDuplicates(RandomArrLengthPhotos)
         // массив строк случайной длины, содержащий адреса фотографий
         //  "http://o0.github.io/assets/images/tokyo/hotel1.jpg", "http://o0.github.io/assets/images/tokyo/hotel2.jpg",
         //   "http://o0.github.io/assets/images/tokyo/hotel3.jpg"
@@ -130,14 +158,19 @@ var getAdList = function (number) {
 var getCreateAdMapElement = function (unitGetAdList) {
   // тут копируем шаблон
   var adMapElement = similarMapPin.cloneNode(true);
+  var pinWidth = document.querySelector('.map__pin').offsetWidth;
+  var pinHeight = document.querySelector('.map__pin').offsetHeight;
+  // тут пишем переменую которая должна определять размеры блока в котором в котором перетаскивается метка.
   var leftX = unitGetAdList.location.x + pinWidth / 2;
   var topY = unitGetAdList.location.y + pinHeight / 2;
   // это координты из массива + половина метки
   adMapElement.style.left = leftX + 'px';
   adMapElement.style.top = topY + 'px';
+
+  var addImgButton = adMapElement.querySelector('img');
   // тут в шаблоне ищем  Альтернативный текст: alt="{{заголовок объявления}}"
-  adMapElement.querySelectorAll('img').item(0).alt = unitGetAdList.offer.title;
-  adMapElement.querySelectorAll('img').item(0).src = unitGetAdList.author.avatar;
+  addImgButton.alt = unitGetAdList.offer.title;
+  addImgButton.src = unitGetAdList.author.avatar;
   return adMapElement;
 };
 
