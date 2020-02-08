@@ -1,5 +1,8 @@
 'use strict';
-// это фиксированные значения обьктов
+
+/**
+ * это фиксированные значения обьктов
+ */
 var TYPE_RANDOM = ['palace', 'flat', 'house', 'bungalo'];
 var CHECKOUT_RANDOM = ['12:00', '13:00', '14:00'];
 var CHECKIN_RANDOM = ['12:00', '13:00', '14:00'];
@@ -7,22 +10,31 @@ var FEATURES_RANDOM = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'c
 var PHOTOS_RANDOM = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
-
-
-// тут пишем переменную которая содержит в себе кол-во обьявлений(по заданию их 8)
+/**
+ * переменная которая содержит в себе кол-во обьявлений(по заданию их 8)
+ */
 var NUMBER_OF_ADS = 8;
 
 // тут ищем шаблон метки и в ней разметку метки
+/**
+ * шаблон метки c разметкой метки .map__pin
+ */
 var similarMapPin = document.querySelector('#pin').content.querySelector('.map__pin');
-
+/**
+ * шаблон для карточек обьявлений '.map__card'
+ */
 var cardsTemplate = document.querySelector('#card').content.querySelector('.map__card');
-// тут ищем шаблон для карточек обьявлений
 
 var mapBlock = document.querySelector('.map');
+/**
+ *  блок с классом '.map__filters-container'
+ */
 var mapFiltersContainer = mapBlock.querySelector('.map__filters-container');
 // тут ищем блок куда будем вставлять и перед чем будем вставлять
 
-// массив для подставки данных
+/**
+ * массив для подставки данных
+ */
 var typeObj = {
   palace: 'Дворец',
   flat: 'Квартира',
@@ -68,10 +80,15 @@ var getRandomArrLength = function (RandomLength, RandomArray) {
 };
 
 // создаем случайный массив строк ограниченый максимальной длиной
+/**
+ * случайный массив строк для списка удобств
+ */
 var RandomArrLengthFeatures = getRandomArrLength(getRandomInt(0, FEATURES_RANDOM.length), FEATURES_RANDOM);
-// для удобств
+/**
+ *  случайный массив строк для массива с фотками
+ */
 var RandomArrLengthPhotos = getRandomArrLength(getRandomInt(0, PHOTOS_RANDOM.length), PHOTOS_RANDOM);
-// для фоток
+
 
 /**
  * пишем функцию которая перебирает массив и удаляет одинаковые элементы
@@ -101,11 +118,10 @@ var getDescriptionRandom = function (needText) {
 };
 
 /**
- *  тут пишем функцию которая в зависимости от введеного числа создаёт такое же количество обьектов в массиве.
+ *  функция которая в зависимости от NUMBER_OF_ADS создаёт такое же количество обьектов в массиве.
  * @param {number}NUMBER_OF_ADS число необходимых обьектов в массиве
  * @return {arr} возвращает массив с задданым кол-вом обьектов.
  */
-
 var getAdList = function () {
   // тут обьявим пустой массив в который  - будем толкать элементы
   var adList = [];
@@ -166,8 +182,8 @@ var getAdList = function () {
 };
 
 /**
- * тут пришем функцию которая в зависимости от данных из массива позиционирует метку+ генерирует подписи и аватарки
- * @param {*} unitGetAdList
+ * функция которая в зависимости от данных из массива позиционирует метку+ генерирует подписи и аватарки
+ * @param {*} unitGetAdList массив который надо отрисовать
  * @return {template} возращает склонируемый шаблон с заполнеными координтам+подписями+картинками
  */
 var getCreateAdMapElement = function (unitGetAdList) {
@@ -190,8 +206,9 @@ var getCreateAdMapElement = function (unitGetAdList) {
 };
 
 /**
- * тут пишем функцию которрая в зависимости от длины массива создаёт метки и циклом накидывает фрагменты
+ * функция которая в зависимости от длины массива создаёт метки и циклом накидывает фрагменты
  * @param {arr} cards массив обьектов которых надо отрисовать на страницы
+ * и возращает новыем ДОМ элементы
  */
 var getRenderAdMapPins = function (cards) {
   var fragment = document.createDocumentFragment();
@@ -208,7 +225,7 @@ var getRenderAdMapPins = function (cards) {
 };
 
 /**
- * фукция вставки массива !! изображений
+ * фукция вставки массива!! изображений
  * @param {*} adTemplate шаблон
  * @param {*} addElementArray один элемент массива
  * заполняет шаблон нужным кол-вом фоток
@@ -256,8 +273,10 @@ var insertFeatures = function (adTemplate, addElementArray) {
  * @return {DOM} заполненный DOM элемент данными из сгенерированного массива
  */
 var getMapCard = function (card) {
+  /**
+   * склонированыый шаблон для карточек обьявлений от cardsTemplate
+   */
   var adMapCard = cardsTemplate.cloneNode(true);
-  // тут пишем переменую равную первому элементу сгенерированого массив(условие из задания)
   if (card.offer.title) {
     adMapCard.querySelector('.popup__title').textContent = card.offer.title;
     //   Выведите заголовок объявления offer.title в заголовок .popup__title.
@@ -297,7 +316,7 @@ var getMapCard = function (card) {
 
   // вставка удобств
   insertFeatures(adMapCard, card);
-  //   В список .popup__features выведите все доступные удобства в объявлении.
+
   return adMapCard;
 };
 
