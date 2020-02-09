@@ -33,6 +33,14 @@ var mapFiltersContainer = mapBlock.querySelector('.map__filters-container');
 // тут ищем блок куда будем вставлять и перед чем будем вставлять
 
 /**
+ * это ширина блока map__pin в котором перетаскивается метка.
+ */
+var pinWidth = document.querySelector('.map__pin').offsetWidth;
+/**
+ * это высота блока map__pin в котором перетаскивается метка.
+ */
+var pinHeight = document.querySelector('.map__pin').offsetHeight;
+/**
  * массив для подставки данных
  */
 var typeObj = {
@@ -181,6 +189,7 @@ var getAdList = function () {
   return adList;
 };
 
+
 /**
  * функция которая в зависимости от данных из массива позиционирует метку+ генерирует подписи и аватарки
  * @param {*} unitGetAdList массив который надо отрисовать
@@ -189,9 +198,6 @@ var getAdList = function () {
 var getCreateAdMapElement = function (unitGetAdList) {
   // тут копируем шаблон
   var adMapElement = similarMapPin.cloneNode(true);
-  var pinWidth = document.querySelector('.map__pin').offsetWidth;
-  var pinHeight = document.querySelector('.map__pin').offsetHeight;
-  // тут пишем переменую которая должна определять размеры блока в котором в котором перетаскивается метка.
   var leftX = unitGetAdList.location.x + pinWidth / 2;
   var topY = unitGetAdList.location.y + pinHeight / 2;
   // это координты из массива + половина метки
@@ -335,20 +341,77 @@ var init = function () {
 };
 
 // обьявляем единую функцию
-init();
+// init();
 
 // 4.2
-// с помощьюе js сделать
-// Все <input> и <select> формы .ad-form заблокированы с помощью атрибута disabled,
-// добавленного на них или на их родительские блоки fieldset;
-// Форма с фильтрами .map__filters заблокирована так же, как и форма .ad-form;
 
-// при клике левой кнопке
-// убрать
-// Блок с картой .map НЕсодержит класс map--faded;
-// Форма заполнения информации об объявлении .ad-form НЕсодержит класс ad-form--disabled;
-// Все <input> и <select> формы .ad-form НЕзаблокированы с помощью атрибута disabled, добавленного на них или на их родительские блоки fieldset;
-// Форма с фильтрами .map__filters НЕзаблокирована так же, как и форма .ad-form;
-// В активном состоянии страница позволяет вносить изменения в форму и отправлять её на сервер,
+/**
+ * блок с классом '.ad-form'
+ */
+var adForm = document.querySelector('.ad-form');
+/**
+ * массив input лежащий в adForm
+ */
+var adFormInput = adForm.querySelectorAll('input');
+/**
+ * массив select лежащий в adForm
+ */
+var adFormSelect = adForm.querySelectorAll('select');
+/**
+ * блок с классом '.map__filters' лежащий в mapBlock
+ */
+var mapFilters = mapBlock.querySelector('.map__filters');
+/**
+ * функция принимает массив и каждому добавляет атрибут disabled
+ * @param {arr} array масссив которому добовляем атрибут disabled
+ */
+var adFormDisabled = function (array) {
+  for (var i = 0; i < array.length; i++) {
+    array[i].disabled = true;
+  }
+};
+/**
+ * функция принимает массив и каждому убирает атрибут disabled
+ * @param {arr} array масссив которому убирает атрибут disabled
+ */
+var adFormEnabled = function (array) {
+  for (var i = 0; i < array.length; i++) {
+    array[i].disabled = false;
+  }
+};
+
+adFormDisabled(adFormInput);
+adFormDisabled(adFormSelect);
+adForm.setAttribute('disabled', '');
+mapFilters.setAttribute('disabled', '');
+
+
+/**
+ * блок с классом map__pin--main в mapBlock (красный кружок)
+ */
+var mapPinMain = mapBlock.querySelector('.map__pin--main');
+
+// вешаем обработчик который срабатывает при клике левой мышки
+mapPinMain.addEventListener('mousedown', function (evt) {
+  if (event.which === 1) {
+    console.log('Убрать все');
+    adForm.classList.remove('ad-form--disabled');
+    adForm.removeAttribute('disabled', '');
+    mapFilters.removeAttribute('disabled');
+    adFormEnabled(adFormInput);
+    adFormEnabled(adFormSelect);
+    init();
+    var pinX = Math.floor(evt.pageX + pinWidth / 2);
+    var pinY = Math.floor(evt.pageY + pinHeight / 2);
+    console.log(pinX + ', ' + pinY);
+    adForm.querySelector('input[name="address"]').value = pinX + ', ' + pinY;
+  } else if (event.which === 2) {
+    console.log('Middle button');
+  } else if (event.which === 3) {
+    console.log('Right button');
+  }
+});
+
+
 // просматривать похожие объявления на карте,
 // фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
