@@ -419,7 +419,13 @@ mapPinMain.addEventListener('mousedown', function (evt) {
 
 // найти  сколько  комнат выбрали -> взависимости от этого заблокировать нете варианты
 
+/**
+ * блок с #room_number лежащий в adForm
+ */
 var selectRoom = adForm.querySelector('#room_number');
+/**
+ * значение options в #room_number
+ */
 var roomsNumberValue = selectRoom.value;
 var selectCapacity = adForm.querySelector('#capacity');
 
@@ -449,7 +455,7 @@ var onRoomSelectChange = function () {
     selectCapacity.options[2].setAttribute('disabled', '');
     selectCapacity.options[3].removeAttribute('disabled', '');
   }
-  console.log(roomsNumberValue);
+  // console.log(roomsNumberValue);
 };
 onRoomSelectChange();
 selectRoom.addEventListener('change', onRoomSelectChange);
