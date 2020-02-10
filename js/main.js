@@ -293,8 +293,6 @@ var insertPhotos = function (adTemplate, addElementArray) {
 var insertFeatures = function (adTemplate, addElementArray) {
   var removeFeatureItem = adTemplate.querySelector('.popup__features');
   removeFeatureItem.innerHTML = ' ';
-  // console.log(removeFeatureItem);
-  // --? Дима почему этот консоль лог показвает бред ?
   if (addElementArray.offer.features) {
     for (var i = 0; i < addElementArray.offer.features.length; i++) {
       var addFeatureItem = document.createElement('li');
@@ -410,7 +408,10 @@ mapFilters.setAttribute('disabled', '');
 var mapPinMain = mapBlock.querySelector('.map__pin--main');
 
 // вешаем обработчик который срабатывает при клике левой мышки
-mapPinMain.addEventListener('mousedown', function (evt) {
+// --?Дима  как сделать чтобыон срабатывал только один раз?
+
+
+var mapPinMainActive = function (evt) {
   if (event.which === 1) {
     adForm.classList.remove('ad-form--disabled');
     adForm.removeAttribute('disabled', '');
@@ -425,8 +426,12 @@ mapPinMain.addEventListener('mousedown', function (evt) {
     //   console.log('средняя на всякий случай');
     // } else if (event.which === 3) {
     //   console.log('правая на всякий случай');
+    mapPinMain.removeEventListener('mousedown', function () {});
+    // незнаю как сделать чтобы срабатывал только один клик
   }
-});
+};
+
+mapPinMain.addEventListener('mousedown', mapPinMainActive);
 
 
 // просматривать похожие объявления на карте,
