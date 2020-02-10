@@ -63,15 +63,16 @@ var mapFilters = mapBlock.querySelector('.map__filters');
  * (комнаты)
  */
 var selectRoom = adForm.querySelector('#room_number');
-/**
- * значение options в #room_number
- */
-var roomsNumberValue = selectRoom.value;
+
 /**
  * блок с #capacity лежащий в adForm
  * (гости)
  */
 var selectCapacity = adForm.querySelector('#capacity');
+
+var elementTIme = adForm.querySelector('.ad-form__element--time');
+var selectCheckIn = elementTIme.querySelector('#timein');
+var selectCheckOut = elementTIme.querySelector('#timeout');
 
 /**
  * массив для подставки данных
@@ -407,10 +408,40 @@ mapFilters.setAttribute('disabled', '');
  */
 var mapPinMain = mapBlock.querySelector('.map__pin--main');
 
+
+/**
+ * взависимости от значение поля кол-во комнат блокирует значение кол-во гостей
+ */
+var onRoomSelectChange = function () {
+  if (selectRoom.value === '1') {
+    selectCapacity.options[0].setAttribute('disabled', '');
+    selectCapacity.options[3].setAttribute('disabled', '');
+    selectCapacity.options[1].removeAttribute('disabled', '');
+    selectCapacity.options[2].removeAttribute('disabled', '');
+
+  }
+  if (selectRoom.value === '2') {
+    selectCapacity.options[0].setAttribute('disabled', '');
+    selectCapacity.options[3].setAttribute('disabled', '');
+    selectCapacity.options[1].removeAttribute('disabled', '');
+    selectCapacity.options[2].removeAttribute('disabled', '');
+  }
+  if (selectRoom.value === '3') {
+    selectCapacity.options[3].setAttribute('disabled', '');
+    selectCapacity.options[1].removeAttribute('disabled', '');
+    selectCapacity.options[2].removeAttribute('disabled', '');
+    selectCapacity.options[0].removeAttribute('disabled', '');
+  }
+  if (selectRoom.value === '100') {
+    selectCapacity.options[0].setAttribute('disabled', '');
+    selectCapacity.options[1].setAttribute('disabled', '');
+    selectCapacity.options[2].setAttribute('disabled', '');
+    selectCapacity.options[3].removeAttribute('disabled', '');
+  }
+};
+
 // вешаем обработчик который срабатывает при клике левой мышки
 // --?Дима  как сделать чтобыон срабатывал только один раз?
-
-
 var mapPinMainActive = function (evt) {
   if (event.which === 1) {
     adForm.classList.remove('ad-form--disabled');
@@ -428,57 +459,18 @@ var mapPinMainActive = function (evt) {
     //   console.log('правая на всякий случай');
     mapPinMain.removeEventListener('mousedown', function () {});
     // незнаю как сделать чтобы срабатывал только один клик
+    // onRoomSelectChange()
   }
 };
 
-mapPinMain.addEventListener('mousedown', mapPinMainActive);
 
 
-// просматривать похожие объявления на карте,
-// фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
-
-// найти  сколько  комнат выбрали -> взависимости от этого заблокировать нете варианты
-
-
-var onRoomSelectChange = function () {
-  if (roomsNumberValue === '1') {
-    selectCapacity.options[0].setAttribute('disabled', '');
-    selectCapacity.options[3].setAttribute('disabled', '');
-    selectCapacity.options[1].removeAttribute('disabled', '');
-    selectCapacity.options[2].removeAttribute('disabled', '');
-
-  }
-  if (roomsNumberValue === '2') {
-    selectCapacity.options[0].setAttribute('disabled', '');
-    selectCapacity.options[3].setAttribute('disabled', '');
-    selectCapacity.options[1].removeAttribute('disabled', '');
-    selectCapacity.options[2].removeAttribute('disabled', '');
-  }
-  if (roomsNumberValue === '3') {
-    selectCapacity.options[3].setAttribute('disabled', '');
-    selectCapacity.options[1].removeAttribute('disabled', '');
-    selectCapacity.options[2].removeAttribute('disabled', '');
-    selectCapacity.options[0].removeAttribute('disabled', '');
-  }
-  if (roomsNumberValue === '100') {
-    selectCapacity.options[0].setAttribute('disabled', '');
-    selectCapacity.options[1].setAttribute('disabled', '');
-    selectCapacity.options[2].setAttribute('disabled', '');
-    selectCapacity.options[3].removeAttribute('disabled', '');
-  }
-  // console.log(roomsNumberValue);
-};
-onRoomSelectChange();
-// -?? Дима это перенести в init или в обработчик ?
+// !просматривать похожие объявления на карте,
+// !фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
+// !!записать в горячии клавиши  console.log()
 
 // вешаем обработчик чтобы реагировать на изменения
 selectRoom.addEventListener('change', onRoomSelectChange);
-// записать в горячии клавиши  console.log()
-
-// для чекина и чек аута - найти значение и сделать их равными друг другу
-var elementTIme = adForm.querySelector('.ad-form__element--time');
-var selectCheckIn = elementTIme.querySelector('#timein');
-var selectCheckOut = elementTIme.querySelector('#timeout');
 
 var onCheckinSelectChange = function () {
   selectCheckOut.value = selectCheckIn.value;
@@ -488,5 +480,7 @@ var onCheckoutSelectChange = function () {
   selectCheckIn.value = selectCheckOut.value;
 };
 
+mapPinMain.addEventListener('mousedown', mapPinMainActive);
 selectCheckIn.addEventListener('change', onCheckinSelectChange);
 selectCheckOut.addEventListener('change', onCheckoutSelectChange);
+selectRoom.addEventListener('change', onRoomSelectChange);
