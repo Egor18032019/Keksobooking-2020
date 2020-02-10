@@ -59,6 +59,21 @@ var adFormSelect = adForm.querySelectorAll('select');
 var mapFilters = mapBlock.querySelector('.map__filters');
 
 /**
+ * блок с #room_number лежащий в adForm
+ * (комнаты)
+ */
+var selectRoom = adForm.querySelector('#room_number');
+/**
+ * значение options в #room_number
+ */
+var roomsNumberValue = selectRoom.value;
+/**
+ * блок с #capacity лежащий в adForm
+ * (гости)
+ */
+var selectCapacity = adForm.querySelector('#capacity');
+
+/**
  * массив для подставки данных
  */
 var typeObj = {
@@ -406,10 +421,10 @@ mapPinMain.addEventListener('mousedown', function (evt) {
     var pinX = Math.floor(evt.pageX + pinWidth / 2);
     var pinY = Math.floor(evt.pageY + pinHeight / 2);
     adForm.querySelector('input[name="address"]').value = pinX + ', ' + pinY;
-  // } else if (event.which === 2) {
-  //   console.log('средняя на всякий случай');
-  // } else if (event.which === 3) {
-  //   console.log('правая на всякий случай');
+    // } else if (event.which === 2) {
+    //   console.log('средняя на всякий случай');
+    // } else if (event.which === 3) {
+    //   console.log('правая на всякий случай');
   }
 });
 
@@ -419,15 +434,6 @@ mapPinMain.addEventListener('mousedown', function (evt) {
 
 // найти  сколько  комнат выбрали -> взависимости от этого заблокировать нете варианты
 
-/**
- * блок с #room_number лежащий в adForm
- */
-var selectRoom = adForm.querySelector('#room_number');
-/**
- * значение options в #room_number
- */
-var roomsNumberValue = selectRoom.value;
-var selectCapacity = adForm.querySelector('#capacity');
 
 var onRoomSelectChange = function () {
   if (roomsNumberValue === '1') {
@@ -458,5 +464,24 @@ var onRoomSelectChange = function () {
   // console.log(roomsNumberValue);
 };
 onRoomSelectChange();
+// -?? Дима это перенести в init или в обработчик ?
+
+// вешаем обработчик чтобы реагировать на изменения
 selectRoom.addEventListener('change', onRoomSelectChange);
 // записать в горячии клавиши  console.log()
+
+// для чекина и чек аута - найти значение и сделать их равными друг другу
+var elementTIme = adForm.querySelector('.ad-form__element--time');
+var selectCheckIn = elementTIme.querySelector('#timein');
+var selectCheckOut = elementTIme.querySelector('#timeout');
+
+var onCheckinSelectChange = function () {
+  selectCheckOut.value = selectCheckIn.value;
+};
+
+var onCheckoutSelectChange = function () {
+  selectCheckIn.value = selectCheckOut.value;
+};
+
+selectCheckIn.addEventListener('change', onCheckinSelectChange);
+selectCheckOut.addEventListener('change', onCheckoutSelectChange);
