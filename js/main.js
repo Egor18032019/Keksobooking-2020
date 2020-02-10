@@ -40,6 +40,24 @@ var pinWidth = document.querySelector('.map__pin').offsetWidth;
  * это высота блока map__pin в котором перетаскивается метка.
  */
 var pinHeight = document.querySelector('.map__pin').offsetHeight;
+
+/**
+ * блок с классом '.ad-form'
+ */
+var adForm = document.querySelector('.ad-form');
+/**
+ * массив input лежащий в adForm
+ */
+var adFormInput = adForm.querySelectorAll('input');
+/**
+ * массив select лежащий в adForm
+ */
+var adFormSelect = adForm.querySelectorAll('select');
+/**
+ * блок с классом '.map__filters' лежащий в mapBlock
+ */
+var mapFilters = mapBlock.querySelector('.map__filters');
+
 /**
  * массив для подставки данных
  */
@@ -345,22 +363,7 @@ var init = function () {
 
 // 4.2
 
-/**
- * блок с классом '.ad-form'
- */
-var adForm = document.querySelector('.ad-form');
-/**
- * массив input лежащий в adForm
- */
-var adFormInput = adForm.querySelectorAll('input');
-/**
- * массив select лежащий в adForm
- */
-var adFormSelect = adForm.querySelectorAll('select');
-/**
- * блок с классом '.map__filters' лежащий в mapBlock
- */
-var mapFilters = mapBlock.querySelector('.map__filters');
+
 /**
  * функция принимает массив и каждому добавляет атрибут disabled
  * @param {arr} array масссив которому добовляем атрибут disabled
@@ -394,7 +397,6 @@ var mapPinMain = mapBlock.querySelector('.map__pin--main');
 // вешаем обработчик который срабатывает при клике левой мышки
 mapPinMain.addEventListener('mousedown', function (evt) {
   if (event.which === 1) {
-    console.log('Убрать все');
     adForm.classList.remove('ad-form--disabled');
     adForm.removeAttribute('disabled', '');
     mapFilters.removeAttribute('disabled');
@@ -403,15 +405,52 @@ mapPinMain.addEventListener('mousedown', function (evt) {
     init();
     var pinX = Math.floor(evt.pageX + pinWidth / 2);
     var pinY = Math.floor(evt.pageY + pinHeight / 2);
-    console.log(pinX + ', ' + pinY);
     adForm.querySelector('input[name="address"]').value = pinX + ', ' + pinY;
-  } else if (event.which === 2) {
-    console.log('Middle button');
-  } else if (event.which === 3) {
-    console.log('Right button');
+  // } else if (event.which === 2) {
+  //   console.log('средняя на всякий случай');
+  // } else if (event.which === 3) {
+  //   console.log('правая на всякий случай');
   }
 });
 
 
 // просматривать похожие объявления на карте,
 // фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
+
+// найти  сколько  комнат выбрали -> взависимости от этого заблокировать нете варианты
+
+var selectRoom = adForm.querySelector('#room_number');
+var roomsNumberValue = selectRoom.value;
+var selectCapacity = adForm.querySelector('#capacity');
+
+var onRoomSelectChange = function () {
+  if (roomsNumberValue === '1') {
+    selectCapacity.options[0].setAttribute('disabled', '');
+    selectCapacity.options[3].setAttribute('disabled', '');
+    selectCapacity.options[1].removeAttribute('disabled', '');
+    selectCapacity.options[2].removeAttribute('disabled', '');
+
+  }
+  if (roomsNumberValue === '2') {
+    selectCapacity.options[0].setAttribute('disabled', '');
+    selectCapacity.options[3].setAttribute('disabled', '');
+    selectCapacity.options[1].removeAttribute('disabled', '');
+    selectCapacity.options[2].removeAttribute('disabled', '');
+  }
+  if (roomsNumberValue === '3') {
+    selectCapacity.options[3].setAttribute('disabled', '');
+    selectCapacity.options[1].removeAttribute('disabled', '');
+    selectCapacity.options[2].removeAttribute('disabled', '');
+    selectCapacity.options[0].removeAttribute('disabled', '');
+  }
+  if (roomsNumberValue === '100') {
+    selectCapacity.options[0].setAttribute('disabled', '');
+    selectCapacity.options[1].setAttribute('disabled', '');
+    selectCapacity.options[2].setAttribute('disabled', '');
+    selectCapacity.options[3].removeAttribute('disabled', '');
+  }
+  console.log(roomsNumberValue);
+};
+onRoomSelectChange();
+selectRoom.addEventListener('change', onRoomSelectChange);
+// записать в горячии клавиши  console.log()
