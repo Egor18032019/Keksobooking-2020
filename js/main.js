@@ -79,6 +79,9 @@ var selectType = adForm.querySelector('#type');
  * блок с классом map__pin--main в mapBlock (красный кружок)
  */
 var mapPinMain = mapBlock.querySelector('.map__pin--main');
+
+var mapPinMainAdress = adForm.querySelector('input[name="address"]');
+
 /**
  * блок с классом input[name="price"] в adForm (ценик на жилье)
  */
@@ -424,22 +427,22 @@ mapFilters.setAttribute('disabled', '');
 var onRoomSelectChange = function () {
   if (selectRoom.value === '1') {
     selectCapacity.options[0].setAttribute('disabled', '');
-    selectCapacity.options[3].setAttribute('disabled', '');
     selectCapacity.options[1].removeAttribute('disabled', '');
     selectCapacity.options[2].removeAttribute('disabled', '');
+    selectCapacity.options[3].setAttribute('disabled', '');
 
   }
   if (selectRoom.value === '2') {
     selectCapacity.options[0].setAttribute('disabled', '');
-    selectCapacity.options[3].setAttribute('disabled', '');
     selectCapacity.options[1].removeAttribute('disabled', '');
     selectCapacity.options[2].removeAttribute('disabled', '');
+    selectCapacity.options[3].setAttribute('disabled', '');
   }
   if (selectRoom.value === '3') {
-    selectCapacity.options[3].setAttribute('disabled', '');
+    selectCapacity.options[0].removeAttribute('disabled', '');
     selectCapacity.options[1].removeAttribute('disabled', '');
     selectCapacity.options[2].removeAttribute('disabled', '');
-    selectCapacity.options[0].removeAttribute('disabled', '');
+    selectCapacity.options[3].setAttribute('disabled', '');
   }
   if (selectRoom.value === '100') {
     selectCapacity.options[0].setAttribute('disabled', '');
@@ -458,8 +461,8 @@ var mapPinMainActive = function (evt) {
     adForm.classList.remove('ad-form--disabled');
     adForm.removeAttribute('disabled', '');
     mapFilters.removeAttribute('disabled');
-    adFormEnabled(adFormInput);
     init();
+    adFormEnabled(adFormInput);
 
     // } else if (evt.which === 2) {
     //   console.log('средняя на всякий случай');
@@ -479,7 +482,8 @@ var mapPinMainCoordinate = function (evt) {
   if (evt.which === 1) {
     var pinX = Math.floor(evt.pageX + pinWidth / 2);
     var pinY = Math.floor(evt.pageY + pinHeight / 2);
-    adForm.querySelector('input[name="address"]').value = pinX + ', ' + pinY;
+    mapPinMainAdress.value = pinX + ', ' + pinY;
+    mapPinMainAdress.setAttribute('disabled', '');
     mapPinMain.removeEventListener('mousedown', mapPinMainCoordinate);
   }
 };
@@ -490,6 +494,23 @@ var onTypeSelectChange = function () {
   selecTypePrice.setAttribute('placeholder', typeObjPrice[selectTypeValue]);
 };
 
+selecTypePrice.addEventListener('invalid', function () {
+  if (selecTypePrice.validity.rangeOverflow) {
+    selecTypePrice.setCustomValidity('Это столько не стоит');
+  } else {
+    selecTypePrice.setCustomValidity('');
+  }
+});
+selectRoom.addEventListener('invalid', function () {
+  // console.log(selectRoom);
+  // console.log('ошибка');
+  // --? Дима что тут использовать чтобы была ошибка неправилльноговыбора ?
+  if (selecTypePrice.validity.patternMismatch) {
+    selecTypePrice.setCustomValidity('Выберите меньше гостей');
+  } else {
+    selecTypePrice.setCustomValidity('');
+  }
+});
 
 // !просматривать похожие объявления на карте,
 // !фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
