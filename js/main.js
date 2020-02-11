@@ -73,6 +73,11 @@ var selectCapacity = adForm.querySelector('#capacity');
 var elementTIme = adForm.querySelector('.ad-form__element--time');
 var selectCheckIn = elementTIme.querySelector('#timein');
 var selectCheckOut = elementTIme.querySelector('#timeout');
+/**
+ * блок с #type лежащий в adForm
+ * (тип жилья)
+ */
+var selectType = adForm.querySelector('#type');
 
 /**
  * массив для подставки данных
@@ -463,14 +468,27 @@ var mapPinMainActive = function (evt) {
   }
 };
 
+var selecTypePrice = adForm.querySelector('input[name="price"]');
+var onTypeSelectChange = function () {
+  if (selectType.value === 'bungalo') {
+    selecTypePrice.setAttribute('min', '0');
+  }
+  if (selectType.value === 'flat') {
+    selecTypePrice.setAttribute('min', '10000');
+  }
+  if (selectType.value === 'house') {
+    selecTypePrice.setAttribute('min', '5000');
+  }
+  if (selectType.value === 'palace') {
+    selecTypePrice.setAttribute('min', '10000');
+  }
+};
 
 
 // !просматривать похожие объявления на карте,
 // !фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
 // !!записать в горячии клавиши  console.log()
 
-// вешаем обработчик чтобы реагировать на изменения
-selectRoom.addEventListener('change', onRoomSelectChange);
 
 var onCheckinSelectChange = function () {
   selectCheckOut.value = selectCheckIn.value;
@@ -480,7 +498,9 @@ var onCheckoutSelectChange = function () {
   selectCheckIn.value = selectCheckOut.value;
 };
 
+// вешаем обработчик чтобы реагировать на изменения
 mapPinMain.addEventListener('mousedown', mapPinMainActive);
 selectCheckIn.addEventListener('change', onCheckinSelectChange);
 selectCheckOut.addEventListener('change', onCheckoutSelectChange);
 selectRoom.addEventListener('change', onRoomSelectChange);
+selectType.addEventListener('change', onTypeSelectChange);
