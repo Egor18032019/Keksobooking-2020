@@ -1,5 +1,8 @@
 'use strict';
-// это фиксированные значения обьктов
+
+/**
+ * это фиксированные значения обьктов
+ */
 var TYPE_RANDOM = ['palace', 'flat', 'house', 'bungalo'];
 var CHECKOUT_RANDOM = ['12:00', '13:00', '14:00'];
 var CHECKIN_RANDOM = ['12:00', '13:00', '14:00'];
@@ -7,28 +10,104 @@ var FEATURES_RANDOM = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'c
 var PHOTOS_RANDOM = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
-
-
-// тут пишем переменную которая содержит в себе кол-во обьявлений(по заданию их 8)
+/**
+ * переменная которая содержит в себе кол-во обьявлений(по заданию их 8)
+ */
 var NUMBER_OF_ADS = 8;
 
 // тут ищем шаблон метки и в ней разметку метки
+/**
+ * шаблон метки c разметкой метки .map__pin
+ */
 var similarMapPin = document.querySelector('#pin').content.querySelector('.map__pin');
-
+/**
+ * шаблон для карточек обьявлений '.map__card'
+ */
 var cardsTemplate = document.querySelector('#card').content.querySelector('.map__card');
-// тут ищем шаблон для карточек обьявлений
 
 var mapBlock = document.querySelector('.map');
+/**
+ *  блок с классом '.map__filters-container'
+ */
 var mapFiltersContainer = mapBlock.querySelector('.map__filters-container');
 // тут ищем блок куда будем вставлять и перед чем будем вставлять
 
-// массив для подставки данных
+/**
+ * это ширина блока map__pin в котором перетаскивается метка.
+ */
+var pinWidth = document.querySelector('.map__pin').offsetWidth;
+/**
+ * это высота блока map__pin в котором перетаскивается метка.
+ */
+var pinHeight = document.querySelector('.map__pin').offsetHeight;
+
+/**
+ * блок с классом '.ad-form'
+ */
+var adForm = document.querySelector('.ad-form');
+/**
+ * массив input лежащий в adForm
+ */
+var adFormInput = adForm.querySelectorAll('input', 'select');
+
+/**
+ * блок с классом '.map__filters' лежащий в mapBlock
+ */
+var mapFilters = mapBlock.querySelector('.map__filters');
+
+/**
+ * блок с #room_number лежащий в adForm
+ * (комнаты)
+ */
+var selectRoom = adForm.querySelector('#room_number');
+
+/**
+ * блок с #capacity лежащий в adForm
+ * (гости)
+ */
+var selectCapacity = adForm.querySelector('#capacity');
+
+var elementTIme = adForm.querySelector('.ad-form__element--time');
+var selectCheckIn = elementTIme.querySelector('#timein');
+var selectCheckOut = elementTIme.querySelector('#timeout');
+/**
+ * блок с #type лежащий в adForm
+ * (тип жилья)
+ */
+var selectType = adForm.querySelector('#type');
+/**
+ * блок с классом map__pin--main в mapBlock (красный кружок)
+ */
+var mapPinMain = mapBlock.querySelector('.map__pin--main');
+
+var mapPinMainAdress = adForm.querySelector('input[name="address"]');
+
+/**
+ * блок с классом input[name="price"] в adForm (ценик на жилье)
+ */
+var selecTypePrice = adForm.querySelector('input[name="price"]');
+
+/**
+ * массив для подставки данных
+ */
 var typeObj = {
   palace: 'Дворец',
   flat: 'Квартира',
   house: 'Дом',
   bungalo: 'Бунгало'
 };
+
+/**
+ * массив для подставки данных
+ */
+var typeObjPrice = {
+  palace: 10000,
+  // строка или так ?
+  flat: '1000',
+  house: '5000',
+  bungalo: '0'
+};
+
 
 /**
  * генерация случайного числа
@@ -68,10 +147,15 @@ var getRandomArrLength = function (RandomLength, RandomArray) {
 };
 
 // создаем случайный массив строк ограниченый максимальной длиной
+/**
+ * случайный массив строк для списка удобств
+ */
 var RandomArrLengthFeatures = getRandomArrLength(getRandomInt(0, FEATURES_RANDOM.length), FEATURES_RANDOM);
-// для удобств
+/**
+ *  случайный массив строк для массива с фотками
+ */
 var RandomArrLengthPhotos = getRandomArrLength(getRandomInt(0, PHOTOS_RANDOM.length), PHOTOS_RANDOM);
-// для фоток
+
 
 /**
  * пишем функцию которая перебирает массив и удаляет одинаковые элементы
@@ -101,36 +185,27 @@ var getDescriptionRandom = function (needText) {
 };
 
 /**
- *  тут пишем функцию которая в зависимости от введеного числа создаёт такое же количество обьектов в массиве.
+ *  функция которая в зависимости от NUMBER_OF_ADS создаёт такое же количество обьектов в массиве.
  * @param {number}NUMBER_OF_ADS число необходимых обьектов в массиве
  * @return {arr} возвращает массив с задданым кол-вом обьектов.
  */
-
 var getAdList = function () {
   // тут обьявим пустой массив в который  - будем толкать элементы
   var adList = [];
   for (var i = 1; i <= NUMBER_OF_ADS; i++) {
     var maxWidth = document.querySelector('.map__pins').offsetWidth;
-    // console.log(maxWidth);
-    // --? Дима Почемуто всегда даёт цифру 980.. ,,??
-    // --? так она всегда 980 внезависимости от размера окна
-
-    // вынес сюда чтобы адрееc считалься
+    // вынес сюда чтобы адреc считалься
     var coordinateX = getRandomInt(130, maxWidth);
     var coordinateY = getRandomInt(130, 630);
     adList.push({
       author: {
         avatar: 'img/avatars/user' + '0' + i + '.png'
         // тут пишем генерацию адрессной строки для ключа avatar
-        // строка, адрес изображения вида img/avatars/user{{xx}}.png, где {{xx}}
-        // это число от 1 до 8 с ведущим нулём.
-        // Например, 01, 02 и т. д. Адреса изображений не повторяются
       },
       location: {
         x: coordinateX,
         y: coordinateY
-        // "x": случайное число, координата x метки на карте. Значение ограничено размерами блока, в котором перетаскивается метка.
-        // --? 130 для x взял от балды или 0 поставит ?
+        // "x": случайное число, координата x метки на карте. Значение ограничено размерами блока, в котором перетаскивается метка
         // "y": случайное число, координата y метки на карте от 130 до 630.
       },
       offer: {
@@ -165,17 +240,15 @@ var getAdList = function () {
   return adList;
 };
 
+
 /**
- * тут пришем функцию которая в зависимости от данных из массива позиционирует метку+ генерирует подписи и аватарки
- * @param {*} unitGetAdList
+ * функция которая в зависимости от данных из массива позиционирует метку+ генерирует подписи и аватарки
+ * @param {*} unitGetAdList массив который надо отрисовать
  * @return {template} возращает склонируемый шаблон с заполнеными координтам+подписями+картинками
  */
 var getCreateAdMapElement = function (unitGetAdList) {
   // тут копируем шаблон
   var adMapElement = similarMapPin.cloneNode(true);
-  var pinWidth = document.querySelector('.map__pin').offsetWidth;
-  var pinHeight = document.querySelector('.map__pin').offsetHeight;
-  // тут пишем переменую которая должна определять размеры блока в котором в котором перетаскивается метка.
   var leftX = unitGetAdList.location.x + pinWidth / 2;
   var topY = unitGetAdList.location.y + pinHeight / 2;
   // это координты из массива + половина метки
@@ -190,8 +263,9 @@ var getCreateAdMapElement = function (unitGetAdList) {
 };
 
 /**
- * тут пишем функцию которрая в зависимости от длины массива создаёт метки и циклом накидывает фрагменты
+ * функция которая в зависимости от длины массива создаёт метки и циклом накидывает фрагменты
  * @param {arr} cards массив обьектов которых надо отрисовать на страницы
+ * и возращает новыем ДОМ элементы
  */
 var getRenderAdMapPins = function (cards) {
   var fragment = document.createDocumentFragment();
@@ -208,7 +282,7 @@ var getRenderAdMapPins = function (cards) {
 };
 
 /**
- * фукция вставки массива !! изображений
+ * фукция вставки массива!! изображений
  * @param {*} adTemplate шаблон
  * @param {*} addElementArray один элемент массива
  * заполняет шаблон нужным кол-вом фоток
@@ -237,8 +311,6 @@ var insertPhotos = function (adTemplate, addElementArray) {
 var insertFeatures = function (adTemplate, addElementArray) {
   var removeFeatureItem = adTemplate.querySelector('.popup__features');
   removeFeatureItem.innerHTML = ' ';
-  // console.log(removeFeatureItem);
-  // --? Дима почему этот консоль лог показвает бред ?
   if (addElementArray.offer.features) {
     for (var i = 0; i < addElementArray.offer.features.length; i++) {
       var addFeatureItem = document.createElement('li');
@@ -256,8 +328,10 @@ var insertFeatures = function (adTemplate, addElementArray) {
  * @return {DOM} заполненный DOM элемент данными из сгенерированного массива
  */
 var getMapCard = function (card) {
+  /**
+   * склонированыый шаблон для карточек обьявлений от cardsTemplate
+   */
   var adMapCard = cardsTemplate.cloneNode(true);
-  // тут пишем переменую равную первому элементу сгенерированого массив(условие из задания)
   if (card.offer.title) {
     adMapCard.querySelector('.popup__title').textContent = card.offer.title;
     //   Выведите заголовок объявления offer.title в заголовок .popup__title.
@@ -297,7 +371,7 @@ var getMapCard = function (card) {
 
   // вставка удобств
   insertFeatures(adMapCard, card);
-  //   В список .popup__features выведите все доступные удобства в объявлении.
+
   return adMapCard;
 };
 
@@ -316,20 +390,145 @@ var init = function () {
 };
 
 // обьявляем единую функцию
-init();
+// init();
 
 // 4.2
-// с помощьюе js сделать
-// Все <input> и <select> формы .ad-form заблокированы с помощью атрибута disabled,
-// добавленного на них или на их родительские блоки fieldset;
-// Форма с фильтрами .map__filters заблокирована так же, как и форма .ad-form;
 
-// при клике левой кнопке
-// убрать
-// Блок с картой .map НЕсодержит класс map--faded;
-// Форма заполнения информации об объявлении .ad-form НЕсодержит класс ad-form--disabled;
-// Все <input> и <select> формы .ad-form НЕзаблокированы с помощью атрибута disabled, добавленного на них или на их родительские блоки fieldset;
-// Форма с фильтрами .map__filters НЕзаблокирована так же, как и форма .ad-form;
-// В активном состоянии страница позволяет вносить изменения в форму и отправлять её на сервер,
-// просматривать похожие объявления на карте,
-// фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
+
+/**
+ * функция принимает массив и каждому добавляет атрибут disabled
+ * @param {arr} array масссив которому добовляем атрибут disabled
+ */
+var adFormDisabled = function (array) {
+  for (var i = 0; i < array.length; i++) {
+    array[i].disabled = true;
+  }
+};
+/**
+ * функция принимает массив и каждому убирает атрибут disabled
+ * @param {arr} array масссив которому убирает атрибут disabled
+ */
+var adFormEnabled = function (array) {
+  for (var i = 0; i < array.length; i++) {
+    array[i].disabled = false;
+  }
+};
+
+
+adFormDisabled(adFormInput);
+
+adForm.setAttribute('disabled', '');
+mapFilters.setAttribute('disabled', '');
+
+
+/**
+ * взависимости от значение поля кол-во комнат блокирует значение кол-во гостей
+ */
+var onRoomSelectChange = function () {
+  if (selectRoom.value === '1') {
+    selectCapacity.options[0].setAttribute('disabled', '');
+    selectCapacity.options[1].removeAttribute('disabled', '');
+    selectCapacity.options[2].removeAttribute('disabled', '');
+    selectCapacity.options[3].setAttribute('disabled', '');
+
+  }
+  if (selectRoom.value === '2') {
+    selectCapacity.options[0].setAttribute('disabled', '');
+    selectCapacity.options[1].removeAttribute('disabled', '');
+    selectCapacity.options[2].removeAttribute('disabled', '');
+    selectCapacity.options[3].setAttribute('disabled', '');
+  }
+  if (selectRoom.value === '3') {
+    selectCapacity.options[0].removeAttribute('disabled', '');
+    selectCapacity.options[1].removeAttribute('disabled', '');
+    selectCapacity.options[2].removeAttribute('disabled', '');
+    selectCapacity.options[3].setAttribute('disabled', '');
+  }
+  if (selectRoom.value === '100') {
+    selectCapacity.options[0].setAttribute('disabled', '');
+    selectCapacity.options[1].setAttribute('disabled', '');
+    selectCapacity.options[2].setAttribute('disabled', '');
+    selectCapacity.options[3].removeAttribute('disabled', '');
+  }
+};
+
+/**
+ * функция активациия пина
+ * @param {*} evt
+ */
+var mapPinMainActive = function (evt) {
+  if (evt.which === 1) {
+    adForm.classList.remove('ad-form--disabled');
+    adForm.removeAttribute('disabled', '');
+    mapFilters.removeAttribute('disabled');
+    init();
+    adFormEnabled(adFormInput);
+
+    // } else if (evt.which === 2) {
+    //   console.log('средняя на всякий случай');
+    // } else if (evt.which === 3) {
+    //   console.log('правая на всякий случай');
+    mapPinMain.removeEventListener('mousedown', mapPinMainActive);
+    // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
+    onRoomSelectChange();
+  }
+};
+
+/**
+ * функция отрисовки координат пина
+ * @param {*} evt
+ */
+var mapPinMainCoordinate = function (evt) {
+  if (evt.which === 1) {
+    var pinX = Math.floor(evt.pageX + pinWidth / 2);
+    var pinY = Math.floor(evt.pageY + pinHeight / 2);
+    mapPinMainAdress.value = pinX + ', ' + pinY;
+    mapPinMainAdress.setAttribute('disabled', '');
+    mapPinMain.removeEventListener('mousedown', mapPinMainCoordinate);
+  }
+};
+
+var onTypeSelectChange = function () {
+  var selectTypeValue = selectType.value;
+  selecTypePrice.setAttribute('min', typeObjPrice[selectTypeValue]);
+  selecTypePrice.setAttribute('placeholder', typeObjPrice[selectTypeValue]);
+};
+
+selecTypePrice.addEventListener('invalid', function () {
+  if (selecTypePrice.validity.rangeOverflow) {
+    selecTypePrice.setCustomValidity('Это столько не стоит');
+  } else {
+    selecTypePrice.setCustomValidity('');
+  }
+});
+selectRoom.addEventListener('invalid', function () {
+  // console.log(selectRoom);
+  // console.log('ошибка');
+  // --? Дима что тут использовать чтобы была ошибка неправилльноговыбора ?
+  if (selecTypePrice.validity.patternMismatch) {
+    selecTypePrice.setCustomValidity('Выберите меньше гостей');
+  } else {
+    selecTypePrice.setCustomValidity('');
+  }
+});
+
+// !просматривать похожие объявления на карте,
+// !фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
+// !!записать в горячии клавиши  console.log()
+
+
+var onCheckinSelectChange = function () {
+  selectCheckOut.value = selectCheckIn.value;
+};
+
+var onCheckoutSelectChange = function () {
+  selectCheckIn.value = selectCheckOut.value;
+};
+
+// вешаем обработчик чтобы реагировать на изменения
+mapPinMain.addEventListener('mousedown', mapPinMainActive);
+mapPinMain.addEventListener('mousedown', mapPinMainCoordinate);
+selectCheckIn.addEventListener('change', onCheckinSelectChange);
+selectCheckOut.addEventListener('change', onCheckoutSelectChange);
+selectRoom.addEventListener('change', onRoomSelectChange);
+selectType.addEventListener('change', onTypeSelectChange);
