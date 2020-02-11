@@ -48,11 +48,8 @@ var adForm = document.querySelector('.ad-form');
 /**
  * массив input лежащий в adForm
  */
-var adFormInput = adForm.querySelectorAll('input');
-/**
- * массив select лежащий в adForm
- */
-var adFormSelect = adForm.querySelectorAll('select');
+var adFormInput = adForm.querySelectorAll('input', 'select');
+
 /**
  * блок с классом '.map__filters' лежащий в mapBlock
  */
@@ -78,6 +75,14 @@ var selectCheckOut = elementTIme.querySelector('#timeout');
  * (тип жилья)
  */
 var selectType = adForm.querySelector('#type');
+/**
+ * блок с классом map__pin--main в mapBlock (красный кружок)
+ */
+var mapPinMain = mapBlock.querySelector('.map__pin--main');
+/**
+ * блок с классом input[name="price"] в adForm (ценик на жилье)
+ */
+var selecTypePrice = adForm.querySelector('input[name="price"]');
 
 /**
  * массив для подставки данных
@@ -88,6 +93,18 @@ var typeObj = {
   house: 'Дом',
   bungalo: 'Бунгало'
 };
+
+/**
+ * массив для подставки данных
+ */
+var typeObjPrice = {
+  palace: 10000,
+  // строка или так ?
+  flat: '1000',
+  house: '5000',
+  bungalo: '0'
+};
+
 
 /**
  * генерация случайного числа
@@ -174,26 +191,18 @@ var getAdList = function () {
   var adList = [];
   for (var i = 1; i <= NUMBER_OF_ADS; i++) {
     var maxWidth = document.querySelector('.map__pins').offsetWidth;
-    // console.log(maxWidth);
-    // --? Дима Почемуто всегда даёт цифру 980.. ,,??
-    // --? так она всегда 980 внезависимости от размера окна
-
-    // вынес сюда чтобы адрееc считалься
+    // вынес сюда чтобы адреc считалься
     var coordinateX = getRandomInt(130, maxWidth);
     var coordinateY = getRandomInt(130, 630);
     adList.push({
       author: {
         avatar: 'img/avatars/user' + '0' + i + '.png'
         // тут пишем генерацию адрессной строки для ключа avatar
-        // строка, адрес изображения вида img/avatars/user{{xx}}.png, где {{xx}}
-        // это число от 1 до 8 с ведущим нулём.
-        // Например, 01, 02 и т. д. Адреса изображений не повторяются
       },
       location: {
         x: coordinateX,
         y: coordinateY
-        // "x": случайное число, координата x метки на карте. Значение ограничено размерами блока, в котором перетаскивается метка.
-        // --? 130 для x взял от балды или 0 поставит ?
+        // "x": случайное число, координата x метки на карте. Значение ограничено размерами блока, в котором перетаскивается метка
         // "y": случайное число, координата y метки на карте от 130 до 630.
       },
       offer: {
@@ -402,16 +411,11 @@ var adFormEnabled = function (array) {
   }
 };
 
+
 adFormDisabled(adFormInput);
-adFormDisabled(adFormSelect);
+
 adForm.setAttribute('disabled', '');
 mapFilters.setAttribute('disabled', '');
-
-
-/**
- * блок с классом map__pin--main в mapBlock (красный кружок)
- */
-var mapPinMain = mapBlock.querySelector('.map__pin--main');
 
 
 /**
@@ -445,43 +449,45 @@ var onRoomSelectChange = function () {
   }
 };
 
-// вешаем обработчик который срабатывает при клике левой мышки
-// --?Дима  как сделать чтобыон срабатывал только один раз?
+/**
+ * функция активациия пина
+ * @param {*} evt
+ */
 var mapPinMainActive = function (evt) {
-  if (event.which === 1) {
+  if (evt.which === 1) {
     adForm.classList.remove('ad-form--disabled');
     adForm.removeAttribute('disabled', '');
     mapFilters.removeAttribute('disabled');
     adFormEnabled(adFormInput);
-    adFormEnabled(adFormSelect);
     init();
-    var pinX = Math.floor(evt.pageX + pinWidth / 2);
-    var pinY = Math.floor(evt.pageY + pinHeight / 2);
-    adForm.querySelector('input[name="address"]').value = pinX + ', ' + pinY;
-    // } else if (event.which === 2) {
+
+    // } else if (evt.which === 2) {
     //   console.log('средняя на всякий случай');
-    // } else if (event.which === 3) {
+    // } else if (evt.which === 3) {
     //   console.log('правая на всякий случай');
-    mapPinMain.removeEventListener('mousedown', function () {});
-    // незнаю как сделать чтобы срабатывал только один клик
-    // onRoomSelectChange()
+    mapPinMain.removeEventListener('mousedown', mapPinMainActive);
+    // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
+    onRoomSelectChange();
   }
 };
 
-var selecTypePrice = adForm.querySelector('input[name="price"]');
+/**
+ * функция отрисовки координат пина
+ * @param {*} evt
+ */
+var mapPinMainCoordinate = function (evt) {
+  if (evt.which === 1) {
+    var pinX = Math.floor(evt.pageX + pinWidth / 2);
+    var pinY = Math.floor(evt.pageY + pinHeight / 2);
+    adForm.querySelector('input[name="address"]').value = pinX + ', ' + pinY;
+    mapPinMain.removeEventListener('mousedown', mapPinMainCoordinate);
+  }
+};
+
 var onTypeSelectChange = function () {
-  if (selectType.value === 'bungalo') {
-    selecTypePrice.setAttribute('min', '0');
-  }
-  if (selectType.value === 'flat') {
-    selecTypePrice.setAttribute('min', '10000');
-  }
-  if (selectType.value === 'house') {
-    selecTypePrice.setAttribute('min', '5000');
-  }
-  if (selectType.value === 'palace') {
-    selecTypePrice.setAttribute('min', '10000');
-  }
+  var selectTypeValue = selectType.value;
+  selecTypePrice.setAttribute('min', typeObjPrice[selectTypeValue]);
+  selecTypePrice.setAttribute('placeholder', typeObjPrice[selectTypeValue]);
 };
 
 
@@ -500,6 +506,7 @@ var onCheckoutSelectChange = function () {
 
 // вешаем обработчик чтобы реагировать на изменения
 mapPinMain.addEventListener('mousedown', mapPinMainActive);
+mapPinMain.addEventListener('mousedown', mapPinMainCoordinate);
 selectCheckIn.addEventListener('change', onCheckinSelectChange);
 selectCheckOut.addEventListener('change', onCheckoutSelectChange);
 selectRoom.addEventListener('change', onRoomSelectChange);
