@@ -256,7 +256,7 @@ var getAdList = function () {
 
 /**
  * функция которая в зависимости от данных из массива позиционирует метку+ генерирует подписи и аватарки
- * @param {*} unitGetAdList массив который надо отрисовать
+ * @param {*} unitGetAdList элемент из массив с которого отрисовываем
  * @return {template} возращает склонируемый шаблон с заполнеными координтам+подписями+картинками
  */
 var getCreateAdMapElement = function (unitGetAdList) {
@@ -264,14 +264,20 @@ var getCreateAdMapElement = function (unitGetAdList) {
   var adMapElement = similarMapPin.cloneNode(true);
   var leftX = unitGetAdList.location.x + pinWidth / 2;
   var topY = unitGetAdList.location.y + pinHeight / 2;
-  // это координты из массива + половина метки
+  var addImgButton = adMapElement.querySelector('img');
+
   adMapElement.style.left = leftX + 'px';
   adMapElement.style.top = topY + 'px';
-
-  var addImgButton = adMapElement.querySelector('img');
-  // тут в шаблоне ищем  Альтернативный текст: alt="{{заголовок объявления}}"
   addImgButton.alt = unitGetAdList.offer.title;
   addImgButton.src = unitGetAdList.author.avatar;
+  // на скопируемый шаблон вешаем слушатель событий - > который при клике отрисовывает обьявление -
+  // согласно элементу массива которым отрисовался этот пин.
+  // я незнаю где js хранить информацию с какого элемента он отрисовал этот пин
+  // но работает же ))
+  adMapElement.addEventListener('click', function () {
+    renderCard(unitGetAdList);
+  });
+
   return adMapElement;
 };
 
@@ -284,8 +290,8 @@ var getRenderAdMapPins = function (cards) {
   var fragment = document.createDocumentFragment();
   // тут создаем переменую fragment которая в содает в document е любой DOM элемент - но он еще не отрисован
   // тут пишем массив который создается из функции getAdList в зависимости от numberOfAds
-  for (var i = 0; i < cards.length; i++) {
-    fragment.appendChild(getCreateAdMapElement(cards[i]));
+  for (var e = 0; e < cards.length; e++) {
+    fragment.appendChild(getCreateAdMapElement(cards[e]));
     //  а тут в fragment циклом накидиваем детей от функции renderWizard с параметром wizards[i]
   }
 
@@ -299,8 +305,6 @@ var getRenderAdMapPins = function (cards) {
  * заполняет шаблон нужным кол-вом фоток
  */
 var insertPhotos = function (adTemplate, addElementArray) {
-  //   В блок .popup__photos выведите все фотографии из списка offer.photos.
-  // Каждая из строк массива photos должна записываться как src соответствующего изображения.
   var removePhotosItem = adTemplate.querySelector('.popup__photos');
   removePhotosItem.innerHTML = ' ';
   if (addElementArray.offer.photos) {
@@ -345,39 +349,28 @@ var getMapCard = function (card) {
   var adMapCard = cardsTemplate.cloneNode(true);
   if (card.offer.title) {
     adMapCard.querySelector('.popup__title').textContent = card.offer.title;
-    //   Выведите заголовок объявления offer.title в заголовок .popup__title.
   }
   if (card.author.avatar) {
     adMapCard.querySelector('.popup__avatar').src = card.author.avatar;
-    // --? Дима , тогда здесь будет всегда одинаковая аватарка
-    //   Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
   }
   if (card.offer.price) {
     adMapCard.querySelector('.popup__text--price').textContent = card.offer.price + '₽/ночь';
-    //   Выведите цену offer.price в блок .popup__text--price строкой вида {{offer.price}}₽/ночь. Например, 5200₽/ночь.
   }
 
   adMapCard.querySelector('.popup__type').textContent = typeObj[card.offer.type];
-  // Запомнить что строку надо брать в квадратные скобки. через токчку не работает
+  // Запомнить что строку надо брать в квадратные скобки. через точку не работает
   // Квадратные скобки также позволяют обратиться к свойству, имя которого может быть результатом выражения.
   adMapCard.querySelector('.popup__text--address').textContent = card.offer.address;
-  //   Выведите адрес offer.address в блок .popup__text--address.
   if (card.offer.rooms || card.offer.quests) {
-    // ---если будет время = сделать что бы более по правильно писала
     adMapCard.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.quests + ' гостей';
-    //  Выведите количество гостей и комнат offer.rooms и offer.guests в блок .popup__text--capacity
-    //  строкой вида {{offer.rooms}} комнаты для {{offer.guests}} гостей. Например, 2 комнаты для 3 гостей.
   }
   if (card.offer.checkin || card.offer.checkout) {
     adMapCard.querySelector('.popup__text--time').textContent = 'заезд после ' + card.offer.checkin + ' , выезд до  ' + card.offer.checkout + ' гостей';
-    //  Время заезда и выезда offer.checkin и offer.checkout в блок .popup__text--time строкой вида
-    //  Заезд после {{offer.checkin}}, выезд до {{offer.checkout}}. Например, заезд после 14:00, выезд до 12:00.
   }
 
   adMapCard.querySelector('.popup__description').textContent = card.offer.description;
-  // В блок .popup__description выведите описание объекта недвижимости offer.description.
 
-  // вставка масиива фото
+  // вставка масива фото
   insertPhotos(adMapCard, card);
 
   // вставка удобств
@@ -390,61 +383,26 @@ var getMapCard = function (card) {
  * пишем единую фунцию в которой содержиться
  * открытие карты
  * отрисовка пинов
- * отрисовка заполненных карточек обьявлений
  */
 var init = function () {
   // открываем карту
   mapBlock.classList.remove('map--faded');
   var cards = getAdList(NUMBER_OF_ADS);
   getRenderAdMapPins(cards);
-  mapBlock.insertBefore(getMapCard(cards[0]), mapFiltersContainer);
+};
 
-  /**
-   * функция которая взависимости от адреса картинки находит этот элемент массива и отрисоввает его в карточкку обьявлений
-   * @param {*} evt
-   */
-  var onPinClick = function (evt) {
-    var pinTarget = evt.target.src;
-    // var currentTarget = evt.currentTarget;
-    // console.log(currentTarget);
-    var currentAdrees = pinTarget.length - 5;
-    var currentArrayForPin = (pinTarget.substring(currentAdrees, pinTarget.length - 4)) - 1;
-    var mapCard = mapBlock.querySelector('.map__card');
-    if (document.contains(mapCard)) {
-      mapCard.remove();
-    }
-    // пишу функцию которая отрисовыват выбраный массив
-    mapBlock.insertBefore(getMapCard(cards[currentArrayForPin]), mapFiltersContainer);
-    exitPopup();
-  };
-
-  /**
-   * функция которая срабатывает при нажатие ентера. не смог придумать другого и + не работает (())
-   * @param {*} evt
-   */
-  var onPinEnter = function (evt) {
-    if (document.activeElement.className === 'map__pin' && evt.key === ENTER_KEY) {
-
-      var pinTarget = evt.target.src;
-      // var currentTarget = evt.currentTarget;
-      // console.log(currentTarget);
-      var currentAdrees = pinTarget.length - 5;
-      var currentArrayForPin = (pinTarget.substring(currentAdrees, pinTarget.length - 4)) - 1;
-      var mapCard = mapBlock.querySelector('.map__card');
-      if (document.contains(mapCard)) {
-        mapCard.remove();
-      }
-      // пишу функцию которая отрисовыват выбраный массив
-      mapBlock.insertBefore(getMapCard(cards[currentArrayForPin]), mapFiltersContainer);
-      exitPopup();
-    }
-  };
-  // ищю все пины и на каждый вешаю обработичик -> в обработчике функция которая при нажатие закрывает попап и отрисовывает новый
-  var adCurrentPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-  for (var i = 0; i < adCurrentPin.length; i++) {
-    adCurrentPin[i].addEventListener('click', onPinClick);
-    adCurrentPin[i].addEventListener('keydown', onPinEnter);
+/**
+ * функция которая отрисовывает обьявление и вставляет его перед mapFiltersContainer
+ * @param {arr} card элемент массива
+ * и также навешает слушателя событий ESC и Enter
+ */
+var renderCard = function (card) {
+  var mapCard = mapBlock.querySelector('.map__card');
+  if (document.contains(mapCard)) {
+    mapCard.remove();
   }
+  mapBlock.insertBefore(getMapCard(card), mapFiltersContainer);
+  exitPopup();
 };
 
 /**
@@ -456,6 +414,7 @@ var adFormDisabled = function (array) {
     array[i].disabled = true;
   }
 };
+
 /**
  * функция принимает массив и каждому убирает атрибут disabled
  * @param {arr} array масссив которому убирает атрибут disabled
@@ -465,12 +424,6 @@ var adFormEnabled = function (array) {
     array[i].disabled = false;
   }
 };
-
-
-adFormDisabled(adFormInput);
-adForm.setAttribute('disabled', '');
-mapFilters.setAttribute('disabled', '');
-
 
 /**
  * взависимости от значение поля кол-во комнат блокирует значение кол-во гостей
@@ -509,7 +462,6 @@ var onRoomSelectChange = function () {
 var exitPopup = function () {
   var mapCard = mapBlock.querySelector('.map__card');
   var popupClose = mapCard.querySelector('.popup__close');
-
   var closePopup = function () {
     if (mapCard) {
       mapCard.classList.add('visually-hidden');
@@ -517,8 +469,9 @@ var exitPopup = function () {
       mapCard.removeEventListener('keydown', onPopupEnterPress);
     }
   };
+
   var onPopupEnterPress = function (evnt) {
-    // для закрытия попапа с клавиатуру если табом дошли до popupClose
+    // для закрытия попапа с клавиатуру если табом дошли до крестика
     if (document.activeElement === popupClose && evnt.key === ENTER_KEY) {
       closePopup();
     }
@@ -548,16 +501,9 @@ var mapPinMainActive = function (evt) {
     mapFilters.removeAttribute('disabled');
     init();
     adFormEnabled(adFormInput);
-
-    // } else if (evt.which === 2) {
-    //   console.log('средняя на всякий случай');
-    // } else if (evt.which === 3) {
-    //   console.log('правая на всякий случай');
     mapPinMain.removeEventListener('mousedown', mapPinMainActive);
     // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
     onRoomSelectChange();
-
-    exitPopup();
   }
 };
 
@@ -581,6 +527,18 @@ var onTypeSelectChange = function () {
   selecTypePrice.setAttribute('placeholder', typeObjPrice[selectTypeValue]);
 };
 
+var onCheckinSelectChange = function () {
+  selectCheckOut.value = selectCheckIn.value;
+};
+
+var onCheckoutSelectChange = function () {
+  selectCheckIn.value = selectCheckOut.value;
+};
+
+adFormDisabled(adFormInput);
+adForm.setAttribute('disabled', '');
+mapFilters.setAttribute('disabled', '');
+
 selecTypePrice.addEventListener('invalid', function () {
   if (selecTypePrice.validity.rangeOverflow) {
     selecTypePrice.setCustomValidity('Это столько не стоит');
@@ -588,6 +546,7 @@ selecTypePrice.addEventListener('invalid', function () {
     selecTypePrice.setCustomValidity('');
   }
 });
+
 selectRoom.addEventListener('invalid', function () {
   // console.log(selectRoom);
   // console.log('ошибка');
@@ -598,20 +557,6 @@ selectRoom.addEventListener('invalid', function () {
     selecTypePrice.setCustomValidity('');
   }
 });
-
-// !просматривать похожие объявления на карте,
-// !фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
-// !!записать в горячии клавиши  console.log()
-
-
-var onCheckinSelectChange = function () {
-  selectCheckOut.value = selectCheckIn.value;
-};
-
-var onCheckoutSelectChange = function () {
-  selectCheckIn.value = selectCheckOut.value;
-};
-
 // вешаем обработчик чтобы реагировать на изменения
 mapPinMain.addEventListener('mousedown', mapPinMainActive);
 mapPinMain.addEventListener('mousedown', mapPinMainCoordinate);
@@ -620,3 +565,7 @@ selectCheckOut.addEventListener('change', onCheckoutSelectChange);
 selectRoom.addEventListener('change', onRoomSelectChange);
 // --?? как бороться с этим . выбираешь 3 комнтаы ставишь 3 гостей - потом выбираешь 1 комнату 3 гостя остаеться
 selectType.addEventListener('change', onTypeSelectChange);
+
+
+// !фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
+// !!записать в горячии клавиши  console.log()
