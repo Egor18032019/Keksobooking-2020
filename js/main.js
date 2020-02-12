@@ -26,7 +26,6 @@ var ENTER_KEY = 'Enter';
 
 // тут ищем ДОМ элемент куда будем добавлять метку
 var mapPins = document.querySelector('.map__pins');
-// тут к mapPins подкидываем детей
 
 /**
  * шаблон метки c разметкой метки .map__pin
@@ -42,7 +41,6 @@ var mapBlock = document.querySelector('.map');
  *  блок с классом '.map__filters-container'
  */
 var mapFiltersContainer = mapBlock.querySelector('.map__filters-container');
-// тут ищем блок куда будем вставлять и перед чем будем вставлять
 
 /**
  * это ширина блока map__pin в котором перетаскивается метка.
