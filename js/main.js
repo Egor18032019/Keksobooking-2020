@@ -15,7 +15,19 @@ var PHOTOS_RANDOM = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http
  */
 var NUMBER_OF_ADS = 8;
 
-// тут ищем шаблон метки и в ней разметку метки
+/**
+ * кнопка 'Escape'
+ */
+var ESC_KEY = 'Escape';
+/**
+ * кнопка 'Enter'
+ */
+var ENTER_KEY = 'Enter';
+
+// тут ищем ДОМ элемент куда будем добавлять метку
+var mapPins = document.querySelector('.map__pins');
+// тут к mapPins подкидываем детей
+
 /**
  * шаблон метки c разметкой метки .map__pin
  */
@@ -86,6 +98,7 @@ var mapPinMainAdress = adForm.querySelector('input[name="address"]');
  * блок с классом input[name="price"] в adForm (ценик на жилье)
  */
 var selecTypePrice = adForm.querySelector('input[name="price"]');
+
 
 /**
  * массив для подставки данных
@@ -275,9 +288,7 @@ var getRenderAdMapPins = function (cards) {
     fragment.appendChild(getCreateAdMapElement(cards[i]));
     //  а тут в fragment циклом накидиваем детей от функции renderWizard с параметром wizards[i]
   }
-  // тут ищем ДОМ элемент куда будем добавлять метку(F12 и там посмотрел)
-  var mapPins = document.querySelector('.map__pins');
-  // тут к mapPins подкидываем детей
+
   mapPins.appendChild(fragment);
 };
 
@@ -387,13 +398,54 @@ var init = function () {
   var cards = getAdList(NUMBER_OF_ADS);
   getRenderAdMapPins(cards);
   mapBlock.insertBefore(getMapCard(cards[0]), mapFiltersContainer);
+
+  /**
+   * функция которая взависимости от адреса картинки находит этот элемент массива и отрисоввает его в карточкку обьявлений
+   * @param {*} evt
+   */
+  var onPinClick = function (evt) {
+    var pinTarget = evt.target.src;
+    // var currentTarget = evt.currentTarget;
+    // console.log(currentTarget);
+    var currentAdrees = pinTarget.length - 5;
+    var currentArrayForPin = (pinTarget.substring(currentAdrees, pinTarget.length - 4)) - 1;
+    var mapCard = mapBlock.querySelector('.map__card');
+    if (document.contains(mapCard)) {
+      mapCard.remove();
+    }
+    // пишу функцию которая отрисовыват выбраный массив
+    mapBlock.insertBefore(getMapCard(cards[currentArrayForPin]), mapFiltersContainer);
+    exitPopup();
+  };
+
+  /**
+   * функция которая срабатывает при нажатие ентера. не смог придумать другого и + не работает (())
+   * @param {*} evt
+   */
+  var onPinEnter = function (evt) {
+    if (document.activeElement.className === 'map__pin' && evt.key === ENTER_KEY) {
+
+      var pinTarget = evt.target.src;
+      // var currentTarget = evt.currentTarget;
+      // console.log(currentTarget);
+      var currentAdrees = pinTarget.length - 5;
+      var currentArrayForPin = (pinTarget.substring(currentAdrees, pinTarget.length - 4)) - 1;
+      var mapCard = mapBlock.querySelector('.map__card');
+      if (document.contains(mapCard)) {
+        mapCard.remove();
+      }
+      // пишу функцию которая отрисовыват выбраный массив
+      mapBlock.insertBefore(getMapCard(cards[currentArrayForPin]), mapFiltersContainer);
+      exitPopup();
+    }
+  };
+  // ищю все пины и на каждый вешаю обработичик -> в обработчике функция которая при нажатие закрывает попап и отрисовывает новый
+  var adCurrentPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  for (var i = 0; i < adCurrentPin.length; i++) {
+    adCurrentPin[i].addEventListener('click', onPinClick);
+    adCurrentPin[i].addEventListener('keydown', onPinEnter);
+  }
 };
-
-// обьявляем единую функцию
-// init();
-
-// 4.2
-
 
 /**
  * функция принимает массив и каждому добавляет атрибут disabled
@@ -416,7 +468,6 @@ var adFormEnabled = function (array) {
 
 
 adFormDisabled(adFormInput);
-
 adForm.setAttribute('disabled', '');
 mapFilters.setAttribute('disabled', '');
 
@@ -427,7 +478,7 @@ mapFilters.setAttribute('disabled', '');
 var onRoomSelectChange = function () {
   if (selectRoom.value === '1') {
     selectCapacity.options[0].setAttribute('disabled', '');
-    selectCapacity.options[1].removeAttribute('disabled', '');
+    selectCapacity.options[1].setAttribute('disabled', '');
     selectCapacity.options[2].removeAttribute('disabled', '');
     selectCapacity.options[3].setAttribute('disabled', '');
 
@@ -453,6 +504,40 @@ var onRoomSelectChange = function () {
 };
 
 /**
+ * функция которая содержит обработчик на закрытие и открытие
+ */
+var exitPopup = function () {
+  var mapCard = mapBlock.querySelector('.map__card');
+  var popupClose = mapCard.querySelector('.popup__close');
+
+  var closePopup = function () {
+    if (mapCard) {
+      mapCard.classList.add('visually-hidden');
+      document.removeEventListener('keydown', onPopupEscPress);
+      mapCard.removeEventListener('keydown', onPopupEnterPress);
+    }
+  };
+  var onPopupEnterPress = function (evnt) {
+    // для закрытия попапа с клавиатуру если табом дошли до popupClose
+    if (document.activeElement === popupClose && evnt.key === ENTER_KEY) {
+      closePopup();
+    }
+  };
+
+  var onPopupEscPress = function (ev) {
+    if (document.activeElement !== selecTypePrice && ev.key === ESC_KEY) {
+      closePopup();
+    }
+  };
+
+  popupClose.addEventListener('click', function () {
+    closePopup();
+  });
+  document.addEventListener('keydown', onPopupEscPress);
+  mapCard.addEventListener('keydown', onPopupEnterPress);
+};
+
+/**
  * функция активациия пина
  * @param {*} evt
  */
@@ -471,6 +556,8 @@ var mapPinMainActive = function (evt) {
     mapPinMain.removeEventListener('mousedown', mapPinMainActive);
     // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
     onRoomSelectChange();
+
+    exitPopup();
   }
 };
 
@@ -483,7 +570,7 @@ var mapPinMainCoordinate = function (evt) {
     var pinX = Math.floor(evt.pageX + pinWidth / 2);
     var pinY = Math.floor(evt.pageY + pinHeight / 2);
     mapPinMainAdress.value = pinX + ', ' + pinY;
-    mapPinMainAdress.setAttribute('disabled', '');
+    mapPinMainAdress.setAttribute('readonly', '');
     mapPinMain.removeEventListener('mousedown', mapPinMainCoordinate);
   }
 };
@@ -504,7 +591,7 @@ selecTypePrice.addEventListener('invalid', function () {
 selectRoom.addEventListener('invalid', function () {
   // console.log(selectRoom);
   // console.log('ошибка');
-  // --? Дима что тут использовать чтобы была ошибка неправилльноговыбора ?
+  // --? Дима что тут использовать чтобы была ошибка неправилльного выбора ?
   if (selecTypePrice.validity.patternMismatch) {
     selecTypePrice.setCustomValidity('Выберите меньше гостей');
   } else {
@@ -531,4 +618,5 @@ mapPinMain.addEventListener('mousedown', mapPinMainCoordinate);
 selectCheckIn.addEventListener('change', onCheckinSelectChange);
 selectCheckOut.addEventListener('change', onCheckoutSelectChange);
 selectRoom.addEventListener('change', onRoomSelectChange);
+// --?? как бороться с этим . выбираешь 3 комнтаы ставишь 3 гостей - потом выбираешь 1 комнату 3 гостя остаеться
 selectType.addEventListener('change', onTypeSelectChange);
