@@ -166,7 +166,10 @@ var RandomArrLengthFeatures = getRandomArrLength(getRandomInt(0, FEATURES_RANDOM
  *  случайный массив строк для массива с фотками
  */
 var RandomArrLengthPhotos = getRandomArrLength(getRandomInt(0, PHOTOS_RANDOM.length), PHOTOS_RANDOM);
-
+/**
+ * кнопка отправить внутри adForm  с классом ad-form__submit
+ */
+var adFormSubmit = adForm.querySelector('.ad-form__submit');
 
 /**
  * пишем функцию которая перебирает массив и удаляет одинаковые элементы
@@ -424,33 +427,17 @@ var adFormEnabled = function (array) {
 };
 
 /**
- * взависимости от значение поля кол-во комнат блокирует значение кол-во гостей
+ * сравнивает чтобы кол-во комната не превышало кол-во гостей && плюс следит за 100 и не для гостей
  */
 var onRoomSelectChange = function () {
-  if (selectRoom.value === '1') {
-    selectCapacity.options[0].setAttribute('disabled', '');
-    selectCapacity.options[1].setAttribute('disabled', '');
-    selectCapacity.options[2].removeAttribute('disabled', '');
-    selectCapacity.options[3].setAttribute('disabled', '');
-
-  }
-  if (selectRoom.value === '2') {
-    selectCapacity.options[0].setAttribute('disabled', '');
-    selectCapacity.options[1].removeAttribute('disabled', '');
-    selectCapacity.options[2].removeAttribute('disabled', '');
-    selectCapacity.options[3].setAttribute('disabled', '');
-  }
-  if (selectRoom.value === '3') {
-    selectCapacity.options[0].removeAttribute('disabled', '');
-    selectCapacity.options[1].removeAttribute('disabled', '');
-    selectCapacity.options[2].removeAttribute('disabled', '');
-    selectCapacity.options[3].setAttribute('disabled', '');
-  }
-  if (selectRoom.value === '100') {
-    selectCapacity.options[0].setAttribute('disabled', '');
-    selectCapacity.options[1].setAttribute('disabled', '');
-    selectCapacity.options[2].setAttribute('disabled', '');
-    selectCapacity.options[3].removeAttribute('disabled', '');
+  if (selectRoom.value === '100' && selectCapacity.value !== '0') {
+    selectCapacity.setCustomValidity('Пригласите больше гостей');
+  } else if (selectCapacity.value === '0' && selectRoom.value !== '100') {
+    selectCapacity.setCustomValidity('Зачем вам комнаты , если нет гостей ?');
+  } else if (selectRoom.value < selectCapacity.value) {
+    selectCapacity.setCustomValidity('Очень много гостей');
+  } else {
+    selectCapacity.setCustomValidity('');
   }
 };
 
@@ -561,8 +548,9 @@ mapPinMain.addEventListener('mousedown', mapPinMainCoordinate);
 selectCheckIn.addEventListener('change', onCheckinSelectChange);
 selectCheckOut.addEventListener('change', onCheckoutSelectChange);
 selectRoom.addEventListener('change', onRoomSelectChange);
-// --?? как бороться с этим . выбираешь 3 комнтаы ставишь 3 гостей - потом выбираешь 1 комнату 3 гостя остаеться
 selectType.addEventListener('change', onTypeSelectChange);
+// обработчик на кнопку отправить, проверяет кол-во гостей и комнат
+adFormSubmit.addEventListener('click', onRoomSelectChange);
 
 
 // !фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
