@@ -15,7 +15,18 @@ var PHOTOS_RANDOM = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http
  */
 var NUMBER_OF_ADS = 8;
 
-// тут ищем шаблон метки и в ней разметку метки
+/**
+ * кнопка 'Escape'
+ */
+var ESC_KEY = 'Escape';
+/**
+ * кнопка 'Enter'
+ */
+var ENTER_KEY = 'Enter';
+
+// тут ищем ДОМ элемент куда будем добавлять метку
+var mapPins = document.querySelector('.map__pins');
+
 /**
  * шаблон метки c разметкой метки .map__pin
  */
@@ -30,7 +41,6 @@ var mapBlock = document.querySelector('.map');
  *  блок с классом '.map__filters-container'
  */
 var mapFiltersContainer = mapBlock.querySelector('.map__filters-container');
-// тут ищем блок куда будем вставлять и перед чем будем вставлять
 
 /**
  * это ширина блока map__pin в котором перетаскивается метка.
@@ -86,6 +96,7 @@ var mapPinMainAdress = adForm.querySelector('input[name="address"]');
  * блок с классом input[name="price"] в adForm (ценик на жилье)
  */
 var selecTypePrice = adForm.querySelector('input[name="price"]');
+
 
 /**
  * массив для подставки данных
@@ -155,7 +166,10 @@ var RandomArrLengthFeatures = getRandomArrLength(getRandomInt(0, FEATURES_RANDOM
  *  случайный массив строк для массива с фотками
  */
 var RandomArrLengthPhotos = getRandomArrLength(getRandomInt(0, PHOTOS_RANDOM.length), PHOTOS_RANDOM);
-
+/**
+ * кнопка отправить внутри adForm  с классом ad-form__submit
+ */
+var adFormSubmit = adForm.querySelector('.ad-form__submit');
 
 /**
  * пишем функцию которая перебирает массив и удаляет одинаковые элементы
@@ -243,7 +257,7 @@ var getAdList = function () {
 
 /**
  * функция которая в зависимости от данных из массива позиционирует метку+ генерирует подписи и аватарки
- * @param {*} unitGetAdList массив который надо отрисовать
+ * @param {*} unitGetAdList элемент из массив с которого отрисовываем
  * @return {template} возращает склонируемый шаблон с заполнеными координтам+подписями+картинками
  */
 var getCreateAdMapElement = function (unitGetAdList) {
@@ -251,14 +265,20 @@ var getCreateAdMapElement = function (unitGetAdList) {
   var adMapElement = similarMapPin.cloneNode(true);
   var leftX = unitGetAdList.location.x + pinWidth / 2;
   var topY = unitGetAdList.location.y + pinHeight / 2;
-  // это координты из массива + половина метки
+  var addImgButton = adMapElement.querySelector('img');
+
   adMapElement.style.left = leftX + 'px';
   adMapElement.style.top = topY + 'px';
-
-  var addImgButton = adMapElement.querySelector('img');
-  // тут в шаблоне ищем  Альтернативный текст: alt="{{заголовок объявления}}"
   addImgButton.alt = unitGetAdList.offer.title;
   addImgButton.src = unitGetAdList.author.avatar;
+  // на скопируемый шаблон вешаем слушатель событий - > который при клике отрисовывает обьявление -
+  // согласно элементу массива которым отрисовался этот пин.
+  // я незнаю где js хранить информацию с какого элемента он отрисовал этот пин
+  // но работает же ))
+  adMapElement.addEventListener('click', function () {
+    renderCard(unitGetAdList);
+  });
+
   return adMapElement;
 };
 
@@ -271,13 +291,11 @@ var getRenderAdMapPins = function (cards) {
   var fragment = document.createDocumentFragment();
   // тут создаем переменую fragment которая в содает в document е любой DOM элемент - но он еще не отрисован
   // тут пишем массив который создается из функции getAdList в зависимости от numberOfAds
-  for (var i = 0; i < cards.length; i++) {
-    fragment.appendChild(getCreateAdMapElement(cards[i]));
+  for (var e = 0; e < cards.length; e++) {
+    fragment.appendChild(getCreateAdMapElement(cards[e]));
     //  а тут в fragment циклом накидиваем детей от функции renderWizard с параметром wizards[i]
   }
-  // тут ищем ДОМ элемент куда будем добавлять метку(F12 и там посмотрел)
-  var mapPins = document.querySelector('.map__pins');
-  // тут к mapPins подкидываем детей
+
   mapPins.appendChild(fragment);
 };
 
@@ -288,8 +306,6 @@ var getRenderAdMapPins = function (cards) {
  * заполняет шаблон нужным кол-вом фоток
  */
 var insertPhotos = function (adTemplate, addElementArray) {
-  //   В блок .popup__photos выведите все фотографии из списка offer.photos.
-  // Каждая из строк массива photos должна записываться как src соответствующего изображения.
   var removePhotosItem = adTemplate.querySelector('.popup__photos');
   removePhotosItem.innerHTML = ' ';
   if (addElementArray.offer.photos) {
@@ -334,39 +350,28 @@ var getMapCard = function (card) {
   var adMapCard = cardsTemplate.cloneNode(true);
   if (card.offer.title) {
     adMapCard.querySelector('.popup__title').textContent = card.offer.title;
-    //   Выведите заголовок объявления offer.title в заголовок .popup__title.
   }
   if (card.author.avatar) {
     adMapCard.querySelector('.popup__avatar').src = card.author.avatar;
-    // --? Дима , тогда здесь будет всегда одинаковая аватарка
-    //   Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
   }
   if (card.offer.price) {
     adMapCard.querySelector('.popup__text--price').textContent = card.offer.price + '₽/ночь';
-    //   Выведите цену offer.price в блок .popup__text--price строкой вида {{offer.price}}₽/ночь. Например, 5200₽/ночь.
   }
 
   adMapCard.querySelector('.popup__type').textContent = typeObj[card.offer.type];
-  // Запомнить что строку надо брать в квадратные скобки. через токчку не работает
+  // Запомнить что строку надо брать в квадратные скобки. через точку не работает
   // Квадратные скобки также позволяют обратиться к свойству, имя которого может быть результатом выражения.
   adMapCard.querySelector('.popup__text--address').textContent = card.offer.address;
-  //   Выведите адрес offer.address в блок .popup__text--address.
   if (card.offer.rooms || card.offer.quests) {
-    // ---если будет время = сделать что бы более по правильно писала
     adMapCard.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.quests + ' гостей';
-    //  Выведите количество гостей и комнат offer.rooms и offer.guests в блок .popup__text--capacity
-    //  строкой вида {{offer.rooms}} комнаты для {{offer.guests}} гостей. Например, 2 комнаты для 3 гостей.
   }
   if (card.offer.checkin || card.offer.checkout) {
     adMapCard.querySelector('.popup__text--time').textContent = 'заезд после ' + card.offer.checkin + ' , выезд до  ' + card.offer.checkout + ' гостей';
-    //  Время заезда и выезда offer.checkin и offer.checkout в блок .popup__text--time строкой вида
-    //  Заезд после {{offer.checkin}}, выезд до {{offer.checkout}}. Например, заезд после 14:00, выезд до 12:00.
   }
 
   adMapCard.querySelector('.popup__description').textContent = card.offer.description;
-  // В блок .popup__description выведите описание объекта недвижимости offer.description.
 
-  // вставка масиива фото
+  // вставка масива фото
   insertPhotos(adMapCard, card);
 
   // вставка удобств
@@ -379,21 +384,27 @@ var getMapCard = function (card) {
  * пишем единую фунцию в которой содержиться
  * открытие карты
  * отрисовка пинов
- * отрисовка заполненных карточек обьявлений
  */
 var init = function () {
   // открываем карту
   mapBlock.classList.remove('map--faded');
   var cards = getAdList(NUMBER_OF_ADS);
   getRenderAdMapPins(cards);
-  mapBlock.insertBefore(getMapCard(cards[0]), mapFiltersContainer);
 };
 
-// обьявляем единую функцию
-// init();
-
-// 4.2
-
+/**
+ * функция которая отрисовывает обьявление и вставляет его перед mapFiltersContainer
+ * @param {arr} card элемент массива
+ * и также навешает слушателя событий ESC и Enter
+ */
+var renderCard = function (card) {
+  var mapCard = mapBlock.querySelector('.map__card');
+  if (document.contains(mapCard)) {
+    mapCard.remove();
+  }
+  mapBlock.insertBefore(getMapCard(card), mapFiltersContainer);
+  exitPopup();
+};
 
 /**
  * функция принимает массив и каждому добавляет атрибут disabled
@@ -404,6 +415,7 @@ var adFormDisabled = function (array) {
     array[i].disabled = true;
   }
 };
+
 /**
  * функция принимает массив и каждому убирает атрибут disabled
  * @param {arr} array масссив которому убирает атрибут disabled
@@ -414,42 +426,53 @@ var adFormEnabled = function (array) {
   }
 };
 
-
-adFormDisabled(adFormInput);
-
-adForm.setAttribute('disabled', '');
-mapFilters.setAttribute('disabled', '');
-
-
 /**
- * взависимости от значение поля кол-во комнат блокирует значение кол-во гостей
+ * сравнивает чтобы кол-во комната не превышало кол-во гостей && плюс следит за 100 и не для гостей
  */
 var onRoomSelectChange = function () {
-  if (selectRoom.value === '1') {
-    selectCapacity.options[0].setAttribute('disabled', '');
-    selectCapacity.options[1].removeAttribute('disabled', '');
-    selectCapacity.options[2].removeAttribute('disabled', '');
-    selectCapacity.options[3].setAttribute('disabled', '');
+  if (selectRoom.value === '100' && selectCapacity.value !== '0') {
+    selectCapacity.setCustomValidity('Пригласите больше гостей');
+  } else if (selectCapacity.value === '0' && selectRoom.value !== '100') {
+    selectCapacity.setCustomValidity('Зачем вам комнаты , если нет гостей ?');
+  } else if (selectRoom.value < selectCapacity.value) {
+    selectCapacity.setCustomValidity('Очень много гостей');
+  } else {
+    selectCapacity.setCustomValidity('');
+  }
+};
 
-  }
-  if (selectRoom.value === '2') {
-    selectCapacity.options[0].setAttribute('disabled', '');
-    selectCapacity.options[1].removeAttribute('disabled', '');
-    selectCapacity.options[2].removeAttribute('disabled', '');
-    selectCapacity.options[3].setAttribute('disabled', '');
-  }
-  if (selectRoom.value === '3') {
-    selectCapacity.options[0].removeAttribute('disabled', '');
-    selectCapacity.options[1].removeAttribute('disabled', '');
-    selectCapacity.options[2].removeAttribute('disabled', '');
-    selectCapacity.options[3].setAttribute('disabled', '');
-  }
-  if (selectRoom.value === '100') {
-    selectCapacity.options[0].setAttribute('disabled', '');
-    selectCapacity.options[1].setAttribute('disabled', '');
-    selectCapacity.options[2].setAttribute('disabled', '');
-    selectCapacity.options[3].removeAttribute('disabled', '');
-  }
+/**
+ * функция которая содержит обработчик на закрытие и открытие
+ */
+var exitPopup = function () {
+  var mapCard = mapBlock.querySelector('.map__card');
+  var popupClose = mapCard.querySelector('.popup__close');
+  var closePopup = function () {
+    if (mapCard) {
+      mapCard.classList.add('visually-hidden');
+      document.removeEventListener('keydown', onPopupEscPress);
+      mapCard.removeEventListener('keydown', onPopupEnterPress);
+    }
+  };
+
+  var onPopupEnterPress = function (evnt) {
+    // для закрытия попапа с клавиатуру если табом дошли до крестика
+    if (document.activeElement === popupClose && evnt.key === ENTER_KEY) {
+      closePopup();
+    }
+  };
+
+  var onPopupEscPress = function (ev) {
+    if (document.activeElement !== selecTypePrice && ev.key === ESC_KEY) {
+      closePopup();
+    }
+  };
+
+  popupClose.addEventListener('click', function () {
+    closePopup();
+  });
+  document.addEventListener('keydown', onPopupEscPress);
+  mapCard.addEventListener('keydown', onPopupEnterPress);
 };
 
 /**
@@ -463,11 +486,6 @@ var mapPinMainActive = function (evt) {
     mapFilters.removeAttribute('disabled');
     init();
     adFormEnabled(adFormInput);
-
-    // } else if (evt.which === 2) {
-    //   console.log('средняя на всякий случай');
-    // } else if (evt.which === 3) {
-    //   console.log('правая на всякий случай');
     mapPinMain.removeEventListener('mousedown', mapPinMainActive);
     // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
     onRoomSelectChange();
@@ -483,7 +501,7 @@ var mapPinMainCoordinate = function (evt) {
     var pinX = Math.floor(evt.pageX + pinWidth / 2);
     var pinY = Math.floor(evt.pageY + pinHeight / 2);
     mapPinMainAdress.value = pinX + ', ' + pinY;
-    mapPinMainAdress.setAttribute('disabled', '');
+    mapPinMainAdress.setAttribute('readonly', '');
     mapPinMain.removeEventListener('mousedown', mapPinMainCoordinate);
   }
 };
@@ -494,29 +512,6 @@ var onTypeSelectChange = function () {
   selecTypePrice.setAttribute('placeholder', typeObjPrice[selectTypeValue]);
 };
 
-selecTypePrice.addEventListener('invalid', function () {
-  if (selecTypePrice.validity.rangeOverflow) {
-    selecTypePrice.setCustomValidity('Это столько не стоит');
-  } else {
-    selecTypePrice.setCustomValidity('');
-  }
-});
-selectRoom.addEventListener('invalid', function () {
-  // console.log(selectRoom);
-  // console.log('ошибка');
-  // --? Дима что тут использовать чтобы была ошибка неправилльноговыбора ?
-  if (selecTypePrice.validity.patternMismatch) {
-    selecTypePrice.setCustomValidity('Выберите меньше гостей');
-  } else {
-    selecTypePrice.setCustomValidity('');
-  }
-});
-
-// !просматривать похожие объявления на карте,
-// !фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
-// !!записать в горячии клавиши  console.log()
-
-
 var onCheckinSelectChange = function () {
   selectCheckOut.value = selectCheckIn.value;
 };
@@ -525,6 +520,28 @@ var onCheckoutSelectChange = function () {
   selectCheckIn.value = selectCheckOut.value;
 };
 
+adFormDisabled(adFormInput);
+adForm.setAttribute('disabled', '');
+mapFilters.setAttribute('disabled', '');
+
+selecTypePrice.addEventListener('invalid', function () {
+  if (selecTypePrice.validity.rangeOverflow) {
+    selecTypePrice.setCustomValidity('Это столько не стоит');
+  } else {
+    selecTypePrice.setCustomValidity('');
+  }
+});
+
+selectRoom.addEventListener('invalid', function () {
+  // console.log(selectRoom);
+  // console.log('ошибка');
+  // --? Дима что тут использовать чтобы была ошибка неправилльного выбора ?
+  if (selecTypePrice.validity.patternMismatch) {
+    selecTypePrice.setCustomValidity('Выберите меньше гостей');
+  } else {
+    selecTypePrice.setCustomValidity('');
+  }
+});
 // вешаем обработчик чтобы реагировать на изменения
 mapPinMain.addEventListener('mousedown', mapPinMainActive);
 mapPinMain.addEventListener('mousedown', mapPinMainCoordinate);
@@ -532,3 +549,9 @@ selectCheckIn.addEventListener('change', onCheckinSelectChange);
 selectCheckOut.addEventListener('change', onCheckoutSelectChange);
 selectRoom.addEventListener('change', onRoomSelectChange);
 selectType.addEventListener('change', onTypeSelectChange);
+// обработчик на кнопку отправить, проверяет кол-во гостей и комнат
+adFormSubmit.addEventListener('click', onRoomSelectChange);
+
+
+// !фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
+// !!записать в горячии клавиши  console.log()
