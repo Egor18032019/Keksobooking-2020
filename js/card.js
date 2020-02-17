@@ -177,4 +177,4 @@
 
 })();
 
-// console.log(window.getRenderAdMapPins);
+console.log(window.getRenderAdMapPins);

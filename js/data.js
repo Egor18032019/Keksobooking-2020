@@ -39,16 +39,6 @@
     return randomArrLength;
   };
 
-  // создаем случайный массив строк ограниченый максимальной длиной
-  /**
-   * случайный массив строк для списка удобств
-   */
-  var RandomArrLengthFeatures = getRandomArrLength(getRandomInt(0, window.FEATURES_RANDOM.length), window.FEATURES_RANDOM);
-  /**
-   *  случайный массив строк для массива с фотками
-   */
-  var RandomArrLengthPhotos = getRandomArrLength(getRandomInt(0, window.PHOTOS_RANDOM.length), window.PHOTOS_RANDOM);
-
   /**
    * пишем функцию которая перебирает массив и удаляет одинаковые элементы
    * @param {*} arr
@@ -82,9 +72,19 @@
    * @return {arr} возвращает массив с задданым кол-вом обьектов.
    */
   window.getAdList = function () {
+
     // тут обьявим пустой массив в который  - будем толкать элементы
     var adList = [];
     for (var i = 1; i <= window.NUMBER_OF_ADS; i++) {
+      /**
+       *  случайный массив строк для массива с фотками
+       */
+      var RandomArrLengthPhotos = getRandomArrLength(getRandomInt(0, window.PHOTOS_RANDOM.length), window.PHOTOS_RANDOM);
+      /**
+       * случайный массив строк для списка удобств
+       */
+      var RandomArrLengthFeatures = getRandomArrLength(getRandomInt(0, window.FEATURES_RANDOM.length), window.FEATURES_RANDOM);
+
       var maxWidth = document.querySelector('.map__pins').offsetWidth;
       // вынес сюда чтобы адреc считалься
       var coordinateX = getRandomInt(130, maxWidth);
@@ -130,4 +130,3 @@
     return adList;
   };
 })();
-// console.log(window.getAdList());

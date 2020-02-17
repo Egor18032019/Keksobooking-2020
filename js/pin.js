@@ -43,6 +43,7 @@ var init = function () {
   // открываем карту
   mapBlock.classList.remove('map--faded');
   var cards = window.getAdList(window.NUMBER_OF_ADS);
+  console.log(window.getAdList());
   window.getRenderAdMapPins(cards);
 };
 
