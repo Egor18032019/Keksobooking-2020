@@ -130,4 +130,4 @@
     return adList;
   };
 })();
-console.log(window.getAdList());
+// console.log(window.getAdList());

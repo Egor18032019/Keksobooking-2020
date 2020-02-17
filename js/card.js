@@ -45,7 +45,7 @@
   var insertPhotos = function (adTemplate, addElementArray) {
     var removePhotosItem = adTemplate.querySelector('.popup__photos');
     removePhotosItem.innerHTML = ' ';
-    console.log(addElementArray.offer.photos.length);
+    // console.log(addElementArray.offer.photos.length);
     if (addElementArray.offer.photos) {
       for (var j = 0; j < addElementArray.offer.photos.length; j++) {
         var addPhotosItem = new Image(45, 40);
@@ -78,7 +78,7 @@
   /**
    * тут пишем функцию которая будт принимать ОДИН элемент массива и из него подставлять данные
    * в карточку обьявления
-   * @param {Object} card так используються фиксированные значения
+   * @param {Object} card элемент массива cards
    * @return {DOM} заполненный DOM элемент данными из сгенерированного массива
    */
   var getMapCard = function (card) {
@@ -177,4 +177,4 @@
 
 })();
 
-console.log(window.getRenderAdMapPins);
+// console.log(window.getRenderAdMapPins);
