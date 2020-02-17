@@ -308,6 +308,7 @@ var getRenderAdMapPins = function (cards) {
 var insertPhotos = function (adTemplate, addElementArray) {
   var removePhotosItem = adTemplate.querySelector('.popup__photos');
   removePhotosItem.innerHTML = ' ';
+  console.log(addElementArray.offer.photos.length);
   if (addElementArray.offer.photos) {
     for (var j = 0; j < addElementArray.offer.photos.length; j++) {
       var addPhotosItem = new Image(45, 40);
@@ -555,3 +556,4 @@ adFormSubmit.addEventListener('click', onRoomSelectChange);
 
 // !фильтровать их и уточнять подробную информацию о них, показывая для каждого из объявлений карточку.
 // !!записать в горячии клавиши  console.log()
+// как сделано - если переходишь в
