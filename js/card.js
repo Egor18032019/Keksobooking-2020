@@ -177,4 +177,3 @@
 
 })();
 
-console.log(window.getRenderAdMapPins);
