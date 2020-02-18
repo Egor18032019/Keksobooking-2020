@@ -3,13 +3,14 @@
 (function () {
 
   var mapBlock = document.querySelector('.map');
-  /**
-   * блок с классом input[name="price"] в adForm (ценик на жилье)
-   */
+
   /**
    * блок с классом '.ad-form'
    */
   var adForm = document.querySelector('.ad-form');
+  /**
+   * блок с классом input[name="price"] в adForm (ценик на жилье)
+   */
   var selecTypePrice = adForm.querySelector('input[name="price"]');
 
   /**
@@ -34,6 +35,7 @@
     };
 
     var onPopupEscPress = function (ev) {
+      // если стоит  на цене - то карточку не закрыват
       if (document.activeElement !== selecTypePrice && ev.key === window.ESC_KEY) {
         closePopup();
       }

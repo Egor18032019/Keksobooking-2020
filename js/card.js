@@ -7,14 +7,15 @@
    * шаблон метки c разметкой метки .map__pin
    */
   var similarMapPin = document.querySelector('#pin').content.querySelector('.map__pin');
+  var dialogHandler = mapPins.querySelector('.map__pin');
   /**
    * это ширина блока map__pin в котором перетаскивается метка.
    */
-  var pinWidth = document.querySelector('.map__pin').offsetWidth;
+  var pinWidth = dialogHandler.offsetWidth;
   /**
    * это высота блока map__pin в котором перетаскивается метка.
    */
-  var pinHeight = document.querySelector('.map__pin').offsetHeight;
+  var pinHeight = dialogHandler.offsetHeight;
   var mapBlock = document.querySelector('.map');
   /**
    *  блок с классом '.map__filters-container'
@@ -155,7 +156,6 @@
     adMapElement.addEventListener('click', function () {
       renderCard(unitGetAdList);
     });
-
     return adMapElement;
   };
 
