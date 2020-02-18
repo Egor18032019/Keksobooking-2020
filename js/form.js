@@ -67,7 +67,7 @@
   /**
    * сравнивает чтобы кол-во комната не превышало кол-во гостей && плюс следит за 100 и не для гостей
    */
-  window.onRoomSelectChange = function () {
+  var onRoomSelectChange = function () {
     if (selectRoom.value === '100' && selectCapacity.value !== '0') {
       selectCapacity.setCustomValidity('Пригласите больше гостей');
     } else if (selectCapacity.value === '0' && selectRoom.value !== '100') {
@@ -97,7 +97,7 @@
    * функция принимает массив и каждому убирает атрибут disabled
    * @param {arr} array масссив которому убирает атрибут disabled
    */
-  window.adFormEnabled = function (array) {
+  var adFormEnabled = function (array) {
     for (var i = 0; i < array.length; i++) {
       array[i].disabled = false;
     }
@@ -126,9 +126,13 @@
   // вешаем обработчик чтобы реагировать на изменения
   selectCheckIn.addEventListener('change', onCheckinSelectChange);
   selectCheckOut.addEventListener('change', onCheckoutSelectChange);
-  selectRoom.addEventListener('change', window.onRoomSelectChange);
+  selectRoom.addEventListener('change', onRoomSelectChange);
   selectType.addEventListener('change', onTypeSelectChange);
   // обработчик на кнопку отправить, проверяет кол-во гостей и комнат
-  adFormSubmit.addEventListener('click', window.onRoomSelectChange);
-})();
+  adFormSubmit.addEventListener('click', onRoomSelectChange);
+  window.form = {
+    adFormEnabled: adFormEnabled,
+    onRoomSelectChange: onRoomSelectChange
+  };
 
+})();

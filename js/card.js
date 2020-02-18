@@ -130,7 +130,7 @@
       mapCard.remove();
     }
     mapBlock.insertBefore(getMapCard(card), mapFiltersContainer);
-    window.exitPopup();
+    window.map.exitPopup();
   };
 
   /**
@@ -164,7 +164,7 @@
    * @param {arr} cards массив обьектов которых надо отрисовать на страницы
    * и возращает новыем ДОМ элементы
    */
-  window.getRenderAdMapPins = function (cards) {
+  var getCardRenderAdMapPins = function (cards) {
     var fragment = document.createDocumentFragment();
     // тут создаем переменую fragment которая в содает в document е любой DOM элемент - но он еще не отрисован
     // тут пишем массив который создается из функции getAdList в зависимости от numberOfAds
@@ -175,5 +175,7 @@
     mapPins.appendChild(fragment);
   };
 
+  window.card = {
+    getRenderAdMapPins: getCardRenderAdMapPins
+  };
 })();
-

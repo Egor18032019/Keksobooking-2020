@@ -72,7 +72,7 @@
    * функция которая в зависимости от NUMBER_OF_ADS создаёт такое же количество обьектов в массиве.
    * @return {arr} возвращает массив с задданым кол-вом обьектов.
    */
-  window.getAdList = function () {
+  var getAdList = function () {
 
     // тут обьявим пустой массив в который  - будем толкать элементы
     var adList = [];
@@ -129,5 +129,9 @@
       });
     }
     return adList;
+  };
+
+  window.data = {
+    getAdList: getAdList
   };
 })();

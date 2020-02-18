@@ -16,7 +16,7 @@
   /**
    * функция которая содержит обработчик на закрытие и открытие
    */
-  window.exitPopup = function () {
+  var exitPopup = function () {
     var mapCard = mapBlock.querySelector('.map__card');
     var popupClose = mapCard.querySelector('.popup__close');
     var closePopup = function () {
@@ -46,5 +46,9 @@
     });
     document.addEventListener('keydown', onPopupEscPress);
     mapCard.addEventListener('keydown', onPopupEnterPress);
+  };
+
+  window.map = {
+    exitPopup: exitPopup
   };
 })();
