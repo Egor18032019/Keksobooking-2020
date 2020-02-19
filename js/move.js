@@ -27,12 +27,12 @@
   /**
    * граница координат по Y
    */
-  var limitY = setupDialogElement.offsetHeight - pinHeight / 2;
+  var limitY = setupDialogElement.offsetHeight - pinHeight * 3;
+
   /**
    * граница координат по X
    */
   var limitX = setupDialogElement.offsetWidth - pinWidth / 2;
-
   var onMoveMouse = function (evt) {
     evt.preventDefault();
     /**
@@ -50,7 +50,6 @@
         x: startCoords.x - moveEvt.clientX,
         y: startCoords.y - moveEvt.clientY
       };
-
       if (moveEvt.clientX < (pinWidth / 2) || moveEvt.clientY < (pinHeight / 2) || moveEvt.clientX > limitX || moveEvt.clientY > limitY) {
         return;
       }
@@ -67,7 +66,7 @@
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
       // заполняем адрес при отжатие
-      mapPinMainAdress.value = (startCoords.x + pinWidth / 2) + ', ' + (startCoords.y + pinHeight / 2);
+      mapPinMainAdress.value = Math.floor((startCoords.x + pinWidth / 2)) + ', ' + Math.floor((startCoords.y + pinHeight / 2));
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
