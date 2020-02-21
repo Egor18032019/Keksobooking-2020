@@ -24,15 +24,7 @@
    * это высота блока map__pin в котором перетаскивается метка.
    */
   var pinHeight = document.querySelector('.map__pin').offsetHeight;
-  /**
-   * граница координат по Y
-   */
-  var limitY = setupDialogElement.offsetHeight - pinHeight * 3;
 
-  /**
-   * граница координат по X
-   */
-  var limitX = setupDialogElement.offsetWidth - pinWidth / 2;
   var onMoveMouse = function (evt) {
     evt.preventDefault();
     /**
@@ -42,36 +34,43 @@
       x: evt.clientX,
       y: evt.clientY
     };
+    /**
+     * получаем обьект - размеров и координат
+     */
+    var rect = setupDialogElement.getBoundingClientRect();
 
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
-
+      //  тут rect не используем так ресурсоемкий
       var shift = {
         x: startCoords.x - moveEvt.clientX,
         y: startCoords.y - moveEvt.clientY
       };
-      if (moveEvt.clientX < (pinWidth / 2) || moveEvt.clientY < (pinHeight / 2) || moveEvt.clientX > limitX || moveEvt.clientY > limitY) {
-        return;
-      }
 
       startCoords = {
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
-      // --? Дима, как тут заменить dialogHandler переменой =  цель вызова в данном случае dialogHandler?
-      dialogHandler.style.top = (dialogHandler.offsetTop - shift.y) + 'px';
-      dialogHandler.style.left = (dialogHandler.offsetLeft - shift.x) + 'px';
+      // делим на 3 для красоты
+      var coordinataX = Math.max((pinWidth / 3), Math.min((dialogHandler.offsetLeft - shift.x), (rect.right - pinWidth / 3)));
+      // (rect.right - pinWidth / 3 - полосу прокурутки(только я так и не разобалься как ее считать))
+      var coordinataY = Math.max((pinHeight / 3), Math.min((dialogHandler.offsetTop - shift.y), (rect.bottom - pinHeight / 3)));
+      // --? Дима, как тут заменить dialogHandler переменой =  цель вызова в данном случае dialogHandler? как его вынести ?
+      dialogHandler.style.top = coordinataY + 'px';
+      dialogHandler.style.left = coordinataX + 'px';
+
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
       // заполняем адрес при отжатие
       mapPinMainAdress.value = Math.floor((startCoords.x + pinWidth / 2)) + ', ' + Math.floor((startCoords.y + pinHeight / 2));
-      document.removeEventListener('mousemove', onMouseMove);
+      // поменял document на setupDialogElement что пин не убегал от мышки  - когда мышка выходит за край
+      setupDialogElement.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
-    // обработчик на движение
-    document.addEventListener('mousemove', onMouseMove);
+    // обработчик на движение - поменял document на setupDialogElement что пин не убегал от мышки  - когда мышка выходит за край
+    setupDialogElement.addEventListener('mousemove', onMouseMove);
     // обработчик на отпускание кнопки
     document.addEventListener('mouseup', onMouseUp);
   };
