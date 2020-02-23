@@ -20,10 +20,10 @@
    * это ширина блока map__pin в котором перетаскивается метка.
    */
   var pinWidth = document.querySelector('.map__pin').offsetWidth;
-  /**
-   * это высота блока map__pin в котором перетаскивается метка.
-   */
-  var pinHeight = document.querySelector('.map__pin').offsetHeight;
+  // /**
+  //  * это высота блока map__pin в котором перетаскивается метка.
+  //  */
+  // var pinHeight = document.querySelector('.map__pin').offsetHeight;
 
   var onMoveMouse = function (evt) {
     evt.preventDefault();
@@ -46,31 +46,35 @@
         x: startCoords.x - moveEvt.clientX,
         y: startCoords.y - moveEvt.clientY
       };
-
       startCoords = {
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
-      // делим на 3 для красоты
-      var coordinataX = Math.max((pinWidth / 3), Math.min((dialogHandler.offsetLeft - shift.x), (rect.right - pinWidth / 3)));
-      // (rect.right - pinWidth / 3 - полосу прокурутки(только я так и не разобалься как ее считать))
-      var coordinataY = Math.max((pinHeight / 3), Math.min((dialogHandler.offsetTop - shift.y), (rect.bottom - pinHeight / 3)));
-      // --? Дима, как тут заменить dialogHandler переменой =  цель вызова в данном случае dialogHandler? как его вынести ?
+
+      var coordinataX = Math.max(0, Math.min((dialogHandler.offsetLeft - shift.x), (rect.width - pinWidth)));
+      var coordinataY = Math.max(130, Math.min((dialogHandler.offsetTop - shift.y), 630));
+      // 4.4.Для удобства пользователей значение Y - координаты адреса должно быть ограничено интервалом от 130 до 630.
       dialogHandler.style.top = coordinataY + 'px';
       dialogHandler.style.left = coordinataX + 'px';
-
+      var coordinats = {
+        coordinataX: coordinataX,
+        coordinataY: coordinataY
+      };
+      return coordinats;
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
+      /**
+       * координаты с onMouseMove()
+       */
+      var coordinats = onMouseMove(upEvt);
       // заполняем адрес при отжатие
-      mapPinMainAdress.value = Math.floor((startCoords.x + pinWidth / 2)) + ', ' + Math.floor((startCoords.y + pinHeight / 2));
-      // поменял document на setupDialogElement что пин не убегал от мышки  - когда мышка выходит за край
-      setupDialogElement.removeEventListener('mousemove', onMouseMove);
+      mapPinMainAdress.value = Math.floor(coordinats.coordinataX) + ', ' + dialogHandler.style.top.substring(0, 3);
+      document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
-    // обработчик на движение - поменял document на setupDialogElement что пин не убегал от мышки  - когда мышка выходит за край
-    setupDialogElement.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mousemove', onMouseMove);
     // обработчик на отпускание кнопки
     document.addEventListener('mouseup', onMouseUp);
   };
