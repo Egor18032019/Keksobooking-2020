@@ -20,9 +20,9 @@
    * это ширина блока map__pin в котором перетаскивается метка.
    */
   var pinWidth = document.querySelector('.map__pin').offsetWidth;
-  // /**
-  //  * это высота блока map__pin в котором перетаскивается метка.
-  //  */
+  /**
+   * это высота блока map__pin в котором перетаскивается метка.
+   */
   // var pinHeight = document.querySelector('.map__pin').offsetHeight;
 
   var onMoveMouse = function (evt) {
@@ -46,6 +46,7 @@
         x: startCoords.x - moveEvt.clientX,
         y: startCoords.y - moveEvt.clientY
       };
+
       startCoords = {
         x: moveEvt.clientX,
         y: moveEvt.clientY
@@ -55,11 +56,20 @@
       var coordinataY = Math.max(130, Math.min((dialogHandler.offsetTop - shift.y), 630));
       // 4.4.Для удобства пользователей значение Y - координаты адреса должно быть ограничено интервалом от 130 до 630.
       dialogHandler.style.top = coordinataY + 'px';
+
       dialogHandler.style.left = coordinataX + 'px';
       var coordinats = {
         coordinataX: coordinataX,
         coordinataY: coordinataY
       };
+
+      // Определние границ
+      if ((dialogHandler.offsetLeft - shift.x) < 0 || (dialogHandler.offsetLeft - shift.x) > (rect.width - pinWidth) || (dialogHandler.offsetTop - shift.y) > 630 || (dialogHandler.offsetTop - shift.y) < 130) {
+        // console.log('Stop');
+        // при выходе за границу снимаем обработчики на движение и отпускание
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
       return coordinats;
     };
 
