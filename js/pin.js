@@ -73,7 +73,7 @@
     var info = data;
     // отрисовываем этот массив с данными
     window.card.getRenderAdMapPins(info);
-  }
+  };
   /**
    * функция для отрисовки ошибок
    * @param {text} errorMessage
