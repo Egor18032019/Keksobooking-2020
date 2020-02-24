@@ -40,8 +40,7 @@
   var init = function () {
     // открываем карту
     mapBlock.classList.remove('map--faded');
-    var cards = window.data.getAdList(window.NUMBER_OF_ADS);
-    window.card.getRenderAdMapPins(cards);
+    window.backend.load(onLoad, onError);
   };
 
   var mapPinMainCoordinate = function (evt) {
@@ -64,8 +63,34 @@
       mapPinMain.removeEventListener('mousedown', mapPinMainActive);
       // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
       window.form.onRoomSelectChange();
-
     }
+  };
+
+  var onLoad = function (data) {
+    /**
+     * массив с данными от сервера
+     */
+    var info = data;
+    // отрисовываем этот массив с данными
+    window.card.getRenderAdMapPins(info);
+  }
+  /**
+   * функция для отрисовки ошибок
+   * @param {text} errorMessage
+   */
+  var onError = function (errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: tomato;';
+    node.style.position = 'absolute';
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = '30px';
+    node.className = 'alert';
+    // добавил класса alert что бы в closePopup найти  у далить его при закрытие
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
+    // submitButton.disabled = false;
+    // submitButton.textContent = 'Сохранить';
   };
 
   mapPinMain.addEventListener('mousedown', mapPinMainActive);

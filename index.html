@@ -93,7 +93,8 @@
     <!-- Форма объявления -->
     <section class="notice">
       <h2 class="notice__title">Ваше объявление</h2>
-      <form class="ad-form ad-form--disabled" method="post" enctype="multipart/form-data" action="https://js.dump.academy/keksobooking" autocomplete="off">
+      <form class="ad-form ad-form--disabled" method="post" enctype="multipart/form-data"
+        action="https://js.dump.academy/keksobooking" autocomplete="off">
         <fieldset class="ad-form-header">
           <legend class="ad-form-header__title">Ваша фотография (для карты)</legend>
           <div class="ad-form-header__upload">
@@ -112,7 +113,7 @@
         <fieldset class="ad-form__element ad-form__element--wide">
           <label class="ad-form__label" for="title">Заголовок объявления</label>
           <input id="title" name="title" type="text" maxlength="100" minlength="30" required
-          placeholder="Милая, уютная квартирка в центре Токио">
+            placeholder="Милая, уютная квартирка в центре Токио">
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--wide">
           <label class="ad-form__label" for="address">Адрес</label>
@@ -129,8 +130,7 @@
         </fieldset>
         <fieldset class="ad-form__element">
           <label class="ad-form__label" for="price">Цена за ночь, руб.</label>
-          <input id="price" name="price" type="number" placeholder="1000" required
-          min="1000" max="1000000">
+          <input id="price" name="price" type="number" placeholder="1000" required min="1000" max="1000000">
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--time">
           <label class="ad-form__label" for="timein">Время заезда и выезда</label>
@@ -273,6 +273,7 @@
     </div>
   </template>
   <script src="js/global.js"></script>
+  <script src="js/backend.js"></script>
   <script src="js/data.js"></script>
   <script src="js/card.js"></script>
   <script src="js/map.js"></script>
