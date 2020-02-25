@@ -23,7 +23,7 @@
   /**
    * это высота блока map__pin в котором перетаскивается метка.
    */
-  // var pinHeight = document.querySelector('.map__pin').offsetHeight;
+  var pinHeight = document.querySelector('.map__pin').offsetHeight;
 
   var onMoveMouse = function (evt) {
     evt.preventDefault();
@@ -38,7 +38,7 @@
      * получаем обьект - размеров и координат
      */
     var rect = setupDialogElement.getBoundingClientRect();
-
+    // console.log(evt.clientX);
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
       //  тут rect не используем так ресурсоемкий
@@ -66,6 +66,8 @@
       // Определние границ
       if ((dialogHandler.offsetLeft - shift.x) < 0 || (dialogHandler.offsetLeft - shift.x) > (rect.width - pinWidth) || (dialogHandler.offsetTop - shift.y) > 630 || (dialogHandler.offsetTop - shift.y) < 130) {
         // console.log('Stop');
+        mapPinMainAdress.value = Math.floor(coordinats.coordinataX) + ', ' + Math.floor(coordinats.coordinataY + pinHeight);
+
         // при выходе за границу снимаем обработчики на движение и отпускание
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
@@ -80,7 +82,8 @@
        */
       var coordinats = onMouseMove(upEvt);
       // заполняем адрес при отжатие
-      mapPinMainAdress.value = Math.floor(coordinats.coordinataX) + ', ' + dialogHandler.style.top.substring(0, 3);
+      mapPinMainAdress.value = Math.floor(coordinats.coordinataX) + ', ' + Math.floor(coordinats.coordinataY + pinHeight);
+
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
