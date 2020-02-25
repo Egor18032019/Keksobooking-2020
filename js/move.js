@@ -8,6 +8,7 @@
    * переменная в setupDialogElement содержашая класс '.map__pin'
    */
   var dialogHandler = setupDialogElement.querySelector('.map__pin--main');
+
   /**
    * блок с классом '.ad-form'
    */
@@ -38,7 +39,11 @@
      * получаем обьект - размеров и координат
      */
     var rect = setupDialogElement.getBoundingClientRect();
-    // console.log(evt.clientX);
+    /**
+     * узнаем размеры псевдво элемента и приводим его к числу
+     */
+    var afterDialogHandler = +window.getComputedStyle(dialogHandler, ':after').getPropertyValue('height').substring(0, 2);
+
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
       //  тут rect не используем так ресурсоемкий
@@ -56,33 +61,26 @@
       var coordinataY = Math.max(130, Math.min((dialogHandler.offsetTop - shift.y), 630));
       // 4.4.Для удобства пользователей значение Y - координаты адреса должно быть ограничено интервалом от 130 до 630.
       dialogHandler.style.top = coordinataY + 'px';
-
       dialogHandler.style.left = coordinataX + 'px';
-      var coordinats = {
-        coordinataX: coordinataX,
-        coordinataY: coordinataY
-      };
 
       // Определние границ
       if ((dialogHandler.offsetLeft - shift.x) < 0 || (dialogHandler.offsetLeft - shift.x) > (rect.width - pinWidth) || (dialogHandler.offsetTop - shift.y) > 630 || (dialogHandler.offsetTop - shift.y) < 130) {
-        // console.log('Stop');
-        mapPinMainAdress.value = Math.floor(coordinats.coordinataX) + ', ' + Math.floor(coordinats.coordinataY + pinHeight);
+        // pinWidth / 2  - что бы найти середину пина
+        mapPinMainAdress.value = Math.floor(dialogHandler.offsetLeft + pinWidth / 2) + ', ' + Math.floor(dialogHandler.offsetTop + pinHeight + afterDialogHandler);
 
         // при выходе за границу снимаем обработчики на движение и отпускание
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
       }
-      return coordinats;
+      return;
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-      /**
-       * координаты с onMouseMove()
-       */
-      var coordinats = onMouseMove(upEvt);
+
       // заполняем адрес при отжатие
-      mapPinMainAdress.value = Math.floor(coordinats.coordinataX) + ', ' + Math.floor(coordinats.coordinataY + pinHeight);
+      // pinWidth / 2  - что бы найти середину пина
+      mapPinMainAdress.value = Math.floor(dialogHandler.offsetLeft + pinWidth / 2) + ', ' + Math.floor(dialogHandler.offsetTop + pinHeight + afterDialogHandler);
 
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
