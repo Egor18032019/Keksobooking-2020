@@ -38,7 +38,7 @@
     /**
      * узнаем размеры псевдоэлемента у dialogHandler  и приводим его к числу
      */
-    var afterDialogHandler = +window.getComputedStyle(dialogHandler, ':after').getPropertyValue('height').substring(0, 2);
+    // var afterDialogHandler = +window.getComputedStyle(dialogHandler, ':after').getPropertyValue('height').substring(0, 2);
     /**
      * функция которая описывает движение мышки
      * @param {target} moveEvt указатель мышки при перемещение
@@ -66,14 +66,14 @@
       dialogHandler.style.left = coordinataX + 'px';
       /**
        * считаем координаты конца пина по X = от левого края пина - отнимаем половину ширины пина
-       */
-      var coordEndX = dialogHandler.offsetLeft + (pinWidth / 2);
-      /**
-       * координаты конца пина по Y = к координат верха пина прибавлем высоту пина и высоту псевдоэлемента
-       */
-      var coordEndY = dialogHandler.offsetTop + pinHeight + afterDialogHandler;
+      //  */
+      // var coordEndX = dialogHandler.offsetLeft + (pinWidth / 2);
+      // /**
+      //  * координаты конца пина по Y = к координат верха пина прибавлем высоту пина и высоту псевдоэлемента
+      //  */
+      // var coordEndY = dialogHandler.offsetTop + pinHeight + afterDialogHandler;
       // заполняем адрес при движение
-      mapPinMainAdress.value = Math.floor(coordEndX) + ', ' + Math.floor(coordEndY);
+      mapPinMainAdress.value = Math.floor(coordX) + ', ' + Math.floor(coordY);
     };
 
     var onMouseUp = function (upEvt) {
