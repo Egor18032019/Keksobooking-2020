@@ -8,7 +8,6 @@
    * переменная в setupDialogElement содержашая класс '.map__pin'
    */
   var dialogHandler = setupDialogElement.querySelector('.map__pin--main');
-
   /**
    * блок с классом '.ad-form'
    */
@@ -26,62 +25,59 @@
    */
   var pinHeight = document.querySelector('.map__pin').offsetHeight;
 
+  /**
+   * фунцкция описывающая поведение указателя мышки
+   * @param {target} evt указатель мышки
+   */
   var onMoveMouse = function (evt) {
     evt.preventDefault();
-    /**
-     * начальные координаты нажатия мышки
-     */
-    var startCoords = {
-      x: evt.clientX,
-      y: evt.clientY
-    };
     /**
      * получаем обьект - размеров и координат
      */
     var rect = setupDialogElement.getBoundingClientRect();
     /**
-     * узнаем размеры псевдво элемента и приводим его к числу
+     * узнаем размеры псевдоэлемента у dialogHandler  и приводим его к числу
      */
     var afterDialogHandler = +window.getComputedStyle(dialogHandler, ':after').getPropertyValue('height').substring(0, 2);
-
+    /**
+     * функция которая описывает движение мышки
+     * @param {target} moveEvt указатель мышки при перемещение
+     */
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
       //  тут rect не используем так ресурсоемкий
-      var shift = {
-        x: startCoords.x - moveEvt.clientX,
-        y: startCoords.y - moveEvt.clientY
-      };
+      /**
+       * считаем координату Х координаты мышки - координаты левой границы окна. при изменение размеров окна значение границы тоже изменяется
+       */
+      var coordX = moveEvt.pageX - rect.left;
+      /**
+       * считаем координату Y . не стали использовать pageX так как нам не надо учитывать прокрутку при скролле мышкиы
+       */
+      var coordY = moveEvt.clientY - rect.top;
 
-      startCoords = {
-        x: moveEvt.clientX,
-        y: moveEvt.clientY
-      };
-
-      var coordinataX = Math.max(0, Math.min((dialogHandler.offsetLeft - shift.x), (rect.width - pinWidth)));
-      var coordinataY = Math.max(130, Math.min((dialogHandler.offsetTop - shift.y), 630));
+      coordX = Math.max(0, Math.min(coordX, rect.width));
+      coordY = Math.max(130, Math.min(coordY, 630));
       // 4.4.Для удобства пользователей значение Y - координаты адреса должно быть ограничено интервалом от 130 до 630.
+      var coordinataY = coordY - pinHeight;
+      // Math.floor что бы не было -1 в строке Адрес
+      var coordinataX = coordX - Math.floor(pinWidth / 2);
+
       dialogHandler.style.top = coordinataY + 'px';
       dialogHandler.style.left = coordinataX + 'px';
-
-      // Определние границ
-      if ((dialogHandler.offsetLeft - shift.x) < 0 || (dialogHandler.offsetLeft - shift.x) > (rect.width - pinWidth) || (dialogHandler.offsetTop - shift.y) > 630 || (dialogHandler.offsetTop - shift.y) < 130) {
-        // pinWidth / 2  - что бы найти середину пина
-        mapPinMainAdress.value = Math.floor(dialogHandler.offsetLeft + pinWidth / 2) + ', ' + Math.floor(dialogHandler.offsetTop + pinHeight + afterDialogHandler);
-
-        // при выходе за границу снимаем обработчики на движение и отпускание
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-      }
-      return;
+      /**
+       * считаем координаты конца пина по X = от левого края пина - отнимаем половину ширины пина
+       */
+      var coordEndX = dialogHandler.offsetLeft + (pinWidth / 2);
+      /**
+       * координаты конца пина по Y = к координат верха пина прибавлем высоту пина и высоту псевдоэлемента
+       */
+      var coordEndY = dialogHandler.offsetTop + pinHeight + afterDialogHandler;
+      // заполняем адрес при движение
+      mapPinMainAdress.value = Math.floor(coordEndX) + ', ' + Math.floor(coordEndY);
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-
-      // заполняем адрес при отжатие
-      // pinWidth / 2  - что бы найти середину пина
-      mapPinMainAdress.value = Math.floor(dialogHandler.offsetLeft + pinWidth / 2) + ', ' + Math.floor(dialogHandler.offsetTop + pinHeight + afterDialogHandler);
-
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
@@ -89,7 +85,7 @@
     // обработчик на отпускание кнопки
     document.addEventListener('mouseup', onMouseUp);
   };
+
   // обработчик нажатия
   dialogHandler.addEventListener('mousedown', onMoveMouse);
-
 })();
