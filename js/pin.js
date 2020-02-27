@@ -40,8 +40,7 @@
   var init = function () {
     // открываем карту
     mapBlock.classList.remove('map--faded');
-    var cards = window.data.getAdList(window.NUMBER_OF_ADS);
-    window.card.getRenderAdMapPins(cards);
+    window.backend.load(onLoad, onError);
   };
 
   var mapPinMainCoordinate = function (evt) {
@@ -64,10 +63,33 @@
       mapPinMain.removeEventListener('mousedown', mapPinMainActive);
       // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
       window.form.onRoomSelectChange();
-
     }
+  };
+
+  var onLoad = function (data) {
+
+    // отрисовываем этот массив с данными
+    window.card.getRenderAdMapPins(data);
+  };
+  /**
+   * функция для отрисовки ошибок
+   * @param {text} errorMessage
+   */
+  // errorMessage
+  var onError = function (errorMessage) {
+    /**
+     * ищем шаблон ошибки и клонируем его
+     */
+    var adErrorElement = document.querySelector('#error').content.cloneNode(true);
+    /**
+     * переписываем текст ошибки
+     */
+    var alertMessage = adErrorElement.querySelector('.error__message');
+    alertMessage.textContent = errorMessage;
+    mapBlock.appendChild(adErrorElement);
   };
 
   mapPinMain.addEventListener('mousedown', mapPinMainActive);
   mapPinMain.addEventListener('mousedown', mapPinMainCoordinate);
+
 })();

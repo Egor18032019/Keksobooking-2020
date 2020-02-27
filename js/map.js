@@ -19,6 +19,7 @@
   var exitPopup = function () {
     var mapCard = mapBlock.querySelector('.map__card');
     var popupClose = mapCard.querySelector('.popup__close');
+
     var closePopup = function () {
       if (mapCard) {
         mapCard.classList.add('visually-hidden');
