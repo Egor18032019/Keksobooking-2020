@@ -75,7 +75,6 @@
    * функция для отрисовки ошибок
    * @param {text} errorMessage
    */
-  // errorMessage
   var onError = function (errorMessage) {
     /**
      * ищем шаблон ошибки и клонируем его

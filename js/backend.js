@@ -4,7 +4,7 @@
 (function () {
 
   var URL = {
-    POST: 'https://js.dump.academy/code-and-magick',
+    POST: 'https://js.dump.academy/keksobooking',
     GET: 'https://js.dump.academy/keksobooking/data'
   };
 
@@ -47,7 +47,6 @@
   var save = function (data, onLoad, onError) {
     var xhr = sendRequest(onLoad, onError);
 
-    // --? Дима как поставить ограничения по времени на отправку??
     xhr.open('POST', URL.POST);
     xhr.send(data);
   };
