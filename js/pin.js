@@ -71,11 +71,25 @@
     // отрисовываем этот массив с данными
     window.card.getRenderAdMapPins(data);
   };
+
+  var onErrorEscPress = function (ev) {
+    if (ev.key === window.ESC_KEY) {
+      closeError();
+    }
+  };
+
+  var closeError = function () {
+    var errorElement = mapBlock.querySelector('.error');
+    if (errorElement) {
+      errorElement.remove();
+      document.removeEventListener('keydown', onErrorEscPress);
+      document.removeEventListener('click', closeError);
+    }
+  };
   /**
    * функция для отрисовки ошибок
    * @param {text} errorMessage
    */
-  // errorMessage
   var onError = function (errorMessage) {
     /**
      * ищем шаблон ошибки и клонируем его
@@ -87,6 +101,8 @@
     var alertMessage = adErrorElement.querySelector('.error__message');
     alertMessage.textContent = errorMessage;
     mapBlock.appendChild(adErrorElement);
+    document.addEventListener('keydown', onErrorEscPress);
+    document.addEventListener('click', closeError);
   };
 
   mapPinMain.addEventListener('mousedown', mapPinMainActive);

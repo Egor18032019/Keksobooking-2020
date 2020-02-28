@@ -123,6 +123,8 @@
       selecTypePrice.setCustomValidity('');
     }
   });
+
+
   // вешаем обработчик чтобы реагировать на изменения
   selectCheckIn.addEventListener('change', onCheckinSelectChange);
   selectCheckOut.addEventListener('change', onCheckoutSelectChange);
@@ -130,6 +132,7 @@
   selectType.addEventListener('change', onTypeSelectChange);
   // обработчик на кнопку отправить, проверяет кол-во гостей и комнат
   adFormSubmit.addEventListener('click', onRoomSelectChange);
+
   window.form = {
     adFormEnabled: adFormEnabled,
     onRoomSelectChange: onRoomSelectChange
