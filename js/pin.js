@@ -66,9 +66,24 @@
     }
   };
 
-  var onLoad = function (data) {
+  var housingType = mapBlock.querySelector('#housing-type');
+  var housingPrice = mapBlock.querySelector('#housing-price');
 
-    // отрисовываем этот массив с данными
+
+  var housing = [];
+  var PRICE = {
+    low: 1000,
+    middle: 50000,
+    hight: 50000
+  };
+
+  var onLoad = function (data) {
+    // копируем пришедший массив
+    housing = data.slice();
+    // при загрузке вешаем два обработчика на измениния цены и типа жилья
+    housingType.addEventListener('change', onSortPins);
+    housingPrice.addEventListener('change', onSortPins);
+    // отрисовываем этот массив с  пришедшими данными
     window.card.getRenderAdMapPins(data);
   };
 
@@ -77,6 +92,51 @@
       closeError();
     }
   };
+
+  var mapPins = document.querySelector('.map__pins');
+
+  /**
+   * фильтр данных
+   */
+  var onSortPins = function () {
+    var mapCard = mapBlock.querySelector('.map__card');
+    if (mapCard) {
+      mapCard.classList.add('visually-hidden');
+    }
+    var filterType = function (data) {
+      return data.offer.type === housingType.value;
+    };
+    // .>??Дима - фильтр почемуто отказываеться работать
+    var filterPriceMidle = function (data) {
+      // console.log(housingPrice.value);
+      // console.log(data.offer.price);
+      // console.log(PRICE.housingPrice.value);
+      return data.offer.price < PRICE.housingPrice.value;
+    };
+
+    var filterPriceHight = function (data) {
+      return data.offer.price > PRICE.housingPrice.value;
+    };
+
+    var filterPrice = function (data) {
+      return filterPriceMidle || filterPriceHight;
+    };
+    /**
+     * фильтруем массив
+     */
+    var housingCopy = housing.filter(function (data) {
+
+      return filterType(data) && filterPrice;
+
+    });
+
+    // console.log(housingCopy);
+    // чистим то что до этого нарисовали
+    mapPins.innerHTML = '';
+    // отрисовываем массив
+    window.card.getRenderAdMapPins(housingCopy);
+  };
+
 
   var closeError = function () {
     var errorElement = mapBlock.querySelector('.error');
