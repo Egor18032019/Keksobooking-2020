@@ -71,6 +71,7 @@
 
 
   var housing = [];
+
   var PRICE = {
     low: 1000,
     middle: 50000,
@@ -103,30 +104,78 @@
     if (mapCard) {
       mapCard.classList.add('visually-hidden');
     }
+
     var filterType = function (data) {
+      // если значение поля "Любой тип жилья" то возращает массив без изменений
+      if (housingType.value === 'any') {
+        return data;
+      }
       return data.offer.type === housingType.value;
     };
-    // .>??Дима - фильтр почемуто отказываеться работать
-    var filterPriceMidle = function (data) {
-      // console.log(housingPrice.value);
-      // console.log(data.offer.price);
-      // console.log(PRICE.housingPrice.value);
-      return data.offer.price < PRICE.housingPrice.value;
+
+
+    // var PRICE = {
+    //   low: 1000,
+    //   middle: от 10 000 до 50 000,
+    //   hight: 50 000
+    // };
+
+
+    var filterPriceMiddle = function (data) {
+      var it = housingPrice.value;
+      // console.log(it);
+      var cost = +data.offer.price;
+      // console.log('стоимость ' + cost);
+      if (it === 'low') {
+        // console.log('это ' + it + ' граница ' + PRICE[it]);
+        return cost < PRICE[it];
+      }
+      if (it === 'hight') {
+        // console.log('это ' + it + ' граница ' + PRICE[it]);
+        return cost > PRICE[it];
+      }
+      if (it === 'middle') {
+        // console.log('это ' + it + ' граница ' + PRICE[it]);
+        return cost < PRICE[it];
+      }
+      return data;
+
+      // switch (it) {
+      //   case 'low':
+      //     // if (it === 'low')
+      //     console.log('это low граница ' + PRICE[it]);
+      //     return cost < PRICE[it];
+      //     break;
+      //   case it === 'hight':
+      //     console.log('это hight граница ' + PRICE[it]);
+      //     return cost >= PRICE[it];
+      //     break;
+      //   case it === 'middle':
+      //     console.log('это middle граница ' + PRICE[it]);
+      //     return cost >= PRICE[it];
+      //     break;
+      //   default:
+      //     return data;
+      //     break;
+      // }
     };
 
-    var filterPriceHight = function (data) {
-      return data.offer.price > PRICE.housingPrice.value;
-    };
+    // var filterPriceHight = function (data) {
+    //   return data.offer.price >= PRICE.hight;
+    // };
+    // var filterPriceLow = function (data) {
+    //   return data.offer.price < PRICE.low;
+    // };
 
-    var filterPrice = function (data) {
-      return filterPriceMidle || filterPriceHight;
-    };
+    // var filterPrice = function (_data) {
+    //   return filterPriceMiddle(_data) || filterPriceHight(_data) || filterPriceLow(_data);
+    // };
     /**
      * фильтруем массив
      */
     var housingCopy = housing.filter(function (data) {
 
-      return filterType(data) && filterPrice;
+      return filterType(data) && filterPriceMiddle(data);
 
     });
 
