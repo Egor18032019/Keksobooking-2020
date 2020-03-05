@@ -81,11 +81,13 @@
   var onLoad = function (data) {
     // копируем пришедший массив
     housing = data.slice();
+    // ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
+    var displayData = data.slice(0, 5);
     // при загрузке вешаем два обработчика на измениния цены и типа жилья
     housingType.addEventListener('change', onSortPins);
     housingPrice.addEventListener('change', onSortPins);
     // отрисовываем этот массив с  пришедшими данными
-    window.card.getRenderAdMapPins(data);
+    window.card.getRenderAdMapPins(displayData);
   };
 
   var onErrorEscPress = function (ev) {
@@ -174,9 +176,10 @@
     for (var i = 1; i < deletePins.length; i++) {
       deletePins[i].remove();
     }
-
+    // ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
+    var housingCopyDisplay = housingCopy.slice(0, 5);
     // отрисовываем массив
-    window.card.getRenderAdMapPins(housingCopy);
+    window.card.getRenderAdMapPins(housingCopyDisplay);
   };
 
 
