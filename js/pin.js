@@ -75,7 +75,7 @@
   var PRICE = {
     low: 1000,
     middle: 50000,
-    hight: 50000
+    high: 50000
   };
 
   var onLoad = function (data) {
@@ -113,30 +113,19 @@
       return data.offer.type === housingType.value;
     };
 
-
-    // var PRICE = {
-    //   low: 1000,
-    //   middle: от 10 000 до 50 000,
-    //   hight: 50 000
-    // };
-
-
     var filterPriceMiddle = function (data) {
       var it = housingPrice.value;
-      // console.log(it);
       var cost = +data.offer.price;
-      // console.log('стоимость ' + cost);
+
       if (it === 'low') {
-        // console.log('это ' + it + ' граница ' + PRICE[it]);
         return cost < PRICE[it];
       }
-      if (it === 'hight') {
-        // console.log('это ' + it + ' граница ' + PRICE[it]);
+      if (it === 'high') {
         return cost > PRICE[it];
       }
       if (it === 'middle') {
         // console.log('это ' + it + ' граница ' + PRICE[it]);
-        return cost < PRICE[it];
+        return cost < PRICE.high && cost > PRICE.low;
       }
       return data;
 
@@ -160,16 +149,7 @@
       // }
     };
 
-    // var filterPriceHight = function (data) {
-    //   return data.offer.price >= PRICE.hight;
-    // };
-    // var filterPriceLow = function (data) {
-    //   return data.offer.price < PRICE.low;
-    // };
 
-    // var filterPrice = function (_data) {
-    //   return filterPriceMiddle(_data) || filterPriceHight(_data) || filterPriceLow(_data);
-    // };
     /**
      * фильтруем массив
      */
@@ -179,7 +159,7 @@
 
     });
 
-    // console.log(housingCopy);
+    console.log(housingCopy);
     // чистим то что до этого нарисовали
     mapPins.innerHTML = '';
     // отрисовываем массив
