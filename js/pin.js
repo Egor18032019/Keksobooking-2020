@@ -82,14 +82,12 @@
   var onLoad = function (data) {
     // копируем пришедший массив
     housing = data.slice();
-    // ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
-    // var displayData = data.slice(0, 5);
+
     // при загрузке вешаем два обработчика на измениния цены и типа жилья
     housingType.addEventListener('change', onSortPins);
     housingPrice.addEventListener('change', onSortPins);
     // отрисовываем этот массив с  пришедшими данными
     onSortPins();
-    // window.card.getRenderAdMapPins(displayData);
   };
 
   var onErrorEscPress = function (ev) {
@@ -118,23 +116,11 @@
   var filterPriceMiddle = function (data) {
     var it = housingPrice.value;
     var cost = +data.offer.price;
-    // if (it === 'low') {
-    //   return cost < Price[it];
-    // }
-    // if (it === 'high') {
-    //   return cost > Price[it];
-    // }
-    // if (it === 'middle') {
-    //   // console.log('это ' + it + ' граница ' + PRICE[it]);
-    //   return cost < Price.high && cost > Price.low;
-    // }
-    // return data;
-    //  - ,,,,????? всеравно не работает (((
     switch (it) {
       case 'low':
         // if (it === 'low')
         return cost < Price[it];
-        // break;
+        // break не работает вместе с return;
       case 'high':
         return cost >= Price[it];
         // break;
