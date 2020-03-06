@@ -31,6 +31,7 @@
    */
   var pinHeight = document.querySelector('.map__pin').offsetHeight;
 
+  var mapPins = document.querySelector('.map__pins');
 
   /**
    * пишем единую фунцию в которой содержиться
@@ -72,8 +73,8 @@
 
   var housing = [];
 
-  var PRICE = {
-    low: 1000,
+  var Price = {
+    low: 10000,
     middle: 50000,
     high: 50000
   };
@@ -82,12 +83,13 @@
     // копируем пришедший массив
     housing = data.slice();
     // ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
-    var displayData = data.slice(0, 5);
+    // var displayData = data.slice(0, 5);
     // при загрузке вешаем два обработчика на измениния цены и типа жилья
     housingType.addEventListener('change', onSortPins);
     housingPrice.addEventListener('change', onSortPins);
     // отрисовываем этот массив с  пришедшими данными
-    window.card.getRenderAdMapPins(displayData);
+    onSortPins();
+    // window.card.getRenderAdMapPins(displayData);
   };
 
   var onErrorEscPress = function (ev) {
@@ -95,8 +97,55 @@
       closeError();
     }
   };
+  /**
+   * сортировка по типу жилья
+   * @param {array} data массив данных
+   * @return {array} data отсортированнный массив
+   */
+  var filterType = function (data) {
+    // если значение поля "Любой тип жилья" то возращает массив без изменений
+    if (housingType.value === 'any') {
+      return data;
+    }
+    return data.offer.type === housingType.value;
+  };
 
-  var mapPins = document.querySelector('.map__pins');
+  /**
+   * функция сортировке по цене
+   * @param {array} data массив данных
+   * @return {array} data отсортированнный массив
+   */
+  var filterPriceMiddle = function (data) {
+    var it = housingPrice.value;
+    var cost = +data.offer.price;
+    // if (it === 'low') {
+    //   return cost < Price[it];
+    // }
+    // if (it === 'high') {
+    //   return cost > Price[it];
+    // }
+    // if (it === 'middle') {
+    //   // console.log('это ' + it + ' граница ' + PRICE[it]);
+    //   return cost < Price.high && cost > Price.low;
+    // }
+    // return data;
+    //  - ,,,,????? всеравно не работает (((
+    switch (it) {
+      case 'low':
+        // if (it === 'low')
+        return cost < Price[it];
+        // break;
+      case 'high':
+        return cost >= Price[it];
+        // break;
+      case 'middle':
+        return cost < Price.high && cost > Price.low;
+        // break;
+      default:
+        return data;
+        // break;
+    }
+  };
 
   /**
    * фильтр данных
@@ -109,73 +158,19 @@
     }
 
     /**
-     * сортировка по типу жилья
-     * @param {array} data массив данных
-     * @return {array} data отсортированнный массив
-     */
-    var filterType = function (data) {
-      // если значение поля "Любой тип жилья" то возращает массив без изменений
-      if (housingType.value === 'any') {
-        return data;
-      }
-      return data.offer.type === housingType.value;
-    };
-
-    /**
-     * функция сортировке по цене
-     * @param {array} data массив данных
-     * @return {array} data отсортированнный массив
-     */
-    var filterPriceMiddle = function (data) {
-      var it = housingPrice.value;
-      var cost = +data.offer.price;
-      if (it === 'low') {
-        return cost < PRICE[it];
-      }
-      if (it === 'high') {
-        return cost > PRICE[it];
-      }
-      if (it === 'middle') {
-        // console.log('это ' + it + ' граница ' + PRICE[it]);
-        return cost < PRICE.high && cost > PRICE.low;
-      }
-      return data;
-
-      // switch (it) {
-      //   case 'low':
-      //     // if (it === 'low')
-      //     console.log('это low граница ' + PRICE[it]);
-      //     return cost < PRICE[it];
-      //     break;
-      //   case it === 'hight':
-      //     console.log('это hight граница ' + PRICE[it]);
-      //     return cost >= PRICE[it];
-      //     break;
-      //   case it === 'middle':
-      //     console.log('это middle граница ' + PRICE[it]);
-      //     return cost >= PRICE[it];
-      //     break;
-      //   default:
-      //     return data;
-      //     break;
-      // }
-    };
-
-    /**
-     * фильтруем массив
+     * фильтруем массив должен сработать если элементов больше 5
      */
     var housingCopy = housing.filter(function (data) {
-
       return filterType(data) && filterPriceMiddle(data);
     });
 
     // console.log(housingCopy);
     // чистим то что до этого нарисовали
-    var deletePins = mapPins.querySelectorAll('.map__pin:not(map__pin--main)');
+    var deletePins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+    deletePins.forEach(function (pins) {
+      pins.remove();
+    });
 
-    for (var i = 1; i < deletePins.length; i++) {
-      deletePins[i].remove();
-    }
     // ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
     var housingCopyDisplay = housingCopy.slice(0, 5);
     // отрисовываем массив
