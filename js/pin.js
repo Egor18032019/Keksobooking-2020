@@ -31,6 +31,7 @@
    */
   var pinHeight = document.querySelector('.map__pin').offsetHeight;
 
+  var mapPins = document.querySelector('.map__pins');
 
   /**
    * пишем единую фунцию в которой содержиться
@@ -66,10 +67,27 @@
     }
   };
 
-  var onLoad = function (data) {
+  var housingType = mapBlock.querySelector('#housing-type');
+  var housingPrice = mapBlock.querySelector('#housing-price');
 
-    // отрисовываем этот массив с данными
-    window.card.getRenderAdMapPins(data);
+
+  var housing = [];
+
+  var Price = {
+    low: 10000,
+    middle: 50000,
+    high: 50000
+  };
+
+  var onLoad = function (data) {
+    // копируем пришедший массив
+    housing = data.slice();
+
+    // при загрузке вешаем два обработчика на измениния цены и типа жилья
+    housingType.addEventListener('change', onSortPins);
+    housingPrice.addEventListener('change', onSortPins);
+    // отрисовываем этот массив с  пришедшими данными
+    onSortPins();
   };
 
   var onErrorEscPress = function (ev) {
@@ -77,6 +95,74 @@
       closeError();
     }
   };
+  /**
+   * сортировка по типу жилья
+   * @param {array} data массив данных
+   * @return {array} data отсортированнный массив
+   */
+  var filterType = function (data) {
+    // если значение поля "Любой тип жилья" то возращает массив без изменений
+    if (housingType.value === 'any') {
+      return data;
+    }
+    return data.offer.type === housingType.value;
+  };
+
+  /**
+   * функция сортировке по цене
+   * @param {array} data массив данных
+   * @return {array} data отсортированнный массив
+   */
+  var filterPriceMiddle = function (data) {
+    var it = housingPrice.value;
+    var cost = +data.offer.price;
+    switch (it) {
+      case 'low':
+        // if (it === 'low')
+        return cost < Price[it];
+        // break не работает вместе с return;
+      case 'high':
+        return cost >= Price[it];
+        // break;
+      case 'middle':
+        return cost < Price.high && cost > Price.low;
+        // break;
+      default:
+        return data;
+        // break;
+    }
+  };
+
+  /**
+   * фильтр данных
+   */
+  var onSortPins = function () {
+    // скрываем открытую карточку обьявдения
+    var mapCard = mapBlock.querySelector('.map__card');
+    if (mapCard) {
+      mapCard.classList.add('visually-hidden');
+    }
+
+    /**
+     * фильтруем массив должен сработать если элементов больше 5
+     */
+    var housingCopy = housing.filter(function (data) {
+      return filterType(data) && filterPriceMiddle(data);
+    });
+
+    // console.log(housingCopy);
+    // чистим то что до этого нарисовали
+    var deletePins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+    deletePins.forEach(function (pins) {
+      pins.remove();
+    });
+
+    // ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
+    var housingCopyDisplay = housingCopy.slice(0, 5);
+    // отрисовываем массив
+    window.card.getRenderAdMapPins(housingCopyDisplay);
+  };
+
 
   var closeError = function () {
     var errorElement = mapBlock.querySelector('.error');
