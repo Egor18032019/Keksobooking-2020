@@ -69,14 +69,27 @@
 
   var housingType = mapBlock.querySelector('#housing-type');
   var housingPrice = mapBlock.querySelector('#housing-price');
+  var housingRooms = mapBlock.querySelector('#housing-rooms');
+  var housingQuests = mapBlock.querySelector('#housing-guests');
+  var housingFeatures = mapBlock.querySelector('#housing-features');
+  /**
+   * псевдо массив input-ов удобств
+   */
+  var inputFeatures = housingFeatures.querySelectorAll('input');
 
+  // var wifiFeatures = housingFeatures.querySelector('#filter-wifi');
+  // var dishwasherFeatures = housingFeatures.querySelector('#filter-dishwasher');
+  // var parkingFeatures = housingFeatures.querySelector('#filter-parking');
+  // var elevatorFeatures = housingFeatures.querySelector('#filter-elevator');
+  // var conditionerFeatures = housingFeatures.querySelector('#filter-conditioner');
+  // var washerFeatures = housingFeatures.querySelector('#filter-washer');
 
   var housing = [];
 
   var Price = {
-    low: 10000,
-    middle: 50000,
-    high: 50000
+    LOW: 10000,
+    MIDDLE: 50000,
+    HIGH: 50000
   };
 
   var onLoad = function (data) {
@@ -86,15 +99,21 @@
     // при загрузке вешаем два обработчика на измениния цены и типа жилья
     housingType.addEventListener('change', onSortPins);
     housingPrice.addEventListener('change', onSortPins);
+    housingRooms.addEventListener('change', onSortPins);
+    housingQuests.addEventListener('change', onSortPins);
+    // housingFeatures.addEventListener('click', onSortPins);
+    housingFeatures.addEventListener('change', onSortPins);
     // отрисовываем этот массив с  пришедшими данными
     onSortPins();
   };
+
 
   var onErrorEscPress = function (ev) {
     if (ev.key === window.ESC_KEY) {
       closeError();
     }
   };
+
   /**
    * сортировка по типу жилья
    * @param {array} data массив данных
@@ -119,19 +138,96 @@
     switch (it) {
       case 'low':
         // if (it === 'low')
-        return cost < Price[it];
+        return cost < Price.LOW;
         // break не работает вместе с return;
       case 'high':
-        return cost >= Price[it];
+        return cost >= Price.HIGH;
         // break;
       case 'middle':
-        return cost < Price.high && cost > Price.low;
+        return cost < Price.HIGH && cost > Price.LOW;
         // break;
       default:
         return data;
         // break;
     }
   };
+
+  /**
+   * функция сортировке по кол-ву комнат
+   * @param {array} data массив данных
+   * @return {array} data отсортированнный массив
+   */
+  var filterRooms = function (data) {
+    var it = housingRooms.value;
+    var cost = +data.offer.rooms;
+    switch (it) {
+      case '1':
+        // if (it === 1)
+        return cost <= 1;
+        // break не работает вместе с return;
+      case '2':
+        return cost < 3 && cost > 1;
+      case '3':
+        return cost >= 3;
+      default:
+        return data;
+    }
+  };
+
+  /**
+   * функция сортировке по кол-ву гостей
+   * @param {array} data массив данных
+   * @return {array} data отсортированнный массив
+   */
+  var filterGuest = function (data) {
+    var it = +housingQuests.value;
+    var count = +data.offer.guests;
+    switch (it) {
+      case 1:
+        // if (it === 1)
+        return count <= 1;
+        // break не работает вместе с return;
+      case 2:
+        return count < 3;
+      case 0:
+        return count === 0;
+      default:
+        return data;
+    }
+  };
+  /**
+   * проверяет есть ли искомый элемент в массиве и возвращает булеевое значение
+   * @param {*} arr массив
+   * @param {*} elem  элемент по которому проверям
+   * @return {true} булево значение
+   */
+  var contains = function (arr, elem) {
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i] === elem) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  /**
+   * сортировка по удобствам
+   * @param {*} data массив
+   * @return {array} отсортированный массив
+   */
+  var filterFeatures = function (data) {
+    // массив с удобствами
+    var sumFea = data.offer.features;
+    // по псевдомассиву inputFeatures пробегаем циклом и если есть чекнутые элементы
+    // то начинаем проверять есть ли значение чекнутого элемента в массиве sumFea
+    for (var index = 0; index < inputFeatures.length; index++) {
+      if (inputFeatures[index].checked) {
+        return contains(sumFea, inputFeatures[index].value);
+      }
+    }
+    return data;
+  };
+
 
   /**
    * фильтр данных
@@ -146,9 +242,7 @@
     /**
      * фильтруем массив должен сработать если элементов больше 5
      */
-    var housingCopy = housing.filter(function (data) {
-      return filterType(data) && filterPriceMiddle(data);
-    });
+    var housingCopy = housing.slice(0, 5);
 
     // console.log(housingCopy);
     // чистим то что до этого нарисовали
@@ -158,7 +252,10 @@
     });
 
     // ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
-    var housingCopyDisplay = housingCopy.slice(0, 5);
+    var housingCopyDisplay = housingCopy.filter(function (data) {
+      return filterType(data) && filterPriceMiddle(data) && filterRooms(data) && filterGuest(data) && filterFeatures(data);
+    });
+
     // отрисовываем массив
     window.card.getRenderAdMapPins(housingCopyDisplay);
   };
