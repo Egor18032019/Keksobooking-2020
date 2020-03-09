@@ -220,12 +220,18 @@
     var sumFeatures = data.offer.features;
     // по псевдомассиву inputFeatures пробегаем циклом и если есть чекнутые элементы
     // то начинаем проверять есть ли значение чекнутого элемента в массиве sumFea
-    for (var index = 0; index < inputFeatures.length; index++) {
-      if (inputFeatures[index].checked) {
-        return contains(sumFeatures, inputFeatures[index].value);
+    var fun = function () {
+      for (var index = 0; index < inputFeatures.length; index++) {
+        if (inputFeatures[index].checked) {
+          return contains(sumFeatures, inputFeatures[index].value);
+          // sumFeatures.some(inputFeatures[index].value);
+        }
       }
-    }
-    return data;
+      return data;
+    };
+
+    return fun();
+
   };
 
   /**
