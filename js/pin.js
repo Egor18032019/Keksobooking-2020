@@ -67,19 +67,11 @@
     }
   };
 
-  var housingType = mapBlock.querySelector('#housing-type');
-  var housingPrice = mapBlock.querySelector('#housing-price');
-  var housingRooms = mapBlock.querySelector('#housing-rooms');
-  var housingQuests = mapBlock.querySelector('#housing-guests');
-  var housingFeatures = mapBlock.querySelector('#housing-features');
-
-
-  // var wifiFeatures = housingFeatures.querySelector('#filter-wifi');
-  // var dishwasherFeatures = housingFeatures.querySelector('#filter-dishwasher');
-  // var parkingFeatures = housingFeatures.querySelector('#filter-parking');
-  // var elevatorFeatures = housingFeatures.querySelector('#filter-elevator');
-  // var conditionerFeatures = housingFeatures.querySelector('#filter-conditioner');
-  // var washerFeatures = housingFeatures.querySelector('#filter-washer');
+  var housingType = mapFilters.querySelector('#housing-type');
+  var housingPrice = mapFilters.querySelector('#housing-price');
+  var housingRooms = mapFilters.querySelector('#housing-rooms');
+  var housingQuests = mapFilters.querySelector('#housing-guests');
+  var housingFeatures = mapFilters.querySelector('#housing-features');
 
   var housing = [];
 
@@ -94,12 +86,12 @@
     housing = data.slice();
 
     // при загрузке вешаем два обработчика на измениния цены и типа жилья
-    housingType.addEventListener('change', onSortPins);
-    housingPrice.addEventListener('change', onSortPins);
-    housingRooms.addEventListener('change', onSortPins);
-    housingQuests.addEventListener('change', onSortPins);
+    // housingType.addEventListener('change', onSortPins);
+    // housingPrice.addEventListener('change', onSortPins);
+    // housingRooms.addEventListener('change', onSortPins);
+    // housingQuests.addEventListener('change', onSortPins);
     // housingFeatures.addEventListener('click', onSortPins);
-    housingFeatures.addEventListener('change', window.debounce(onSortPins));
+    mapFilters.addEventListener('change', window.debounce(onSortPins));
     // отрисовываем этот массив с  пришедшими данными
     onSortPins();
   };
@@ -160,10 +152,11 @@
     switch (it) {
       case '1':
         // if (it === 1)
-        return cost <= 1;
+        return cost === 1 || cost < 1;
         // break не работает вместе с return;
       case '2':
-        return cost < 3 && cost > 1;
+        // показывает обьявления где есть две комнаты(где есть одна комната не показывает)
+        return cost === 2;
       case '3':
         return cost >= 3;
       default:
@@ -199,7 +192,7 @@
    * @return {array} отсортированный массив
    */
   var filterFeatures = function (data) {
-    console.log(data);
+    // console.log(data);
     /**
      * преобразованный массив удобств из псевдо масива
      * на псевдо массиве не работает every и т.п.

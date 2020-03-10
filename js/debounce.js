@@ -2,7 +2,7 @@
 
 // устранение мигания
 (function () {
-  var DEBOUNCE_INTERVAL = 555; // ms
+  var DEBOUNCE_INTERVAL = 5; // ms
 
   window.debounce = function (cb) {
     var lastTimeout = null;
@@ -21,10 +21,4 @@
   };
 
 })();
-// for (var index = 0; index < inputFeatures.length; index++) {
-//   if (inputFeatures[index].checked) {
-//     return contains(sumFeatures, inputFeatures[index].value);
-//   }
-// }
-// return true;
-// };
+
