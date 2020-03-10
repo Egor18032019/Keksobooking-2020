@@ -72,10 +72,7 @@
   var housingRooms = mapBlock.querySelector('#housing-rooms');
   var housingQuests = mapBlock.querySelector('#housing-guests');
   var housingFeatures = mapBlock.querySelector('#housing-features');
-  /**
-   * псевдо массив input-ов удобств
-   */
-  var inputFeatures = housingFeatures.querySelectorAll('input');
+
 
   // var wifiFeatures = housingFeatures.querySelector('#filter-wifi');
   // var dishwasherFeatures = housingFeatures.querySelector('#filter-dishwasher');
@@ -102,7 +99,7 @@
     housingRooms.addEventListener('change', onSortPins);
     housingQuests.addEventListener('change', onSortPins);
     // housingFeatures.addEventListener('click', onSortPins);
-    housingFeatures.addEventListener('change', onSortPins);
+    housingFeatures.addEventListener('change', window.debounce(onSortPins));
     // отрисовываем этот массив с  пришедшими данными
     onSortPins();
   };
@@ -195,20 +192,6 @@
         return data;
     }
   };
-  /**
-   * проверяет есть ли искомый элемент в массиве и возвращает булеевое значение
-   * @param {*} arr массив
-   * @param {*} elem  элемент по которому проверям
-   * @return {true} булево значение
-   */
-  var contains = function (arr, elem) {
-    for (var i = 0; i < arr.length; i++) {
-      if (arr[i] === elem) {
-        return true;
-      }
-    }
-    return false;
-  };
 
   /**
    * сортировка по удобствам
@@ -216,21 +199,27 @@
    * @return {array} отсортированный массив
    */
   var filterFeatures = function (data) {
+    console.log(data);
+    /**
+     * преобразованный массив удобств из псевдо масива
+     * на псевдо массиве не работает every и т.п.
+     */
+    var inputFeatures = Array.from(housingFeatures.querySelectorAll('input:checked'));
+
     // массив с удобствами
     var sumFeatures = data.offer.features;
-    // по псевдомассиву inputFeatures пробегаем циклом и если есть чекнутые элементы
-    // то начинаем проверять есть ли значение чекнутого элемента в массиве sumFea
-    var fun = function () {
-      for (var index = 0; index < inputFeatures.length; index++) {
-        if (inputFeatures[index].checked) {
-          return contains(sumFeatures, inputFeatures[index].value);
-          // sumFeatures.some(inputFeatures[index].value);
-        }
-      }
-      return data;
-    };
+    // возвращает те значения которые удовлетворяют следующим условиям: в data.offer.features (каждого обьекта в массиве data) есть хотя бы одно значения инпута из массива inputFeatures
+    // сравниваем каждое значение элемента массива чекнутых инпутов inputFeatures
+    // с каждым элементом массива удобств sumFeatures
+    return inputFeatures.every(function (inputElement) {
+      // every так как проверям ВСЕ ли элементы равны условиям функции(то есть возратят true после выполнения условий функции)
+      return sumFeatures.some(function (featuresElement) {
+        // some так как проверяем есть ли ОДНО такое значение в массиве значений = и если хоть одно есть то возвращает true
 
-    return fun();
+        return featuresElement === inputElement.value;
+
+      });
+    });
 
   };
 
@@ -260,6 +249,7 @@
     var housingCopyDisplay = housingCopy.filter(function (data) {
       return filterType(data) && filterPriceMiddle(data) && filterRooms(data) && filterGuest(data) && filterFeatures(data);
     });
+
 
     // отрисовываем массив
     window.card.getRenderAdMapPins(housingCopyDisplay);
