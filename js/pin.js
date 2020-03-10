@@ -227,12 +227,12 @@
       pins.remove();
     });
 
-    // ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
     var housingCopyDisplay = housing.filter(function (data) {
       return filterType(data) && filterPriceMiddle(data) && filterRooms(data) && filterGuest(data) && filterFeatures(data);
     });
+
     /**
-     * фильтруем массив должен сработать если элементов больше 5
+     * ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
      */
     var housingCopy = housingCopyDisplay.slice(0, 5);
 
