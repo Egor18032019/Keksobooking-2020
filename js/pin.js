@@ -84,13 +84,7 @@
   var onLoad = function (data) {
     // копируем пришедший массив
     housing = data.slice();
-
-    // при загрузке вешаем два обработчика на измениния цены и типа жилья
-    // housingType.addEventListener('change', onSortPins);
-    // housingPrice.addEventListener('change', onSortPins);
-    // housingRooms.addEventListener('change', onSortPins);
-    // housingQuests.addEventListener('change', onSortPins);
-    // housingFeatures.addEventListener('click', onSortPins);
+    //  вешаем один обработчик на всю форму
     mapFilters.addEventListener('change', window.debounce(onSortPins));
     // отрисовываем этот массив с  пришедшими данными
     onSortPins();
@@ -220,18 +214,13 @@
    * фильтр данных
    */
   var onSortPins = function () {
+
     // скрываем открытую карточку обьявдения
     var mapCard = mapBlock.querySelector('.map__card');
     if (mapCard) {
       mapCard.classList.add('visually-hidden');
     }
 
-    /**
-     * фильтруем массив должен сработать если элементов больше 5
-     */
-    var housingCopy = housing.slice(0, 5);
-
-    // console.log(housingCopy);
     // чистим то что до этого нарисовали
     var deletePins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
     deletePins.forEach(function (pins) {
@@ -239,13 +228,16 @@
     });
 
     // ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
-    var housingCopyDisplay = housingCopy.filter(function (data) {
+    var housingCopyDisplay = housing.filter(function (data) {
       return filterType(data) && filterPriceMiddle(data) && filterRooms(data) && filterGuest(data) && filterFeatures(data);
     });
-
+    /**
+     * фильтруем массив должен сработать если элементов больше 5
+     */
+    var housingCopy = housingCopyDisplay.slice(0, 5);
 
     // отрисовываем массив
-    window.card.getRenderAdMapPins(housingCopyDisplay);
+    window.card.getRenderAdMapPins(housingCopy);
   };
 
 
