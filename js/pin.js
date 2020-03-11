@@ -105,7 +105,7 @@
   var filterType = function (data) {
     // если значение поля "Любой тип жилья" то возращает массив без изменений
     if (housingType.value === 'any') {
-      return data;
+      return true;
     }
     return data.offer.type === housingType.value;
   };
@@ -130,7 +130,7 @@
         return cost < Price.HIGH && cost > Price.LOW;
         // break;
       default:
-        return data;
+        return true;
         // break;
     }
   };
@@ -154,7 +154,7 @@
       case '3':
         return cost >= 3;
       default:
-        return data;
+        return true;
     }
   };
 
@@ -176,7 +176,7 @@
       case 0:
         return count === 0;
       default:
-        return data;
+        return true;
     }
   };
 
