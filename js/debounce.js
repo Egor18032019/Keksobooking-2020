@@ -15,8 +15,8 @@
       }
       lastTimeout = window.setTimeout(function () {
         // фунцкция которая пришла в аргументах функции debounce
-        //вызываеться на null и принимает значения parametrs равные аргументам функции которая пришла в аргументах debounce.
-        //как то так
+        // вызываеться на null и принимает значения parametrs равные аргументам функции которая пришла в аргументах debounce.
+        // как то так
         cb.apply(null, parameters);
       }, DEBOUNCE_INTERVAL);
     };
