@@ -67,34 +67,36 @@
     }
   };
 
-  var housingType = mapBlock.querySelector('#housing-type');
-  var housingPrice = mapBlock.querySelector('#housing-price');
-
+  var housingType = mapFilters.querySelector('#housing-type');
+  var housingPrice = mapFilters.querySelector('#housing-price');
+  var housingRooms = mapFilters.querySelector('#housing-rooms');
+  var housingQuests = mapFilters.querySelector('#housing-guests');
+  var housingFeatures = mapFilters.querySelector('#housing-features');
 
   var housing = [];
 
   var Price = {
-    low: 10000,
-    middle: 50000,
-    high: 50000
+    LOW: 10000,
+    MIDDLE: 50000,
+    HIGH: 50000
   };
 
   var onLoad = function (data) {
     // копируем пришедший массив
     housing = data.slice();
-
-    // при загрузке вешаем два обработчика на измениния цены и типа жилья
-    housingType.addEventListener('change', onSortPins);
-    housingPrice.addEventListener('change', onSortPins);
+    //  вешаем один обработчик на всю форму
+    mapFilters.addEventListener('change', window.debounce(onSortPins));
     // отрисовываем этот массив с  пришедшими данными
     onSortPins();
   };
+
 
   var onErrorEscPress = function (ev) {
     if (ev.key === window.ESC_KEY) {
       closeError();
     }
   };
+
   /**
    * сортировка по типу жилья
    * @param {array} data массив данных
@@ -103,7 +105,7 @@
   var filterType = function (data) {
     // если значение поля "Любой тип жилья" то возращает массив без изменений
     if (housingType.value === 'any') {
-      return data;
+      return true;
     }
     return data.offer.type === housingType.value;
   };
@@ -119,48 +121,123 @@
     switch (it) {
       case 'low':
         // if (it === 'low')
-        return cost < Price[it];
+        return cost < Price.LOW;
         // break не работает вместе с return;
       case 'high':
-        return cost >= Price[it];
+        return cost >= Price.HIGH;
         // break;
       case 'middle':
-        return cost < Price.high && cost > Price.low;
+        return cost < Price.HIGH && cost > Price.LOW;
         // break;
       default:
-        return data;
+        return true;
         // break;
     }
+  };
+
+  /**
+   * функция сортировке по кол-ву комнат
+   * @param {array} data массив данных
+   * @return {array} data отсортированнный массив
+   */
+  var filterRooms = function (data) {
+    var it = housingRooms.value;
+    var cost = +data.offer.rooms;
+    switch (it) {
+      case '1':
+        // if (it === 1)
+        return cost === 1 || cost < 1;
+        // break не работает вместе с return;
+      case '2':
+        // показывает обьявления где есть две комнаты(где есть одна комната не показывает)
+        return cost === 2;
+      case '3':
+        return cost >= 3;
+      default:
+        return true;
+    }
+  };
+
+  /**
+   * функция сортировке по кол-ву гостей
+   * @param {array} data массив данных
+   * @return {array} data отсортированнный массив
+   */
+  var filterGuest = function (data) {
+    var it = +housingQuests.value;
+    var count = +data.offer.guests;
+    switch (it) {
+      case 1:
+        // if (it === 1)
+        return count <= 1;
+        // break не работает вместе с return;
+      case 2:
+        return count < 3;
+      case 0:
+        return count === 0;
+      default:
+        return true;
+    }
+  };
+
+  /**
+   * сортировка по удобствам
+   * @param {*} data массив
+   * @return {array} отсортированный массив
+   */
+  var filterFeatures = function (data) {
+    // console.log(data);
+    /**
+     * преобразованный массив удобств из псевдо масива
+     * на псевдо массиве не работает every и т.п.
+     */
+    var inputFeatures = Array.from(housingFeatures.querySelectorAll('input:checked'));
+
+    // массив с удобствами
+    var sumFeatures = data.offer.features;
+    // возвращает те значения которые удовлетворяют следующим условиям: в data.offer.features (каждого обьекта в массиве data) есть хотя бы одно значения инпута из массива inputFeatures
+    // сравниваем каждое значение элемента массива чекнутых инпутов inputFeatures
+    // с каждым элементом массива удобств sumFeatures
+    return inputFeatures.every(function (inputElement) {
+      // every так как проверям ВСЕ ли элементы равны условиям функции(то есть возратят true после выполнения условий функции)
+      return sumFeatures.some(function (featuresElement) {
+        // some так как проверяем есть ли ОДНО такое значение в массиве значений = и если хоть одно есть то возвращает true
+
+        return featuresElement === inputElement.value;
+
+      });
+    });
+
   };
 
   /**
    * фильтр данных
    */
   var onSortPins = function () {
+
     // скрываем открытую карточку обьявдения
     var mapCard = mapBlock.querySelector('.map__card');
     if (mapCard) {
       mapCard.classList.add('visually-hidden');
     }
 
-    /**
-     * фильтруем массив должен сработать если элементов больше 5
-     */
-    var housingCopy = housing.filter(function (data) {
-      return filterType(data) && filterPriceMiddle(data);
-    });
-
-    // console.log(housingCopy);
     // чистим то что до этого нарисовали
     var deletePins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
     deletePins.forEach(function (pins) {
       pins.remove();
     });
 
-    // ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
-    var housingCopyDisplay = housingCopy.slice(0, 5);
+    var housingCopyDisplay = housing.filter(function (data) {
+      return filterType(data) && filterPriceMiddle(data) && filterRooms(data) && filterGuest(data) && filterFeatures(data);
+    });
+
+    /**
+     * ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
+     */
+    var housingCopy = housingCopyDisplay.slice(0, 5);
+
     // отрисовываем массив
-    window.card.getRenderAdMapPins(housingCopyDisplay);
+    window.card.getRenderAdMapPins(housingCopy);
   };
 
 
