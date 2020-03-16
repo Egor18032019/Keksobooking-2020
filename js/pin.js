@@ -13,10 +13,18 @@
    * массив input лежащий в adForm
    */
   var adFormInput = adForm.querySelectorAll('input', 'select');
+  var adFormSelect = adForm.querySelectorAll('select');
+
   /**
    * блок с классом '.map__filters' лежащий в mapBlock
    */
   var mapFilters = mapBlock.querySelector('.map__filters');
+
+  /**
+   * массив input лежащий в mapFilters
+   */
+  var mapFiltersInput = mapFilters.querySelectorAll('input');
+  var mapFiltersSelect = mapFilters.querySelectorAll('select');
 
   /**
    * переменная для записи координат
@@ -60,7 +68,12 @@
       adForm.removeAttribute('disabled', '');
       mapFilters.removeAttribute('disabled');
       init();
+      // разблокируем инпт и селекты в двух форамах
       window.form.adFormEnabled(adFormInput);
+      window.form.adFormEnabled(adFormSelect);
+      window.form.adFormEnabled(mapFiltersSelect);
+      window.form.adFormEnabled(mapFiltersInput);
+
       mapPinMain.removeEventListener('mousedown', mapPinMainActive);
       // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
       window.form.onRoomSelectChange();
@@ -103,11 +116,8 @@
    * @return {array} data отсортированнный массив
    */
   var filterType = function (data) {
-    // если значение поля "Любой тип жилья" то возращает массив без изменений
-    if (housingType.value === 'any') {
-      return true;
-    }
-    return data.offer.type === housingType.value;
+    // возращает true если
+    return data.offer.type === housingType.value || housingType.value === 'any';
   };
 
   /**
@@ -117,17 +127,17 @@
    */
   var filterPriceMiddle = function (data) {
     var it = housingPrice.value;
-    var cost = +data.offer.price;
+    var count = +data.offer.price;
     switch (it) {
       case 'low':
         // if (it === 'low')
-        return cost < Price.LOW;
+        return count < Price.LOW;
         // break не работает вместе с return;
       case 'high':
-        return cost >= Price.HIGH;
+        return count >= Price.HIGH;
         // break;
       case 'middle':
-        return cost < Price.HIGH && cost > Price.LOW;
+        return count < Price.HIGH && count > Price.LOW;
         // break;
       default:
         return true;
@@ -141,21 +151,9 @@
    * @return {array} data отсортированнный массив
    */
   var filterRooms = function (data) {
-    var it = housingRooms.value;
-    var cost = +data.offer.rooms;
-    switch (it) {
-      case '1':
-        // if (it === 1)
-        return cost === 1 || cost < 1;
-        // break не работает вместе с return;
-      case '2':
-        // показывает обьявления где есть две комнаты(где есть одна комната не показывает)
-        return cost === 2;
-      case '3':
-        return cost >= 3;
-      default:
-        return true;
-    }
+    var it = +housingRooms.value;
+    var count = +data.offer.rooms;
+    return it === count || housingRooms.value === 'any';
   };
 
   /**
@@ -166,18 +164,7 @@
   var filterGuest = function (data) {
     var it = +housingQuests.value;
     var count = +data.offer.guests;
-    switch (it) {
-      case 1:
-        // if (it === 1)
-        return count <= 1;
-        // break не работает вместе с return;
-      case 2:
-        return count < 3;
-      case 0:
-        return count === 0;
-      default:
-        return true;
-    }
+    return it === count || housingQuests.value === 'any';
   };
 
   /**
@@ -186,7 +173,6 @@
    * @return {array} отсортированный массив
    */
   var filterFeatures = function (data) {
-    // console.log(data);
     /**
      * преобразованный массив удобств из псевдо масива
      * на псевдо массиве не работает every и т.п.
@@ -226,15 +212,24 @@
     deletePins.forEach(function (pins) {
       pins.remove();
     });
+    var i = 0;
+    var housingCopy = [];
+    while (i < housing.length && housingCopy.length < 5) {
+      var data = housing[i];
+      if (filterType(data) && filterPriceMiddle(data) && filterRooms(data) && filterGuest(data) && filterFeatures(data)) {
+        housingCopy.push(data);
 
-    var housingCopyDisplay = housing.filter(function (data) {
-      return filterType(data) && filterPriceMiddle(data) && filterRooms(data) && filterGuest(data) && filterFeatures(data);
-    });
+      }
+      i++;
+    }
+    // var housingCopyDisplay = housing.filter(function (data) {
+    //   return filterType(data) && filterPriceMiddle(data) && filterRooms(data) && filterGuest(data) && filterFeatures(data);
+    // });
 
     /**
      * ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
      */
-    var housingCopy = housingCopyDisplay.slice(0, 5);
+    // var housingCopy = housingCopyDisplay.slice(0, 5);
 
     // отрисовываем массив
     window.card.getRenderAdMapPins(housingCopy);

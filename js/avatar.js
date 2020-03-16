@@ -51,8 +51,7 @@
         img.height = heightImg;
         preview.innerHTML = '';
         preview.appendChild(img);
-        // ? ? спросить у Димы про new FileReader() правильно ли я понял его
-        // console.log(reader);
+
       });
       //  переписываем у reader с помощью метода readAsDataURL значение у ключа .result
       //  = равную URL у file загружаемого файла
@@ -69,3 +68,5 @@
   });
 
 })();
+
+
