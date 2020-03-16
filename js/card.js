@@ -102,7 +102,7 @@
     // Квадратные скобки также позволяют обратиться к свойству, имя которого может быть результатом выражения.
     adMapCard.querySelector('.popup__text--address').textContent = card.offer.address;
     if (card.offer.rooms || card.offer.quests) {
-      adMapCard.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.quests + ' гостей';
+      adMapCard.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
     }
     if (card.offer.checkin || card.offer.checkout) {
       adMapCard.querySelector('.popup__text--time').textContent = 'заезд после ' + card.offer.checkin + ' , выезд до  ' + card.offer.checkout + ' гостей';

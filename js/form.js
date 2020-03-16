@@ -32,7 +32,9 @@
   /**
    * массив input лежащий в adForm
    */
-  var adFormInput = adForm.querySelectorAll('input', 'select');
+  var adFormInput = adForm.querySelectorAll('input');
+  var adFormSelect = adForm.querySelectorAll('select');
+
   /**
    * кнопка отправить внутри adForm  с классом ad-form__submit
    */
@@ -53,6 +55,12 @@
    * блок с классом '.map__filters' лежащий в mapBlock
    */
   var mapFilters = mapBlock.querySelector('.map__filters');
+
+  /**
+   * массив input лежащий в mapFilters
+   */
+  var mapFiltersInput = mapFilters.querySelectorAll('input');
+  var mapFiltersSelect = mapFilters.querySelectorAll('select');
 
   /**
    * функция принимает массив и каждому добавляет атрибут disabled
@@ -102,8 +110,12 @@
       array[i].disabled = false;
     }
   };
-
+  // блокиркуем все инпуты и селекты в двух формах
   adFormDisabled(adFormInput);
+  adFormDisabled(adFormSelect);
+  adFormDisabled(mapFiltersInput);
+  adFormDisabled(mapFiltersSelect);
+
   adForm.setAttribute('disabled', '');
   mapFilters.setAttribute('disabled', '');
 

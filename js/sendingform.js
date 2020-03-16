@@ -20,6 +20,9 @@
    */
   var adSuccessElement = document.querySelector('#success').content.cloneNode(true);
 
+  var avatarPreview = document.querySelector('.ad-form-header__preview');
+  var photoPreview = document.querySelector('.ad-form__photo');
+
   var adFormReset = adForm.querySelector('.ad-form__reset');
   var closeError = function () {
     var errorElement = mainBlock.querySelector('.error');
@@ -51,6 +54,7 @@
     }
   };
 
+
   var onLoadForm = function () {
     adForm.reset();
     mainBlock.appendChild(adSuccessElement);
@@ -58,6 +62,7 @@
     adFormSubmit.disabled = false;
     document.addEventListener('keydown', onSuccessEscPress);
     document.addEventListener('click', closeSuccess);
+
   };
 
   /**
@@ -86,13 +91,18 @@
     adFormSubmit.disabled = true;
     evt.preventDefault();
     window.backend.save(data, onLoadForm, onError);
+
   };
 
   adForm.addEventListener('submit', onSetupFormSubmit);
+
   // --------------- обработчик очистки формы
   var resetForm = function (evt) {
     if (evt.which === 1) {
       adForm.reset();
+      avatarPreview.removeChild(avatarPreview.firstChild);
+      // подумать как сделать чтобы не удалялся рисунок аватрчика oldChild ?
+      photoPreview.innerHTML = '';
     }
   };
   adFormReset.addEventListener('click', resetForm);
