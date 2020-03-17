@@ -7,6 +7,7 @@
    * блок form
    */
   var adForm = mainBlock.querySelector('.ad-form');
+
   /**
    * кнопка отправить внутри adForm  с классом ad-form__submit
    */
@@ -23,7 +24,6 @@
   var avatarPreview = document.querySelector('.ad-form-header__preview');
   var photoPreview = document.querySelector('.ad-form__photo');
 
-  var adFormReset = adForm.querySelector('.ad-form__reset');
   var closeError = function () {
     var errorElement = mainBlock.querySelector('.error');
     if (errorElement) {
@@ -42,14 +42,14 @@
     }
   };
 
-  var onErrorEscPress = function (ev) {
-    if (ev.key === window.ESC_KEY) {
+  var onErrorEscPress = function (evt) {
+    if (evt.key === window.ESC_KEY) {
       closeError();
     }
   };
 
-  var onSuccessEscPress = function (ev) {
-    if (ev.key === window.ESC_KEY) {
+  var onSuccessEscPress = function (evt) {
+    if (evt.key === window.ESC_KEY) {
       closeSuccess();
     }
   };
@@ -57,6 +57,9 @@
 
   var onLoadForm = function () {
     adForm.reset();
+    avatarPreview.removeChild(avatarPreview.firstChild);
+    photoPreview.innerHTML = '';
+
     mainBlock.appendChild(adSuccessElement);
     adFormSubmit.textContent = 'Опубликовать';
     adFormSubmit.disabled = false;
@@ -75,8 +78,6 @@
     adFormSubmit.textContent = 'Попробуйте снова';
     document.addEventListener('keydown', onErrorEscPress);
     document.addEventListener('click', closeError);
-
-    // при нажатие на кнопку повторной отправки формы  и если небыло интернета = окно ошибки непоявляеться
     var errorButton = mainBlock.querySelector('.error__button');
     // ставим обработчик на кнопку
     if (errorButton) {
@@ -96,15 +97,16 @@
 
   adForm.addEventListener('submit', onSetupFormSubmit);
 
-  // --------------- обработчик очистки формы
-  var resetForm = function (evt) {
-    if (evt.which === 1) {
-      adForm.reset();
-      avatarPreview.removeChild(avatarPreview.firstChild);
-      // подумать как сделать чтобы не удалялся рисунок аватрчика oldChild ?
-      photoPreview.innerHTML = '';
-    }
-  };
-  adFormReset.addEventListener('click', resetForm);
+  // // --------------- обработчик очистки формы
+  // var resetForm = function (evt) {
+  //   if (evt.which === 1) {
+  //     adForm.reset();
+  //     mapFilters.reset();
+  //     avatarPreview.removeChild(avatarPreview.firstChild);
+  //     photoPreview.innerHTML = '';
+
+  //   }
+  // };
+  // adFormReset.addEventListener('click', resetForm);
 
 })();

@@ -62,22 +62,21 @@
     }
   };
 
-  var mapPinMainActive = function (evt) {
-    if (evt.which === 1) {
-      adForm.classList.remove('ad-form--disabled');
-      adForm.removeAttribute('disabled', '');
-      mapFilters.removeAttribute('disabled');
-      init();
-      // разблокируем инпт и селекты в двух форамах
-      window.form.adFormEnabled(adFormInput);
-      window.form.adFormEnabled(adFormSelect);
-      window.form.adFormEnabled(mapFiltersSelect);
-      window.form.adFormEnabled(mapFiltersInput);
+  var mapPinMainActive = function () {
 
-      mapPinMain.removeEventListener('mousedown', mapPinMainActive);
-      // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
-      window.form.onRoomSelectChange();
-    }
+    adForm.classList.remove('ad-form--disabled');
+    adForm.removeAttribute('disabled', '');
+    mapFilters.removeAttribute('disabled');
+    init();
+    // разблокируем инпт и селекты в двух форамах
+    window.form.adFormEnabled(adFormInput);
+    window.form.adFormEnabled(adFormSelect);
+    window.form.adFormEnabled(mapFiltersSelect);
+    window.form.adFormEnabled(mapFiltersInput);
+
+    mapPinMain.removeEventListener('mousedown', mapPinMainActive);
+    // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
+
   };
 
   var housingType = mapFilters.querySelector('#housing-type');
@@ -222,18 +221,27 @@
       }
       i++;
     }
-    // var housingCopyDisplay = housing.filter(function (data) {
-    //   return filterType(data) && filterPriceMiddle(data) && filterRooms(data) && filterGuest(data) && filterFeatures(data);
-    // });
 
-    /**
-     * ставим ограничения чтобы отрисовывал не больше 5 - согласно ТЗ
-     */
-    // var housingCopy = housingCopyDisplay.slice(0, 5);
 
     // отрисовываем массив
     window.card.getRenderAdMapPins(housingCopy);
   };
+  var avatarPreview = document.querySelector('.ad-form-header__preview');
+  var photoPreview = document.querySelector('.ad-form__photo');
+
+  var adFormReset = adForm.querySelector('.ad-form__reset');
+
+  // --------------- обработчик очистки формы
+  var resetForm = function (evt) {
+    if (evt.which === 1) {
+      adForm.reset();
+      mapFilters.reset();
+      avatarPreview.removeChild(avatarPreview.firstChild);
+      photoPreview.innerHTML = '';
+      onSortPins();
+    }
+  };
+  adFormReset.addEventListener('click', resetForm);
 
 
   var closeError = function () {

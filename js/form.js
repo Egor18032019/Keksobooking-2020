@@ -107,7 +107,7 @@
    */
   var adFormEnabled = function (array) {
     for (var i = 0; i < array.length; i++) {
-      array[i].disabled = false;
+      array[i].removeAttribute('disabled');
     }
   };
   // блокиркуем все инпуты и селекты в двух формах
