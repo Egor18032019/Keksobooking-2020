@@ -41,6 +41,10 @@
 
   var mapPins = document.querySelector('.map__pins');
 
+  var avatarPreview = document.querySelector('.ad-form-header__preview');
+  var photoPreview = document.querySelector('.ad-form__photo');
+  var adFormReset = adForm.querySelector('.ad-form__reset');
+
   /**
    * пишем единую фунцию в которой содержиться
    * открытие карты
@@ -226,10 +230,6 @@
     // отрисовываем массив
     window.card.getRenderAdMapPins(housingCopy);
   };
-  var avatarPreview = document.querySelector('.ad-form-header__preview');
-  var photoPreview = document.querySelector('.ad-form__photo');
-
-  var adFormReset = adForm.querySelector('.ad-form__reset');
 
   // --------------- обработчик очистки формы
   var resetForm = function (evt) {
