@@ -155,6 +155,13 @@
     // но работает же ))
     adMapElement.addEventListener('click', function () {
       renderCard(unitGetAdList);
+      // добавление и убирание класса 'map__pin--active с пинов при клики
+      var pins = document.querySelectorAll('.map__pin');
+      for (var i = 0; i < pins.length; i++) {
+        pins[i].classList.remove('map__pin--active');
+      }
+      adMapElement.classList.add('map__pin--active');
+
     });
     return adMapElement;
   };

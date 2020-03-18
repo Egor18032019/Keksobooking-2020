@@ -110,14 +110,15 @@
       array[i].disabled = false;
     }
   };
+
   // блокиркуем все инпуты и селекты в двух формах
   adFormDisabled(adFormInput);
   adFormDisabled(adFormSelect);
   adFormDisabled(mapFiltersInput);
   adFormDisabled(mapFiltersSelect);
 
-  adForm.setAttribute('disabled', '');
-  mapFilters.setAttribute('disabled', '');
+  adForm.disabled = true;
+  mapFilters.disabled = true;
 
   selecTypePrice.addEventListener('invalid', function () {
     if (selecTypePrice.validity.rangeOverflow) {
@@ -147,6 +148,7 @@
 
   window.form = {
     adFormEnabled: adFormEnabled,
+    adFormDisabled: adFormDisabled,
     onRoomSelectChange: onRoomSelectChange
   };
 
