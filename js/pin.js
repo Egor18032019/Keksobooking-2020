@@ -231,16 +231,16 @@
     window.card.getRenderAdMapPins(housingCopy);
   };
 
-  var onCoordinateForAdress = function () {
-    mapPinMainAdress.removeAttribute('readonly', '');
-    var mapPinMainLeft = mapPinMain.style.left.substr(0, mapPinMain.style.left.length - 2);
-    var mapPinMainTop = mapPinMain.style.top.substr(0, mapPinMain.style.top.length - 2);
-    var pinX = Math.floor(+mapPinMainLeft + pinWidth / 2);
-    var pinY = Math.floor(+mapPinMainTop + pinHeight / 2);
-    mapPinMainAdress.value = pinX + ', ' + pinY;
-    console.log(mapPinMainAdress.value);
-    mapPinMainAdress.setAttribute('readonly', '');
-  };
+  // var onCoordinateForAdress = function () {
+  //   mapPinMainAdress.removeAttribute('readonly', '');
+  //   var mapPinMainLeft = mapPinMain.style.left.substr(0, mapPinMain.style.left.length - 2);
+  //   var mapPinMainTop = mapPinMain.style.top.substr(0, mapPinMain.style.top.length - 2);
+  //   var pinX = Math.floor(+mapPinMainLeft + pinWidth / 2);
+  //   var pinY = Math.floor(+mapPinMainTop + pinHeight / 2);
+  //   mapPinMainAdress.value = pinX + ', ' + pinY;
+  //   console.log(mapPinMainAdress.value);
+  //   mapPinMainAdress.setAttribute('readonly', '');
+  // };
 
   // --------------- обработчик очистки формы
   var resetForm = function (evt) {
@@ -256,7 +256,7 @@
       onSortPins();
 
       // onCoordinateForAdress();
-      console.log(addressCoordinate);
+      // console.log(addressCoordinate);
 
       mapPinMainAdress.value = addressCoordinate;
     }
