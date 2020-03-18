@@ -30,6 +30,7 @@
    * переменная для записи координат
    */
   var mapPinMainAdress = adForm.querySelector('input[name="address"]');
+
   /**
    * это ширина блока map__pin в котором перетаскивается метка.
    */
@@ -43,7 +44,6 @@
 
   var avatarPreview = document.querySelector('.ad-form-header__preview');
   var photoPreview = document.querySelector('.ad-form__photo');
-  var adFormReset = adForm.querySelector('.ad-form__reset');
 
   /**
    * пишем единую фунцию в которой содержиться
@@ -56,31 +56,32 @@
     window.backend.load(onLoad, onError);
   };
 
-  var mapPinMainCoordinate = function (evt) {
-    if (evt.which === 1) {
-      var pinX = Math.floor(evt.pageX + pinWidth / 2);
-      var pinY = Math.floor(evt.pageY + pinHeight / 2);
-      mapPinMainAdress.value = pinX + ', ' + pinY;
-      mapPinMainAdress.setAttribute('readonly', '');
-      mapPinMain.removeEventListener('mousedown', mapPinMainCoordinate);
-    }
+  var mapPinMainCoordinate = function () {
+    var mapPinMainLeft = mapPinMain.style.left.substr(0, mapPinMain.style.left.length - 2);
+    var mapPinMainTop = mapPinMain.style.top.substr(0, mapPinMain.style.top.length - 2);
+    var pinX = Math.floor(+mapPinMainLeft + pinWidth / 2);
+    var pinY = Math.floor(+mapPinMainTop + pinHeight);
+    mapPinMainAdress.value = pinX + ', ' + pinY;
+    mapPinMainAdress.setAttribute('readonly', '');
+    mapPinMain.removeEventListener('mousedown', mapPinMainCoordinate);
+
   };
 
-  var mapPinMainActive = function (evt) {
-    if (evt.which === 1) {
-      adForm.classList.remove('ad-form--disabled');
-      adForm.removeAttribute('disabled', '');
-      mapFilters.removeAttribute('disabled');
-      init();
-      // разблокируем инпт и селекты в двух форамах
-      window.form.adFormEnabled(adFormInput);
-      window.form.adFormEnabled(adFormSelect);
-      window.form.adFormEnabled(mapFiltersSelect);
-      window.form.adFormEnabled(mapFiltersInput);
+  var mapPinMainActive = function () {
 
-      mapPinMain.removeEventListener('mousedown', mapPinMainActive);
-      // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
-    }
+    adForm.classList.remove('ad-form--disabled');
+    adForm.disabled = false;
+    mapFilters.disabled = false;
+    init();
+    // разблокируем инпт и селекты в двух форамах
+    window.form.adFormEnabled(adFormInput);
+    window.form.adFormEnabled(adFormSelect);
+    window.form.adFormEnabled(mapFiltersSelect);
+    window.form.adFormEnabled(mapFiltersInput);
+
+    mapPinMain.removeEventListener('mousedown', mapPinMainActive);
+    // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
+
   };
 
   var housingType = mapFilters.querySelector('#housing-type');
@@ -209,7 +210,6 @@
     if (mapCard) {
       mapCard.classList.add('visually-hidden');
     }
-
     // чистим то что до этого нарисовали
     var deletePins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
     deletePins.forEach(function (pins) {
@@ -221,49 +221,52 @@
       var data = housing[i];
       if (filterType(data) && filterPriceMiddle(data) && filterRooms(data) && filterGuest(data) && filterFeatures(data)) {
         housingCopy.push(data);
-
       }
       i++;
     }
-
 
     // отрисовываем массив
     window.card.getRenderAdMapPins(housingCopy);
   };
 
   // var onCoordinateForAdress = function () {
-  //   mapPinMainAdress.removeAttribute('readonly', '');
   //   var mapPinMainLeft = mapPinMain.style.left.substr(0, mapPinMain.style.left.length - 2);
   //   var mapPinMainTop = mapPinMain.style.top.substr(0, mapPinMain.style.top.length - 2);
   //   var pinX = Math.floor(+mapPinMainLeft + pinWidth / 2);
   //   var pinY = Math.floor(+mapPinMainTop + pinHeight / 2);
   //   mapPinMainAdress.value = pinX + ', ' + pinY;
-  //   console.log(mapPinMainAdress.value);
-  //   mapPinMainAdress.setAttribute('readonly', '');
   // };
 
   // --------------- обработчик очистки формы
   var resetForm = function (evt) {
-    var addressCoordinate = mapPinMainAdress.value;
+    evt.preventDefault();
+    // document.forms[0].reset();
+    adForm.reset();
+    mapFilters.reset();
 
-    mapPinMainAdress.removeAttribute('readonly', '');
+    avatarPreview.innerHTML = '';
+    photoPreview.innerHTML = '';
 
-    if (evt.which === 1) {
-      adForm.reset();
-      mapFilters.reset();
-      avatarPreview.innerHTML = '';
-      photoPreview.innerHTML = '';
-      onSortPins();
+    var deletePins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+    deletePins.forEach(function (pins) {
+      pins.remove();
+    });
 
-      // onCoordinateForAdress();
-      // console.log(addressCoordinate);
+    adForm.classList.add('ad-form--disabled');
+    adForm.disabled = true;
+    mapFilters.disabled = true;
+    window.form.adFormDisabled(adFormInput);
+    window.form.adFormDisabled(adFormSelect);
+    window.form.adFormDisabled(mapFiltersSelect);
+    window.form.adFormDisabled(mapFiltersInput);
 
-      mapPinMainAdress.value = addressCoordinate;
-    }
+    mapBlock.classList.add('map--faded');
+
+    // вешаем обработчик  что бы еще раз можно было активировать форму
+    mapPinMain.addEventListener('mousedown', mapPinMainActive);
+    // можно было сделать проще - повесить обратно обработчик
+    mapPinMain.addEventListener('mousedown', mapPinMainCoordinate);
   };
-
-  adFormReset.addEventListener('click', resetForm);
-
 
   var closeError = function () {
     var errorElement = mapBlock.querySelector('.error');
@@ -291,6 +294,9 @@
     document.addEventListener('keydown', onErrorEscPress);
     document.addEventListener('click', closeError);
   };
+
+  var adFormReset = adForm.querySelector('.ad-form__reset');
+  adFormReset.addEventListener('click', resetForm);
 
   mapPinMain.addEventListener('mousedown', mapPinMainActive);
   mapPinMain.addEventListener('mousedown', mapPinMainCoordinate);

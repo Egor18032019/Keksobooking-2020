@@ -34,9 +34,12 @@
   };
 
   var closeSuccess = function () {
+
     var successElement = mainBlock.querySelector('.success');
+
     if (successElement) {
-      successElement.remove();
+      mainBlock.removeChild(successElement);
+      // successElement.remove();
       document.removeEventListener('keydown', onSuccessEscPress);
       document.removeEventListener('click', closeSuccess);
     }
@@ -53,19 +56,40 @@
       closeSuccess();
     }
   };
+  var mapFilters = document.querySelector('.map__filters');
+  var mapPinMain = document.querySelector('.map__pin--main');
+  var mapPinMainAdress = adForm.querySelector('input[name="address"]');
+  /**
+   * это ширина блока map__pin в котором перетаскивается метка.
+   */
+  var pinWidth = document.querySelector('.map__pin').offsetWidth;
+  /**
+   * это высота блока map__pin в котором перетаскивается метка.
+   */
+  var pinHeight = document.querySelector('.map__pin').offsetHeight;
 
+  var onCoordinateForAdress = function () {
+    var mapPinMainLeft = mapPinMain.style.left.substr(0, mapPinMain.style.left.length - 2);
+    var mapPinMainTop = mapPinMain.style.top.substr(0, mapPinMain.style.top.length - 2);
+    var pinX = Math.floor(+mapPinMainLeft + pinWidth / 2);
+    var pinY = Math.floor(+mapPinMainTop + pinHeight);
+    mapPinMainAdress.value = pinX + ', ' + pinY;
+  };
 
   var onLoadForm = function () {
     adForm.reset();
-    avatarPreview.removeChild(avatarPreview.firstChild);
+    mapFilters.reset();
+    avatarPreview.innerHTML = '';
     photoPreview.innerHTML = '';
 
     mainBlock.appendChild(adSuccessElement);
+
     adFormSubmit.textContent = 'Опубликовать';
     adFormSubmit.disabled = false;
+
+    onCoordinateForAdress();
     document.addEventListener('keydown', onSuccessEscPress);
     document.addEventListener('click', closeSuccess);
-
   };
 
   /**
@@ -87,26 +111,13 @@
   };
 
   var onSetupFormSubmit = function (evt) {
+    evt.preventDefault();
     var data = new FormData(adForm);
     adFormSubmit.textContent = 'Попытка отправки...';
     adFormSubmit.disabled = true;
-    evt.preventDefault();
     window.backend.save(data, onLoadForm, onError);
 
   };
 
   adForm.addEventListener('submit', onSetupFormSubmit);
-
-  // // --------------- обработчик очистки формы
-  // var resetForm = function (evt) {
-  //   if (evt.which === 1) {
-  //     adForm.reset();
-  //     mapFilters.reset();
-  //     avatarPreview.removeChild(avatarPreview.firstChild);
-  //     photoPreview.innerHTML = '';
-
-  //   }
-  // };
-  // adFormReset.addEventListener('click', resetForm);
-
 })();
