@@ -19,12 +19,12 @@
   var exitPopup = function () {
     var mapCard = mapBlock.querySelector('.map__card');
     var popupClose = mapCard.querySelector('.popup__close');
-    var pins = document.querySelectorAll(".map__pin");
+    var pins = document.querySelectorAll('.map__pin');
 
     var closePopup = function () {
       if (mapCard) {
         for (var i = 0; i < pins.length; i++) {
-          pins[i].classList.remove('map__pin--active')
+          pins[i].classList.remove('map__pin--active');
         }
         mapCard.classList.add('visually-hidden');
         document.removeEventListener('keydown', onPopupEscPress);

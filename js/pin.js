@@ -66,21 +66,21 @@
     }
   };
 
-  var mapPinMainActive = function () {
+  var mapPinMainActive = function (evt) {
+    if (evt.which === 1) {
+      adForm.classList.remove('ad-form--disabled');
+      adForm.removeAttribute('disabled', '');
+      mapFilters.removeAttribute('disabled');
+      init();
+      // разблокируем инпт и селекты в двух форамах
+      window.form.adFormEnabled(adFormInput);
+      window.form.adFormEnabled(adFormSelect);
+      window.form.adFormEnabled(mapFiltersSelect);
+      window.form.adFormEnabled(mapFiltersInput);
 
-    adForm.classList.remove('ad-form--disabled');
-    adForm.removeAttribute('disabled', '');
-    mapFilters.removeAttribute('disabled');
-    init();
-    // разблокируем инпт и селекты в двух форамах
-    window.form.adFormEnabled(adFormInput);
-    window.form.adFormEnabled(adFormSelect);
-    window.form.adFormEnabled(mapFiltersSelect);
-    window.form.adFormEnabled(mapFiltersInput);
-
-    mapPinMain.removeEventListener('mousedown', mapPinMainActive);
-    // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
-
+      mapPinMain.removeEventListener('mousedown', mapPinMainActive);
+      // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
+    }
   };
 
   var housingType = mapFilters.querySelector('#housing-type');
@@ -231,16 +231,37 @@
     window.card.getRenderAdMapPins(housingCopy);
   };
 
+  var onCoordinateForAdress = function () {
+    mapPinMainAdress.removeAttribute('readonly', '');
+    var mapPinMainLeft = mapPinMain.style.left.substr(0, mapPinMain.style.left.length - 2);
+    var mapPinMainTop = mapPinMain.style.top.substr(0, mapPinMain.style.top.length - 2);
+    var pinX = Math.floor(+mapPinMainLeft + pinWidth / 2);
+    var pinY = Math.floor(+mapPinMainTop + pinHeight / 2);
+    mapPinMainAdress.value = pinX + ', ' + pinY;
+    console.log(mapPinMainAdress.value);
+    mapPinMainAdress.setAttribute('readonly', '');
+  };
+
   // --------------- обработчик очистки формы
   var resetForm = function (evt) {
+    var addressCoordinate = mapPinMainAdress.value;
+
+    mapPinMainAdress.removeAttribute('readonly', '');
+
     if (evt.which === 1) {
       adForm.reset();
       mapFilters.reset();
-      avatarPreview.removeChild(avatarPreview.firstChild);
+      avatarPreview.innerHTML = '';
       photoPreview.innerHTML = '';
       onSortPins();
+
+      // onCoordinateForAdress();
+      console.log(addressCoordinate);
+
+      mapPinMainAdress.value = addressCoordinate;
     }
   };
+
   adFormReset.addEventListener('click', resetForm);
 
 
