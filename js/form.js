@@ -89,9 +89,7 @@
 
   var onTypeSelectChange = function () {
     var selectTypeValue = selectType.value;
-    // selecTypePrice.setAttribute('min', typeObjPrice[selectTypeValue]);
     selecTypePrice.min = typeObjPrice[selectTypeValue];
-    // selecTypePrice.setAttribute('placeholder', typeObjPrice[selectTypeValue]);
     selecTypePrice.placeholder = typeObjPrice[selectTypeValue];
   };
 
