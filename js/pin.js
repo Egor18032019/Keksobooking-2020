@@ -5,6 +5,8 @@
    * блок с классом map__pin--main в mapBlock (красный кружок)
    */
   var mapPinMain = mapBlock.querySelector('.map__pin--main');
+  var mapPinMainCoordinateLeft = mapPinMain.style.left;
+  var mapPinMainCoordinateTop = mapPinMain.style.top;
   /**
    * блок с классом '.ad-form'
    */
@@ -56,18 +58,18 @@
     window.backend.load(onLoad, onError);
   };
 
-  var mapPinMainCoordinate = function () {
+  var onMapPinMainCoordinate = function () {
     var mapPinMainLeft = mapPinMain.style.left.substr(0, mapPinMain.style.left.length - 2);
     var mapPinMainTop = mapPinMain.style.top.substr(0, mapPinMain.style.top.length - 2);
     var pinX = Math.floor(+mapPinMainLeft + pinWidth / 2);
     var pinY = Math.floor(+mapPinMainTop + pinHeight);
     mapPinMainAdress.value = pinX + ', ' + pinY;
-    mapPinMainAdress.setAttribute('readonly', '');
-    mapPinMain.removeEventListener('mousedown', mapPinMainCoordinate);
+    mapPinMainAdress.readOnly = true;
+    mapPinMain.removeEventListener('mousedown', onMapPinMainCoordinate);
 
   };
 
-  var mapPinMainActive = function () {
+  var onMapPinMainActive = function () {
 
     adForm.classList.remove('ad-form--disabled');
     adForm.disabled = false;
@@ -79,7 +81,7 @@
     window.form.adFormEnabled(mapFiltersSelect);
     window.form.adFormEnabled(mapFiltersInput);
 
-    mapPinMain.removeEventListener('mousedown', mapPinMainActive);
+    mapPinMain.removeEventListener('mousedown', onMapPinMainActive);
     // убираем обработчик кликов с mapPinMain что бы не плодил обьявления
 
   };
@@ -110,7 +112,7 @@
 
   var onErrorEscPress = function (ev) {
     if (ev.key === window.ESC_KEY) {
-      closeError();
+      onCloseError();
     }
   };
 
@@ -229,16 +231,8 @@
     window.card.getRenderAdMapPins(housingCopy);
   };
 
-  // var onCoordinateForAdress = function () {
-  //   var mapPinMainLeft = mapPinMain.style.left.substr(0, mapPinMain.style.left.length - 2);
-  //   var mapPinMainTop = mapPinMain.style.top.substr(0, mapPinMain.style.top.length - 2);
-  //   var pinX = Math.floor(+mapPinMainLeft + pinWidth / 2);
-  //   var pinY = Math.floor(+mapPinMainTop + pinHeight / 2);
-  //   mapPinMainAdress.value = pinX + ', ' + pinY;
-  // };
-
   // --------------- обработчик очистки формы
-  var resetForm = function (evt) {
+  var onResetForm = function (evt) {
     evt.preventDefault();
     // document.forms[0].reset();
     adForm.reset();
@@ -251,7 +245,14 @@
     deletePins.forEach(function (pins) {
       pins.remove();
     });
-
+    // скрываем открытую карточку обьявдения
+    var mapCard = mapBlock.querySelector('.map__card');
+    if (mapCard) {
+      mapCard.classList.add('visually-hidden');
+    }
+    // возвращаем пин на место
+    mapPinMain.style.left = mapPinMainCoordinateLeft;
+    mapPinMain.style.top = mapPinMainCoordinateTop;
     adForm.classList.add('ad-form--disabled');
     adForm.disabled = true;
     mapFilters.disabled = true;
@@ -263,17 +264,17 @@
     mapBlock.classList.add('map--faded');
 
     // вешаем обработчик  что бы еще раз можно было активировать форму
-    mapPinMain.addEventListener('mousedown', mapPinMainActive);
+    mapPinMain.addEventListener('mousedown', onMapPinMainActive);
     // можно было сделать проще - повесить обратно обработчик
-    mapPinMain.addEventListener('mousedown', mapPinMainCoordinate);
+    mapPinMain.addEventListener('mousedown', onMapPinMainCoordinate);
   };
 
-  var closeError = function () {
+  var onCloseError = function () {
     var errorElement = mapBlock.querySelector('.error');
     if (errorElement) {
       errorElement.remove();
       document.removeEventListener('keydown', onErrorEscPress);
-      document.removeEventListener('click', closeError);
+      document.removeEventListener('click', onCloseError);
     }
   };
   /**
@@ -292,13 +293,13 @@
     alertMessage.textContent = errorMessage;
     mapBlock.appendChild(adErrorElement);
     document.addEventListener('keydown', onErrorEscPress);
-    document.addEventListener('click', closeError);
+    document.addEventListener('click', onCloseError);
   };
 
   var adFormReset = adForm.querySelector('.ad-form__reset');
-  adFormReset.addEventListener('click', resetForm);
+  adFormReset.addEventListener('click', onResetForm);
 
-  mapPinMain.addEventListener('mousedown', mapPinMainActive);
-  mapPinMain.addEventListener('mousedown', mapPinMainCoordinate);
+  mapPinMain.addEventListener('mousedown', onMapPinMainActive);
+  mapPinMain.addEventListener('mousedown', onMapPinMainCoordinate);
 
 })();

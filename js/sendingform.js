@@ -24,16 +24,16 @@
   var avatarPreview = document.querySelector('.ad-form-header__preview');
   var photoPreview = document.querySelector('.ad-form__photo');
 
-  var closeError = function () {
+  var onCloseError = function () {
     var errorElement = mainBlock.querySelector('.error');
     if (errorElement) {
       errorElement.remove();
       document.removeEventListener('keydown', onErrorEscPress);
-      document.removeEventListener('click', closeError);
+      document.removeEventListener('click', onCloseError);
     }
   };
 
-  var closeSuccess = function () {
+  var onCloseSuccess = function () {
 
     var successElement = mainBlock.querySelector('.success');
 
@@ -41,19 +41,19 @@
       mainBlock.removeChild(successElement);
       // successElement.remove();
       document.removeEventListener('keydown', onSuccessEscPress);
-      document.removeEventListener('click', closeSuccess);
+      document.removeEventListener('click', onCloseSuccess);
     }
   };
 
   var onErrorEscPress = function (evt) {
     if (evt.key === window.ESC_KEY) {
-      closeError();
+      onCloseError();
     }
   };
 
   var onSuccessEscPress = function (evt) {
     if (evt.key === window.ESC_KEY) {
-      closeSuccess();
+      onCloseSuccess();
     }
   };
   var mapFilters = document.querySelector('.map__filters');
@@ -89,7 +89,7 @@
 
     onCoordinateForAdress();
     document.addEventListener('keydown', onSuccessEscPress);
-    document.addEventListener('click', closeSuccess);
+    document.addEventListener('click', onCloseSuccess);
   };
 
   /**
@@ -101,11 +101,11 @@
     adFormSubmit.disabled = false;
     adFormSubmit.textContent = 'Попробуйте снова';
     document.addEventListener('keydown', onErrorEscPress);
-    document.addEventListener('click', closeError);
+    document.addEventListener('click', onCloseError);
     var errorButton = mainBlock.querySelector('.error__button');
     // ставим обработчик на кнопку
     if (errorButton) {
-      errorButton.addEventListener('click', closeError);
+      errorButton.addEventListener('click', onCloseError);
       // а как его снять ? если нет обьекта то обработчика на нем нет?
     }
   };
