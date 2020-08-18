@@ -58,6 +58,7 @@
     window.backend.load(onLoad, onError);
   };
 
+  // функция активации пина
   var onMapPinMainCoordinate = function () {
     var mapPinMainLeft = mapPinMain.style.left.substr(0, mapPinMain.style.left.length - 2);
     var mapPinMainTop = mapPinMain.style.top.substr(0, mapPinMain.style.top.length - 2);
@@ -66,7 +67,6 @@
     mapPinMainAdress.value = pinX + ', ' + pinY;
     mapPinMainAdress.readOnly = true;
     mapPinMain.removeEventListener('mousedown', onMapPinMainCoordinate);
-
   };
 
   var onMapPinMainActive = function () {
