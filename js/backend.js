@@ -4,8 +4,8 @@
 (function () {
 
   var URL = {
-    POST: 'https://js.dump.academy/keksobooking',
-    GET: 'https://js.dump.academy/keksobooking/data'
+    POST: 'https://javascript.pages.academy/keksobooking',
+    GET: 'https://javascript.pages.academy/keksobooking/data'
   };
 
 
